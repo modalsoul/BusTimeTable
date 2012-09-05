@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, KeikyuTimeTableActivity!</string>
+    <string name="app_name">KeikyuTimeTable</string>
+    <string name="select_bus_stop">乗車するバス停を選択</string>
+    <string name="bus_stop_list_dialog_title">乗車するバス停を選択</string>
+    <string name="select_line">行き先を選択</string>
+
+</resources>
