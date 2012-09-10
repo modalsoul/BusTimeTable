@@ -2,7 +2,7 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 
 
 import jp.modal.soul.KeikyuTimeTable.R;
-import jp.modal.soul.KeikyuTimeTable.util.Util;
+import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
