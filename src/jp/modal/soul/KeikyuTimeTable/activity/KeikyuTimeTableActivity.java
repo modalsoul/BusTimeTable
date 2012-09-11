@@ -1,12 +1,16 @@
 package jp.modal.soul.KeikyuTimeTable.activity;
 
 
+import java.util.ArrayList;
+
 import jp.modal.soul.KeikyuTimeTable.R;
-import jp.modal.soul.KeikyuTimeTable.util.Utils;
+import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
+import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,26 +32,35 @@ public class KeikyuTimeTableActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        // 初回起動時のセットアップ
+        setupInit();
         // Viewのセットアップ
         setupView();
         // 動作のセットアップ
         setupEventhandling();
+
     }
 
 
+    /**
+     *  Viewのセットアップ
+     */
 	private void setupView() {
 		
 		selectBusStopButton = (Button)findViewById(R.id.select_bus_stop_btn);
 		
 	}
+	/**
+	 *  動作のセットアップ
+	 */
 	private void setupEventhandling() {
 		
 		selectBusStopButton.setOnClickListener(selectBusStopClickListener);
 		
 	}
 	
+	// バス停選択ボタンをクリックしたときの動作を設定
 	public View.OnClickListener selectBusStopClickListener = new OnClickListener() {
-		// バス停選択ボタンをクリックしたときの動作を設定
 		@Override
 		public void onClick(View v) {			
 			showBusStopList();
@@ -58,7 +71,8 @@ public class KeikyuTimeTableActivity extends Activity {
 	 * バス停選択のダイアログを表示する
 	 */
 	private void showBusStopList() {
-		final CharSequence[] busStopItems = {"大森西２丁目","蒲田","大森"};
+		
+		final CharSequence[] busStopItems = getBusStopList();
 		
 		// バス停選択のリストを表示するダイアログを作成
 		AlertDialog.Builder builder = new AlertDialog.Builder(KeikyuTimeTableActivity.this);		
@@ -88,5 +102,74 @@ public class KeikyuTimeTableActivity extends Activity {
 		// BusStopActivityの起動
 //		Util.intentLauncher(this, intent);	
 		this.startActivity(intent);
+	}
+	
+	/**
+	 * バス停名のリストを取得
+	 * @return
+	 */
+	public CharSequence[] getBusStopList() {
+		BusStopDao busStopDao = new BusStopDao(getApplicationContext());
+		ArrayList<BusStopItem> items = busStopDao.queryBusStopOrderById();
+		
+		// バス停数
+		int busStopNum = items.size();
+		// バス停名のリスト
+		CharSequence[] busStopList = new CharSequence[busStopNum];
+		int i = 0;
+		for(BusStopItem item: items) {
+			busStopList[i] = item.busStopName;
+			i++;
+		}
+		return busStopList;
+	}
+	
+	/**
+	 * アプリ初回起動時の初期化処理
+	 */
+	public void setupInit() {
+		InitState initState = new InitState();
+		// 初回起動の判定
+		if(initState.getStatus() == InitState.PREFERENCE_INIT) {
+			// 初回起動の場合、初期データをセット
+			BusStopDao busStopDao = new BusStopDao(getApplicationContext());
+			busStopDao.setup();
+			// 起動状態を変更
+			initState.setStatus(InitState.PREFERENCE_BOOTED);
+		}
+	}
+	/**
+	 * 起動ステータスの共有プリファレンスのクラス
+	 * TODO 別ファイルへの切り出し
+	 * @author M
+	 *
+	 */
+	public class InitState {
+		/** 共有プリファレンス名 */
+		public static final String INIT_PREFERENCE_NAME = "InitState";
+		// 起動ステータスの定数
+		/** 未起動　*/
+		public static final int PREFERENCE_INIT = 0;
+		/** 起動 */
+		public static final int PREFERENCE_BOOTED = 1;
+		
+		/**
+		 * 起動ステータスの保存
+		 * @param status
+		 */
+		void setStatus(int state) {
+			SharedPreferences sp = getSharedPreferences(INIT_PREFERENCE_NAME, MODE_PRIVATE);
+			sp.edit().putInt(INIT_PREFERENCE_NAME, state).commit();
+		}
+		/**
+		 * 起動ステータスの取得
+		 * @return
+		 */
+		int getStatus() {
+			SharedPreferences sp = getSharedPreferences(INIT_PREFERENCE_NAME, MODE_PRIVATE);
+			return sp.getInt(INIT_PREFERENCE_NAME, 0);
+		}
+		
+		
 	}
 }
