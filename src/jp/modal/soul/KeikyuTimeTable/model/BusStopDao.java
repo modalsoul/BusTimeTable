@@ -2,62 +2,59 @@ package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.util.ArrayList;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * 路線を扱うクラス
+ * バス停を扱うクラス
  * @author M
  *
  */
-public class RouteDao extends Dao {
+public class BusStopDao extends Dao {
 
 	/**
 	 * 初期データ
 	 */
 	private String[][] initicalData = new String[][]{
-			{"1","森50 東邦大学 大森駅 ゆき", "13", "1", "{\"bus_stop\":1,2,3,4,5,6,7,8,9,10,11,12,13}"},
-
+			{"1","蒲田駅"},
+			{"2","あやめ橋"},
+			{"3","蒲田一丁目"},
+			{"4","東邦大学"},
+			{"5","大森西四丁目"},
+			{"6","富士見橋(大田区)"},
+			{"7","大森西二丁目"},
+			{"8","沢田通り"},
+			{"9","大森北四丁目"},
+			{"10","大森北三丁目"},
+			{"11","八幡通り"},
+			{"12","ＮＴＴ大森前"},
+			{"13","大森駅"}
 	};
 	
 	/** テーブル名 */
-	public static final String TABLE_NAME = "route";
+	public static final String TABLE_NAME = "bus_stop";
 	
 	// カラム名定義
-	/** 路線ID　*/
+	/** バス停ID　*/
 	public static final String COLUMN_ID = "id";
-	/** 路線名 */
-	public static final String COLUMN_ROUTE_NAME = "route_name";
-	/** 終着バス停ID */
-	public static final String COLUMN_TERMINAL = "terminal";
-	/** 始発バス停ID */
-	public static final String COLUMN_STARTING = "starting";
-	/** バス停 */
-	public static final String COLUMN_BUS_STOPS = "bus_stops";
+	/** バス停名 */
+	public static final String COLUMN_BUS_STOP_NAME = "bus_stop_name";
+
 	
 	
 	// カラム名配列定義
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
-											COLUMN_ROUTE_NAME,
-											COLUMN_TERMINAL,
-											COLUMN_STARTING,
-											COLUMN_BUS_STOPS};
+											COLUMN_BUS_STOP_NAME };
 	
 	// create table文定義
 	public static final String CREATE_TABLE;
 	static {
 		// @formatter:off
 		String columnDefine = COLUMN_ID + " integer primary key, "
-							+ COLUMN_ROUTE_NAME + " text not null, "
-							+ COLUMN_TERMINAL + " text not null, "
-							+ COLUMN_STARTING + " text not null, "
-							+ COLUMN_BUS_STOPS + " text not null, "
+							+ COLUMN_BUS_STOP_NAME + " text not null, "
 							;
 		// @formatter:off
 		CREATE_TABLE = createTable(TABLE_NAME, columnDefine);
@@ -67,24 +64,16 @@ public class RouteDao extends Dao {
 	 * コンストラクタ
 	 * @param context
 	 */
-	public RouteDao(Context context) {
+	public BusStopDao(Context context) {
 		super(context);	
 	}
 	
-	public static RouteItem getRouteItem(Cursor cursor){
-		RouteItem routeItem = new RouteItem();
-		routeItem.id = cursor.getInt(0);
-		routeItem.routeName = cursor.getString(1);
-		routeItem.terminal = cursor.getInt(2);
-		routeItem.starting = cursor.getInt(3);
-		try {
-			routeItem.busStops = new JSONObject(cursor.getString(4));
-		} catch (JSONException e) {
-			// システムエラー
-			e.printStackTrace();
-		}
+	public static BusStopItem getBusStopItem(Cursor cursor){
+		BusStopItem busStopItem = new BusStopItem();
+		busStopItem.id = cursor.getInt(0);
+		busStopItem.busStopName = cursor.getString(1);
 		
-		return routeItem;
+		return busStopItem;
 	}
 	/**
 	 * リスト取得
@@ -97,7 +86,7 @@ public class RouteDao extends Dao {
 	 * @param limit
 	 * @return
 	 */
-	private ArrayList<RouteItem> queryList(String[] columns, String selection, String[] selectionArgs,  String groupBy, 
+	private ArrayList<BusStopItem> queryList(String[] columns, String selection, String[] selectionArgs,  String groupBy, 
 			String having, String orderBy, String limit) {
 		// 参照系ではReadableモード
 		SQLiteDatabase db = getReadableDatabase();
@@ -107,9 +96,9 @@ public class RouteDao extends Dao {
 		cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
 		
 		// 実行結果取得
-		ArrayList<RouteItem> itemList = new ArrayList<RouteItem>();
+		ArrayList<BusStopItem> itemList = new ArrayList<BusStopItem>();
 		while (cursor.moveToNext()) {
-			RouteItem item = getRouteItem(cursor);
+			BusStopItem item = getBusStopItem(cursor);
 			itemList.add(item);
 		}
 		
@@ -121,10 +110,10 @@ public class RouteDao extends Dao {
 	}
 	
 	/**
-	 * 路線ID順に取得
+	 * バス停ID順に取得
 	 * @return
 	 */
-	public ArrayList<RouteItem> queryRouteOrderById() {
+	public ArrayList<BusStopItem> queryBusStopOrderById() {
 		String orderBy = COLUMN_ID + " asc";
 		return queryList(COLUMNS, null, null, null, null, orderBy, null);
 	}
@@ -137,13 +126,10 @@ public class RouteDao extends Dao {
 	 * @return
 	 * @throws Exception
 	 */
-	public long insertWithoutOpenDb(SQLiteDatabase db, RouteItem item) throws Exception {
+	public long insertWithoutOpenDb(SQLiteDatabase db, BusStopItem item) throws Exception {
 		ContentValues values = new  ContentValues();
 		values.put(COLUMN_ID, item.id);
-		values.put(COLUMN_ROUTE_NAME, item.routeName);
-		values.put(COLUMN_TERMINAL, item.terminal);
-		values.put(COLUMN_STARTING, item.starting);
-		values.put(COLUMN_BUS_STOPS, item.busStops.getString("bus_stop"));
+		values.put(COLUMN_BUS_STOP_NAME, item.busStopName);
 		
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
@@ -153,22 +139,14 @@ public class RouteDao extends Dao {
 	}
 	
 	public void setup() {
-		RouteItem item;
+		BusStopItem item;
 		
 		SQLiteDatabase db = getWritableDatabase();
 		for( String[] data: initicalData) {
 			// 初期データのバス停アイテムの設定
-			item = new RouteItem();
+			item = new BusStopItem();
 			item.id = Long.parseLong(data[0]);
-			item.routeName = data[1];
-			item.terminal = Long.parseLong(data[2]);
-			item.starting = Long.parseLong(data[3]);
-			try {
-				item.busStops = new JSONObject(data[4]);
-			} catch (JSONException e1) {
-				// データ不正
-				e1.printStackTrace();
-			}
+			item.busStopName = data[1];			
 			try {
 				// DBへインサート				
 				insertWithoutOpenDb(db, item);
