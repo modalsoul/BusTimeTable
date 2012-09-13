@@ -4,8 +4,11 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
+import jp.modal.soul.KeikyuTimeTable.R.id;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
+import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
+import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -14,7 +17,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
 public class KeikyuTimeTableActivity extends Activity {
 	/** バス停選択ボタン */
@@ -38,6 +45,36 @@ public class KeikyuTimeTableActivity extends Activity {
         setupView();
         // 動作のセットアップ
         setupEventhandling();
+        
+        // TODO adaptorを外だし
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        
+        // リストの取得
+        RouteDao routeDao = new RouteDao(getApplicationContext());
+        ArrayList<RouteItem> routeList = routeDao.queryRouteOrderById();
+        
+  adapter.add(Integer.toString(routeList.size()));      
+        // アイテムの追加
+//        for(RouteItem item : routeList) {
+//        	adapter.add(item.routeName);
+//        }
+        
+        ListView listView = (ListView)findViewById(id.lineList);
+        // アダプターの設定
+        listView.setAdapter(adapter);
+        // ListViewのアイテムがクリックされたときのコールバックリスナーを登録
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        	@Override
+        	public void onItemClick(AdapterView<?> parent, View view, int position,
+        			long id) {
+        		ListView listView = (ListView)parent;
+        		// クリックされたアイテムの取得
+        		String item = (String)listView.getItemAtPosition(position);
+        		Toast.makeText(KeikyuTimeTableActivity.this, item, Toast.LENGTH_SHORT).show();
+        		
+        	}
+		});
+        
 
     }
 
@@ -134,6 +171,8 @@ public class KeikyuTimeTableActivity extends Activity {
 			// 初回起動の場合、初期データをセット
 			BusStopDao busStopDao = new BusStopDao(getApplicationContext());
 			busStopDao.setup();
+			RouteDao routeDao = new RouteDao(getApplicationContext());
+			routeDao.setup();
 			// 起動状態を変更
 			initState.setStatus(InitState.PREFERENCE_BOOTED);
 		}
