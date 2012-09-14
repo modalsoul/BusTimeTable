@@ -3,6 +3,8 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.R.id;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
@@ -52,12 +54,11 @@ public class KeikyuTimeTableActivity extends Activity {
         // リストの取得
         RouteDao routeDao = new RouteDao(getApplicationContext());
         ArrayList<RouteItem> routeList = routeDao.queryRouteOrderById();
-        
-  adapter.add(Integer.toString(routeList.size()));      
+            
         // アイテムの追加
-//        for(RouteItem item : routeList) {
-//        	adapter.add(item.routeName);
-//        }
+        for(RouteItem item : routeList) {
+        	adapter.add(item.routeName);
+        }
         
         ListView listView = (ListView)findViewById(id.lineList);
         // アダプターの設定
@@ -108,6 +109,21 @@ public class KeikyuTimeTableActivity extends Activity {
 	 * バス停選択のダイアログを表示する
 	 */
 	private void showBusStopList() {
+//		private void showBusStopList(long routeId) {		
+		RouteDao routeDao = new RouteDao(getApplicationContext());
+		// 路線情報を取得
+//		String[] routeIdList = {Long.toString(routeId)};
+//		if(routeIdList.length != 1) {
+//			// システムエラー
+//		}
+//		ArrayList<RouteItem> routeItems = routeDao.queryAllBusStopByRouteId(routeIdList);
+//		
+//		JSONObject json = routeItems.get(0).busStops;
+//		
+//		String[] selectionArgs = json.get;
+//		
+//		BusStopDao busStopDao = new BusStopDao(getApplicationContext());
+//		ArrayList<BusStopItem> busStopItems = busStopDao.queryAllBusStopById(selectionArgs);
 		
 		final CharSequence[] busStopItems = getBusStopList();
 		

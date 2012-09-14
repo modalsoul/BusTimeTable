@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * 路線を扱うクラス
@@ -21,8 +22,8 @@ public class RouteDao extends Dao {
 	 * 初期データ
 	 */
 	private String[][] initicalData = new String[][]{
-			{"1","森50 東邦大学 大森駅 ゆき", "13", "1", "{\"bus_stop\":1,2,3,4,5,6,7,8,9,10,11,12,13}"},
-
+			{"1","森50 東邦大学 大森駅 ゆき", "13", "1", "{\"bus_stop\":\"1,2,3,4,5,6,7,8,9,10,11,12,13\"}"},
+			{"2","森50 東邦大学 蒲田駅 ゆき", "1", "13", "{\"bus_stop\":\"13,12,11,10,9,8,7,6,5,4,3,2,1\"}"}
 	};
 	
 	/** テーブル名 */
@@ -130,6 +131,16 @@ public class RouteDao extends Dao {
 	}
 	
 	/**
+	 * 指定された路線IDの情報を取得
+	 * @param routeId
+	 * @return
+	 */
+	public ArrayList<RouteItem> queryAllBusStopByRouteId(String[] routeId) {
+		String selection = COLUMN_ID;
+		return queryList(COLUMNS, selection, routeId, null, null, null, null);
+	}
+	
+	/**
 	 * 新規作成
 	 * SQLiteDatabaseオブジェクトのopen,closeは外部で行う
 	 * @param db
@@ -171,11 +182,12 @@ public class RouteDao extends Dao {
 			}
 			try {
 				// DBへインサート				
-				insertWithoutOpenDb(db, item);
+				Log.e("**********************",Long.toString(insertWithoutOpenDb(db, item)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		db.close();
 	}
 	
 	

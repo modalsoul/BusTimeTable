@@ -18,7 +18,7 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
     /**
      * Serializableクラスに記述する定数
      */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
 	@Override
 	public int compareTo(RouteItem another) {

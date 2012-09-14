@@ -119,6 +119,17 @@ public class BusStopDao extends Dao {
 	}
 	
 	/**
+	 * 指定されたバス停IDの情報を取得
+	 * @return
+	 */
+	public ArrayList<BusStopItem> queryAllBusStopById(String[] selectionArgs) {
+
+		String selection = COLUMN_ID;
+		
+		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
+	}
+	
+	/**
 	 * 新規作成
 	 * SQLiteDatabaseオブジェクトのopen,closeは外部で行う
 	 * @param db
@@ -154,6 +165,7 @@ public class BusStopDao extends Dao {
 				e.printStackTrace();
 			}
 		}
+		db.close();
 	}
 	
 	
