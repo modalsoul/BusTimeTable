@@ -13,7 +13,7 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
     public String routeName;
     public long terminal;
     public long starting;
-    public JSONObject busStops;
+    public String busStops;
     
     /**
      * Serializableクラスに記述する定数

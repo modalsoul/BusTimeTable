@@ -2,6 +2,8 @@ package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.util.ArrayList;
 
+import jp.modal.soul.KeikyuTimeTable.util.Utils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,8 +24,8 @@ public class RouteDao extends Dao {
 	 * 初期データ
 	 */
 	private String[][] initicalData = new String[][]{
-			{"1","森50 東邦大学 大森駅 ゆき", "13", "1", "{\"bus_stop\":\"1,2,3,4,5,6,7,8,9,10,11,12,13\"}"},
-			{"2","森50 東邦大学 蒲田駅 ゆき", "1", "13", "{\"bus_stop\":\"13,12,11,10,9,8,7,6,5,4,3,2,1\"}"}
+			{"1","森50 東邦大学 大森駅 ゆき", "13", "1", "1,2,3,4,5,6,7,8,9,10,11,12,13"},
+			{"2","森50 東邦大学 蒲田駅 ゆき", "1", "13", "13,12,11,10,9,8,7,6,5,4,3,2,1"}
 	};
 	
 	/** テーブル名 */
@@ -78,12 +80,7 @@ public class RouteDao extends Dao {
 		routeItem.routeName = cursor.getString(1);
 		routeItem.terminal = cursor.getInt(2);
 		routeItem.starting = cursor.getInt(3);
-		try {
-			routeItem.busStops = new JSONObject(cursor.getString(4));
-		} catch (JSONException e) {
-			// システムエラー
-			e.printStackTrace();
-		}
+		routeItem.busStops = cursor.getString(4);
 		
 		return routeItem;
 	}
@@ -132,12 +129,20 @@ public class RouteDao extends Dao {
 	
 	/**
 	 * 指定された路線IDの情報を取得
-	 * @param routeId
+	 * @param routeId 取得対象の路線ID
 	 * @return
 	 */
-	public ArrayList<RouteItem> queryAllBusStopByRouteId(String[] routeId) {
+	public RouteItem queryAllBusStopByRouteId(long routeId) {
 		String selection = COLUMN_ID;
-		return queryList(COLUMNS, selection, routeId, null, null, null, null);
+		String[] selectionArgs = new String[1];
+		selectionArgs[0] = Long.toString(routeId);
+		ArrayList<RouteItem> routeItems =  queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
+		
+		if(routeItems.size() != 1){
+			// システムエラー
+			return null;
+		}
+		return routeItems.get(0);
 	}
 	
 	/**
@@ -154,7 +159,7 @@ public class RouteDao extends Dao {
 		values.put(COLUMN_ROUTE_NAME, item.routeName);
 		values.put(COLUMN_TERMINAL, item.terminal);
 		values.put(COLUMN_STARTING, item.starting);
-		values.put(COLUMN_BUS_STOPS, item.busStops.getString("bus_stop"));
+		values.put(COLUMN_BUS_STOPS, item.busStops);
 		
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
@@ -174,12 +179,8 @@ public class RouteDao extends Dao {
 			item.routeName = data[1];
 			item.terminal = Long.parseLong(data[2]);
 			item.starting = Long.parseLong(data[3]);
-			try {
-				item.busStops = new JSONObject(data[4]);
-			} catch (JSONException e1) {
-				// データ不正
-				e1.printStackTrace();
-			}
+			item.busStops = data[4];
+
 			try {
 				// DBへインサート				
 				Log.e("**********************",Long.toString(insertWithoutOpenDb(db, item)));

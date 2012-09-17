@@ -122,11 +122,12 @@ public class BusStopDao extends Dao {
 	 * w’è‚³‚ê‚½ƒoƒX’âID‚Ìî•ñ‚ğæ“¾
 	 * @return
 	 */
-	public ArrayList<BusStopItem> queryAllBusStopById(String[] selectionArgs) {
+	public ArrayList<BusStopItem> queryBusStopById(String[] selectionArgs) {
 
 		String selection = COLUMN_ID;
 		
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
+		
 	}
 	
 	/**

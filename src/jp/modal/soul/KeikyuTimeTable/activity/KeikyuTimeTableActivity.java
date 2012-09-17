@@ -3,20 +3,20 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 
 import java.util.ArrayList;
 
-import org.json.JSONObject;
-
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.R.id;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
+import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -33,6 +33,8 @@ public class KeikyuTimeTableActivity extends Activity {
 	
 	/** 選択されたバス停の番号 */
 	public int selectedBusStopNumber; 
+	/** 選択された路線ID */
+	public long selectedRouteId;
 	
 	
     /** Called when the activity is first created. */
@@ -73,6 +75,10 @@ public class KeikyuTimeTableActivity extends Activity {
         		String item = (String)listView.getItemAtPosition(position);
         		Toast.makeText(KeikyuTimeTableActivity.this, item, Toast.LENGTH_SHORT).show();
         		
+        		// 路線IDをセット
+        		selectedRouteId = position + 1;
+        		showBusStopList();
+        		
         	}
 		});
         
@@ -108,34 +114,35 @@ public class KeikyuTimeTableActivity extends Activity {
 	/**
 	 * バス停選択のダイアログを表示する
 	 */
-	private void showBusStopList() {
-//		private void showBusStopList(long routeId) {		
+	private void showBusStopList() {	
 		RouteDao routeDao = new RouteDao(getApplicationContext());
 		// 路線情報を取得
-//		String[] routeIdList = {Long.toString(routeId)};
-//		if(routeIdList.length != 1) {
-//			// システムエラー
-//		}
-//		ArrayList<RouteItem> routeItems = routeDao.queryAllBusStopByRouteId(routeIdList);
-//		
-//		JSONObject json = routeItems.get(0).busStops;
-//		
-//		String[] selectionArgs = json.get;
-//		
-//		BusStopDao busStopDao = new BusStopDao(getApplicationContext());
-//		ArrayList<BusStopItem> busStopItems = busStopDao.queryAllBusStopById(selectionArgs);
+		Log.e("GYAAAAAAAAAAA", Long.toString(selectedRouteId));
+		RouteItem routeItem = routeDao.queryAllBusStopByRouteId(selectedRouteId);
+		if(routeItem == null) {
+			// システムエラー
+		}
+		String[] busStops = Utils.busStopIdString2StringItems(routeItem.busStops);
+		// 路線のバス停を取得
+		BusStopDao busStopDao = new BusStopDao(getApplicationContext());
+		ArrayList<BusStopItem> busStopItems = busStopDao.queryBusStopById(busStops);
 		
-		final CharSequence[] busStopItems = getBusStopList();
-		
+		// バス停名を設定
+		final CharSequence[] busStopNames = new CharSequence[busStopItems.size()];
+		int i = 0;
+		for(BusStopItem item: busStopItems) {
+			busStopNames[i] = item.busStopName;
+			i++;
+		}
 		// バス停選択のリストを表示するダイアログを作成
 		AlertDialog.Builder builder = new AlertDialog.Builder(KeikyuTimeTableActivity.this);		
 		builder.setTitle(R.string.bus_stop_list_dialog_title);
-		builder.setSingleChoiceItems(busStopItems, -1, new DialogInterface.OnClickListener(){
+		builder.setSingleChoiceItems(busStopNames, -1, new DialogInterface.OnClickListener(){
 			// バス停リストを選択したときの動作を設定
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// 選択されたバス停番号を設定
-				selectedBusStopNumber = which;
+				selectedBusStopNumber = which +1;
 				// バス停の行き先選択画面へ遷移
 				launchBusStop();
 			}
