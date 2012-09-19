@@ -124,7 +124,14 @@ public class BusStopDao extends Dao {
 	 */
 	public ArrayList<BusStopItem> queryBusStopById(String[] selectionArgs) {
 
-		String selection = COLUMN_ID;
+		String selection = COLUMN_ID + " = ?";
+		int i = 0;
+		for(String arg: selectionArgs) {
+			if(i != 0) {
+				selection += "OR ?";
+			}
+			i++;
+		}
 		
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
 		

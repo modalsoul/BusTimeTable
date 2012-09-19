@@ -20,6 +20,6 @@ public class Utils {
 	}
 
 	public static String[] busStopIdString2StringItems(String busStopIds) {
-		return null;
+		return busStopIds.split(",");
 	}
 }

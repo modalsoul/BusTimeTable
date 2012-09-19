@@ -58,8 +58,8 @@ public class RouteDao extends Dao {
 		// @formatter:off
 		String columnDefine = COLUMN_ID + " integer primary key, "
 							+ COLUMN_ROUTE_NAME + " text not null, "
-							+ COLUMN_TERMINAL + " text not null, "
-							+ COLUMN_STARTING + " text not null, "
+							+ COLUMN_TERMINAL + " integer not null, "
+							+ COLUMN_STARTING + " integer not null, "
 							+ COLUMN_BUS_STOPS + " text not null, "
 							;
 		// @formatter:off
@@ -133,7 +133,8 @@ public class RouteDao extends Dao {
 	 * @return
 	 */
 	public RouteItem queryAllBusStopByRouteId(long routeId) {
-		String selection = COLUMN_ID;
+		String selection = COLUMN_ID + " = ?";
+
 		String[] selectionArgs = new String[1];
 		selectionArgs[0] = Long.toString(routeId);
 		ArrayList<RouteItem> routeItems =  queryList(COLUMNS, selection, selectionArgs, null, null, null, null);

@@ -50,11 +50,17 @@ public class KeikyuTimeTableActivity extends Activity {
         // 動作のセットアップ
         setupEventhandling();
         
-        // TODO adaptorを外だし
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         
-        // リストの取得
-        RouteDao routeDao = new RouteDao(getApplicationContext());
+        // 路線リストのセットアップ
+        setupRouteList();
+        
+
+    }
+
+
+	private void setupRouteList() {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+		RouteDao routeDao = new RouteDao(getApplicationContext());
         ArrayList<RouteItem> routeList = routeDao.queryRouteOrderById();
             
         // アイテムの追加
@@ -66,25 +72,25 @@ public class KeikyuTimeTableActivity extends Activity {
         // アダプターの設定
         listView.setAdapter(adapter);
         // ListViewのアイテムがクリックされたときのコールバックリスナーを登録
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        	@Override
-        	public void onItemClick(AdapterView<?> parent, View view, int position,
-        			long id) {
-        		ListView listView = (ListView)parent;
-        		// クリックされたアイテムの取得
-        		String item = (String)listView.getItemAtPosition(position);
-        		Toast.makeText(KeikyuTimeTableActivity.this, item, Toast.LENGTH_SHORT).show();
-        		
-        		// 路線IDをセット
-        		selectedRouteId = position + 1;
-        		showBusStopList();
-        		
-        	}
-		});
-        
+        listView.setOnItemClickListener(onRouteItemClick);
+	}
 
-    }
-
+	// 路線リストのアイテムがクリックされたときのリスナー
+	AdapterView.OnItemClickListener onRouteItemClick = new AdapterView.OnItemClickListener() {
+    	@Override
+    	public void onItemClick(AdapterView<?> parent, View view, int position,
+    			long id) {
+    		ListView listView = (ListView)parent;
+    		// クリックされたアイテムの取得
+    		String item = (String)listView.getItemAtPosition(position);
+    		Toast.makeText(KeikyuTimeTableActivity.this, item, Toast.LENGTH_SHORT).show();
+    		
+    		// 路線IDをセット
+    		selectedRouteId = position + 1;
+    		showBusStopList();
+    		
+    	}
+	};
 
     /**
      *  Viewのセットアップ
@@ -117,15 +123,20 @@ public class KeikyuTimeTableActivity extends Activity {
 	private void showBusStopList() {	
 		RouteDao routeDao = new RouteDao(getApplicationContext());
 		// 路線情報を取得
-		Log.e("GYAAAAAAAAAAA", Long.toString(selectedRouteId));
+
 		RouteItem routeItem = routeDao.queryAllBusStopByRouteId(selectedRouteId);
+		
 		if(routeItem == null) {
 			// システムエラー
 		}
+		Log.e("GEGEGEGGE", routeItem.busStops);
 		String[] busStops = Utils.busStopIdString2StringItems(routeItem.busStops);
 		// 路線のバス停を取得
 		BusStopDao busStopDao = new BusStopDao(getApplicationContext());
 		ArrayList<BusStopItem> busStopItems = busStopDao.queryBusStopById(busStops);
+		for(BusStopItem item: busStopItems) {
+			Log.e("GYAAA", item.busStopName);
+		}
 		
 		// バス停名を設定
 		final CharSequence[] busStopNames = new CharSequence[busStopItems.size()];
@@ -160,8 +171,8 @@ public class KeikyuTimeTableActivity extends Activity {
 		// 選択されたバス停番号を指定
 		intent.putExtra(BusStopActivity.BUSS_STOP_NUMBER, selectedBusStopNumber);
 		// BusStopActivityの起動
-//		Util.intentLauncher(this, intent);	
-		this.startActivity(intent);
+		Utils.intentLauncher(this, intent);	
+//		this.startActivity(intent);
 	}
 	
 	/**
