@@ -26,8 +26,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class KeikyuTimeTableActivity extends Activity {
-	/** バス停選択ボタン */
-	public Button selectBusStopButton;
+
 	/** バス停リストを表示するダイアログ */
 	public AlertDialog busStopListDialog;
 	
@@ -36,6 +35,10 @@ public class KeikyuTimeTableActivity extends Activity {
 	/** 選択された路線ID */
 	public long selectedRouteId;
 	
+	/** DAO */
+	private RouteDao routeDao;
+	private BusStopDao busStopDao;
+	
 	
     /** Called when the activity is first created. */
     @Override
@@ -43,24 +46,27 @@ public class KeikyuTimeTableActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        // DAOのセットアップ
+        setupDao();
         // 初回起動時のセットアップ
         setupInit();
         // Viewのセットアップ
         setupView();
         // 動作のセットアップ
         setupEventhandling();
-        
-        
+                
         // 路線リストのセットアップ
         setupRouteList();
         
 
     }
-
+    private void setupDao() {
+    	routeDao = new RouteDao(getApplicationContext());
+    	busStopDao = new BusStopDao(getApplicationContext());
+    }
 
 	private void setupRouteList() {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-		RouteDao routeDao = new RouteDao(getApplicationContext());
         ArrayList<RouteItem> routeList = routeDao.queryRouteOrderById();
             
         // アイテムの追加
@@ -96,34 +102,20 @@ public class KeikyuTimeTableActivity extends Activity {
      *  Viewのセットアップ
      */
 	private void setupView() {
-		
-		selectBusStopButton = (Button)findViewById(R.id.select_bus_stop_btn);
-		
+				
 	}
 	/**
 	 *  動作のセットアップ
 	 */
 	private void setupEventhandling() {
-		
-		selectBusStopButton.setOnClickListener(selectBusStopClickListener);
-		
+			
 	}
-	
-	// バス停選択ボタンをクリックしたときの動作を設定
-	public View.OnClickListener selectBusStopClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View v) {			
-			showBusStopList();
-		}
-	};
-	
+		
 	/**
 	 * バス停選択のダイアログを表示する
 	 */
 	private void showBusStopList() {	
-		RouteDao routeDao = new RouteDao(getApplicationContext());
 		// 路線情報を取得
-
 		RouteItem routeItem = routeDao.queryAllBusStopByRouteId(selectedRouteId);
 		
 		if(routeItem == null) {
@@ -132,7 +124,6 @@ public class KeikyuTimeTableActivity extends Activity {
 		Log.e("GEGEGEGGE", routeItem.busStops);
 		String[] busStops = Utils.busStopIdString2StringItems(routeItem.busStops);
 		// 路線のバス停を取得
-		BusStopDao busStopDao = new BusStopDao(getApplicationContext());
 		ArrayList<BusStopItem> busStopItems = busStopDao.queryBusStopById(busStops);
 		for(BusStopItem item: busStopItems) {
 			Log.e("GYAAA", item.busStopName);
@@ -180,7 +171,6 @@ public class KeikyuTimeTableActivity extends Activity {
 	 * @return
 	 */
 	public CharSequence[] getBusStopList() {
-		BusStopDao busStopDao = new BusStopDao(getApplicationContext());
 		ArrayList<BusStopItem> items = busStopDao.queryBusStopOrderById();
 		
 		// バス停数
@@ -203,9 +193,7 @@ public class KeikyuTimeTableActivity extends Activity {
 		// 初回起動の判定
 		if(initState.getStatus() == InitState.PREFERENCE_INIT) {
 			// 初回起動の場合、初期データをセット
-			BusStopDao busStopDao = new BusStopDao(getApplicationContext());
 			busStopDao.setup();
-			RouteDao routeDao = new RouteDao(getApplicationContext());
 			routeDao.setup();
 			// 起動状態を変更
 			initState.setStatus(InitState.PREFERENCE_BOOTED);
