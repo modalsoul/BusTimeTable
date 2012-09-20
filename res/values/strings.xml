@@ -6,5 +6,8 @@
     <string name="select_bus_stop">乗車するバス停を選択</string>
     <string name="bus_stop_list_dialog_title">乗車するバス停を選択</string>
     <string name="select_line">行き先を選択</string>
+    
+	<!--  路線リストRow  -->
+    <string name="starting_to_terminal">%1$s から %2$s</string>
 
 </resources>

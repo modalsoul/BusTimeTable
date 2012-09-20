@@ -24,4 +24,12 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
 	public int compareTo(RouteItem another) {
 		return (int)(this.id - another.id);
 	}
+	
+	/**
+	 * ˜Hü–¼‚ğæ“¾‚·‚é
+	 * @return ˜Hü–¼
+	 */
+	public String routeName() {
+		return routeName;
+	}
 }
