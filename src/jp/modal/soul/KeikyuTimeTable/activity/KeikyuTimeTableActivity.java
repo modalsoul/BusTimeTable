@@ -38,6 +38,15 @@ public class KeikyuTimeTableActivity extends Activity {
 	private RouteDao routeDao;
 	private BusStopDao busStopDao;
 	
+	/** ItemList */
+	List<RouteItem> routeList;
+	
+	/** Adapter */
+	RouteListAdapter adapter;
+	
+	/** ListView */
+	ListView listView;
+	
 	
     /** Called when the activity is first created. */
     @Override
@@ -46,14 +55,8 @@ public class KeikyuTimeTableActivity extends Activity {
         setContentView(R.layout.main);
         // DAOのセットアップ
         setupDao();
-
-        List<RouteItem> routeList = routeDao.queryRouteOrderById();
-        
-        RouteListAdapter adapter = new RouteListAdapter(this, R.layout.route_row, routeList);
-        
-        ListView listView = (ListView)findViewById(R.id.lineList);
-        // アダプターの設定
-        listView.setAdapter(adapter);
+        // ListViewのセットアップ
+        setupListView();
 
         
         
@@ -69,6 +72,22 @@ public class KeikyuTimeTableActivity extends Activity {
         
 
     }
+    /**
+     * ListViewのセットアップ
+     */
+    public void setupListView() {
+    	// 路線情報の取得
+    	routeList = routeDao.queryRouteOrderById();
+    	// Adapterの生成
+    	adapter = new RouteListAdapter(this, R.layout.route_row, routeList);
+    	// ListViewの取得
+    	listView = (ListView)findViewById(R.id.lineList);
+    	// アダプターの設定
+    	listView.setAdapter(adapter);
+    }
+    /**
+     * Daoのセットアップ
+     */
     private void setupDao() {
     	routeDao = new RouteDao(getApplicationContext());
     	busStopDao = new BusStopDao(getApplicationContext());

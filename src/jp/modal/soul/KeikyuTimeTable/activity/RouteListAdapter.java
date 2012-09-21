@@ -23,6 +23,11 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 	/** Dao */
 	RouteDao routeDao;
 	
+	/** View */
+	View routeRow;
+	TextView routeName;
+	TextView toFrom;
+	
 	RouteListAdapter(Context context, int textViewResourceId, List<RouteItem> items){
 		super(context, textViewResourceId, items);
 		this.context = context;
@@ -33,29 +38,30 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// Viewの受け取り
-		View view = convertView;
+		routeRow = convertView;
 		// 受け取ったViewがnullなら新しくViewを生成
-		if(view == null) {
-			view = inflater.inflate(R.layout.route_row, null);
+		if(routeRow == null) {
+			routeRow = inflater.inflate(R.layout.route_row, null);
 		}
-		// 表示データの取得
-//		routeDao = new RouteDao(context);
-//		ArrayList<RouteItem> routeList = routeDao.queryRouteOrderById();
-		
+		// 表示データのセット	
 		RouteItem item = items.get(position);
 		// itemがnullでなければViewにセット
 		if(item != null) {
-			Log.e("Not null, so...","adapter");
-			TextView routeName = (TextView)view.findViewById(R.id.route_name);
-			routeName.setText(item.routeName());
-			TextView toFrom = (TextView)view.findViewById(R.id.to_from);
-			toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), 0, Long.toString(item.starting)));
-			toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), 1, Long.toString(item.terminal)));
+
+			setupRowView(item);
 		}
-		
-		
-//		return super.getView(position, convertView, parent);
-		return view;
+
+		return routeRow;
+	}
+
+	private void setupRowView(RouteItem item) {
+		routeName = (TextView)routeRow.findViewById(R.id.route_name);
+		routeName.setText(item.routeName());
+		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
+		// 路線名のセット
+		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.startingName(context), item.terminalName(context)));
+		// 始発、終点のセット
+//		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), 99, item.terminalName(context)));
 	}
 	
 

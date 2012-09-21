@@ -1,8 +1,9 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
-import org.json.JSONObject;
+import android.content.Context;
 
 public class RouteItem implements Comparable<RouteItem>, Serializable{
 	/** ログ出力用 タグ */
@@ -14,6 +15,12 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
     public long terminal;
     public long starting;
     public String busStops;
+    
+    /** Dao */
+    BusStopDao busStopDao;
+    
+    /** Item */
+    ArrayList<BusStopItem> busStopItemList;
     
     /**
      * Serializableクラスに記述する定数
@@ -31,5 +38,34 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
 	 */
 	public String routeName() {
 		return routeName;
+	}
+	/**
+	 * バス停名を取得
+	 * @param context
+	 * @param busStopId
+	 * @return
+	 */
+	private String getBusStopName(Context context, long busStopId) {
+		busStopDao = new BusStopDao(context);
+		
+		busStopItemList = busStopDao.queryBusStopById(new String[]{Long.toString(busStopId)});
+		
+		return busStopItemList.get(0).busStopName;
+	}
+	/**
+	 * 終点バス停名を取得
+	 * @param context
+	 * @return
+	 */
+	public String terminalName(Context context) {
+		return getBusStopName(context, terminal);
+	}
+	/**
+	 * 始発バス停名を取得
+	 * @param context
+	 * @return
+	 */
+	public String startingName(Context context) {
+		return getBusStopName(context, starting);
 	}
 }
