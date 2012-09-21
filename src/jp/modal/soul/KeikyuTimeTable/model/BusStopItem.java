@@ -14,8 +14,7 @@ public class BusStopItem implements Comparable<BusStopItem>, Serializable{
      * Serializableクラスに記述する定数
      */
     private static final long serialVersionUID = 1L;
-
-	@Override
+    @Override
 	public int compareTo(BusStopItem another) {
 		return (int)(this.id - another.id);
 	}

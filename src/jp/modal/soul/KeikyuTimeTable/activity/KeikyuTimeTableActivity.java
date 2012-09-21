@@ -2,6 +2,7 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.R.id;
@@ -18,10 +19,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,18 +44,28 @@ public class KeikyuTimeTableActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
         // DAOのセットアップ
         setupDao();
-        // 初回起動時のセットアップ
-        setupInit();
-        // Viewのセットアップ
-        setupView();
-        // 動作のセットアップ
-        setupEventhandling();
-                
-        // 路線リストのセットアップ
-        setupRouteList();
+
+        List<RouteItem> routeList = routeDao.queryRouteOrderById();
+        
+        RouteListAdapter adapter = new RouteListAdapter(this, R.layout.route_row, routeList);
+        
+        ListView listView = (ListView)findViewById(R.id.lineList);
+        // アダプターの設定
+        listView.setAdapter(adapter);
+
+        
+        
+// 初回起動時のセットアップ
+//        setupInit();
+//        // Viewのセットアップ
+//        setupView();
+//        // 動作のセットアップ
+//        setupEventhandling();
+//                
+//        // 路線リストのセットアップ
+//        setupRouteList();
         
 
     }
@@ -84,7 +93,7 @@ public class KeikyuTimeTableActivity extends Activity {
 	// 路線リストのアイテムがクリックされたときのリスナー
 	AdapterView.OnItemClickListener onRouteItemClick = new AdapterView.OnItemClickListener() {
     	@Override
-    	public void onItemClick(AdapterView<?> parent, View view, int position,
+		public void onItemClick(AdapterView<?> parent, View view, int position,
     			long id) {
     		ListView listView = (ListView)parent;
     		// クリックされたアイテムの取得
@@ -121,13 +130,9 @@ public class KeikyuTimeTableActivity extends Activity {
 		if(routeItem == null) {
 			// システムエラー
 		}
-		Log.e("GEGEGEGGE", routeItem.busStops);
 		String[] busStops = Utils.busStopIdString2StringItems(routeItem.busStops);
 		// 路線のバス停を取得
 		ArrayList<BusStopItem> busStopItems = busStopDao.queryBusStopById(busStops);
-		for(BusStopItem item: busStopItems) {
-			Log.e("GYAAA", item.busStopName);
-		}
 		
 		// バス停名を設定
 		final CharSequence[] busStopNames = new CharSequence[busStopItems.size()];
