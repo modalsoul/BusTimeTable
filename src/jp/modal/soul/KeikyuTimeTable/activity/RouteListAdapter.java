@@ -27,7 +27,12 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 	View routeRow;
 	TextView routeName;
 	TextView toFrom;
-	
+	/**
+	 * コンストラクタ
+	 * @param context
+	 * @param textViewResourceId
+	 * @param items
+	 */
 	RouteListAdapter(Context context, int textViewResourceId, List<RouteItem> items){
 		super(context, textViewResourceId, items);
 		this.context = context;
@@ -47,21 +52,24 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 		RouteItem item = items.get(position);
 		// itemがnullでなければViewにセット
 		if(item != null) {
-
 			setupRowView(item);
 		}
 
 		return routeRow;
 	}
 
+	/**
+	 * 路線情報のセット
+	 * @param item
+	 */
 	private void setupRowView(RouteItem item) {
+		// 路線名のセット
 		routeName = (TextView)routeRow.findViewById(R.id.route_name);
 		routeName.setText(item.routeName());
-		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
-		// 路線名のセット
-		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.startingName(context), item.terminalName(context)));
+
 		// 始発、終点のセット
-//		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), 99, item.terminalName(context)));
+		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
+		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.startingName(context), item.terminalName(context)));
 	}
 	
 

@@ -137,6 +137,15 @@ public class BusStopDao extends Dao {
 		
 	}
 	
+	public ArrayList<BusStopItem> queryBusStop(String selectionArg) {
+		String[] selectionArgs = new String[]{selectionArg};
+		
+		String selection = COLUMN_ID + " = ?";
+		
+		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
+		
+	}
+	
 	/**
 	 * 新規作成
 	 * SQLiteDatabaseオブジェクトのopen,closeは外部で行う
