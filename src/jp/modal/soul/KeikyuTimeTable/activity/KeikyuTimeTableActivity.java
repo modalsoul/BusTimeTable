@@ -61,6 +61,8 @@ public class KeikyuTimeTableActivity extends Activity {
         // ListViewのセットアップ
         setupListView();
 
+        TagSoupSampleActivity soup = new TagSoupSampleActivity(this);
+        soup.tagSoupTest();
         
         
 // 初回起動時のセットアップ
