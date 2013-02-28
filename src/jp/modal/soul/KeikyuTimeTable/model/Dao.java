@@ -5,22 +5,22 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 public class Dao {
-	/** ƒƒOo—Í—p@ƒ^ƒO */
+	/** ãƒ­ã‚°å‡ºåŠ›ç”¨ã€€ã‚¿ã‚° */
 	public final String TAG = this.getClass().getSimpleName();
-	/** ƒXƒe[ƒ^ƒXƒR[ƒh’è” */
+	/** ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚³ãƒ¼ãƒ‰å®šæ•° */
 	public static final int RETURN_CODE_INSERT_FAIL = -1;
 	public static final int RETURN_CODE_UPDATE_FAIL = 0;
-	
+
 	public Context context;
 	private DatabaseHelper dbHelper;
-	
-	// ƒe[ƒuƒ‹‚Ì‹¤’ÊƒJƒ‰ƒ€–¼
-	/** ƒŒƒR[ƒhì¬“ú */
+
+	// ãƒ†ãƒ¼ãƒ–ãƒ«ã®å…±é€šã‚«ãƒ©ãƒ å
+	/** ãƒ¬ã‚³ãƒ¼ãƒ‰ä½œæˆæ—¥æ™‚ */
 	public static final String COLUMN_CREATE_DATE = "create_date"; 
-	/** ƒŒƒR[ƒhXV“ú */
+	/** ãƒ¬ã‚³ãƒ¼ãƒ‰æ›´æ–°æ—¥æ™‚ */
 	public static final String COLUMN_UPDATE_DATE = "update_date";
-	
-	// ƒe[ƒuƒ‹‚Ìcreate•¶
+
+	// ãƒ†ãƒ¼ãƒ–ãƒ«ã®createæ–‡
 	public static String createTable(String tableName, String columnDefine) {
 		// @formatter:off
 		return "create table " + tableName + " ( "
@@ -30,9 +30,9 @@ public class Dao {
 				+ ")";
 		// @formatter:on
 	}
-	
+
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @param context
 	 */
 	public Dao(Context context) {
@@ -40,8 +40,8 @@ public class Dao {
 		dbHelper = new DatabaseHelper(context);
 	}
 	/**
-	 * SQLiteDatabase‚Ìæ“¾
-	 * db‚ªƒƒbƒN’†‚Ìê‡A‰ğœ‚³‚ê‚é‚Ü‚Å‘Ò‚Â
+	 * SQLiteDatabaseã®å–å¾—
+	 * dbãŒãƒ­ãƒƒã‚¯ä¸­ã®å ´åˆã€è§£é™¤ã•ã‚Œã‚‹ã¾ã§å¾…ã¤
 	 * @param isWritable
 	 * @return
 	 */
@@ -59,7 +59,7 @@ public class Dao {
 		return db;
 	}
 	/**
-	 * ƒXƒŠ[ƒv‚·‚é
+	 * ã‚¹ãƒªãƒ¼ãƒ—ã™ã‚‹
 	 */
 	private void sleep() {
 		try {
@@ -69,8 +69,8 @@ public class Dao {
 		}
 	}
 	/**
-	 * DB‚ğReadableƒ‚[ƒh‚ÅŠJ‚­
-	 * ƒfƒBƒXƒN—e—Ê•s‘«‚Ì‚İAread-only‚ÅDB‚ğƒI[ƒvƒ“‚·‚é
+	 * DBã‚’Readableãƒ¢ãƒ¼ãƒ‰ã§é–‹ã
+	 * ãƒ‡ã‚£ã‚¹ã‚¯å®¹é‡ä¸è¶³æ™‚ã®ã¿ã€read-onlyã§DBã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹
 	 * @return
 	 */
 	public final SQLiteDatabase getReadableDatabase() {
@@ -78,10 +78,10 @@ public class Dao {
 	}
 
 	/**
-	 * DB‚ğWritableƒ‚[ƒh‚ÅŠJ‚­
-	 * ‘‚«‚İ‰Â”\‚Èó‘Ô‚ÅDB‚ğƒI[ƒvƒ“‚·‚éB
-	 * ƒfƒBƒXƒN—e—Ê•s‘«ASQLException‚ª“Š‚°‚ç‚ê‚éBQÆ‚Ì‚İ‚Ìê‡‚Å‚àASQLException‚Å‚à“¯‚¶B
-	 * ƒfƒBƒXƒN—e—Ê•s‘«‚àQÆˆ—‚ğ‘±s‚·‚éê‡AgetReadableDatabase‚ğg—p
+	 * DBã‚’Writableãƒ¢ãƒ¼ãƒ‰ã§é–‹ã
+	 * æ›¸ãè¾¼ã¿å¯èƒ½ãªçŠ¶æ…‹ã§DBã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ã€‚
+	 * ãƒ‡ã‚£ã‚¹ã‚¯å®¹é‡ä¸è¶³æ™‚ã€SQLExceptionãŒæŠ•ã’ã‚‰ã‚Œã‚‹ã€‚å‚ç…§ã®ã¿ã®å ´åˆã§ã‚‚ã€SQLExceptionã§ã‚‚åŒã˜ã€‚
+	 * ãƒ‡ã‚£ã‚¹ã‚¯å®¹é‡ä¸è¶³æ™‚ã‚‚å‚ç…§å‡¦ç†ã‚’ç¶šè¡Œã™ã‚‹å ´åˆã€getReadableDatabaseã‚’ä½¿ç”¨
 	 * @return
 	 */
 	public final SQLiteDatabase getWritableDatabase() {

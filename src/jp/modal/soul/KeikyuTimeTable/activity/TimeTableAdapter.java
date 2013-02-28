@@ -28,7 +28,7 @@ public class TimeTableAdapter extends ArrayAdapter<RouteItem> {
 	TextView routeName;
 	TextView toFrom;
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @param context
 	 * @param textViewResourceId
 	 * @param items
@@ -42,15 +42,15 @@ public class TimeTableAdapter extends ArrayAdapter<RouteItem> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// View‚Ìó‚¯æ‚è
+		// Viewã®å—ã‘å–ã‚Š
 		routeRow = convertView;
-		// ó‚¯æ‚Á‚½View‚ªnull‚È‚çV‚µ‚­View‚ğ¶¬
+		// å—ã‘å–ã£ãŸViewãŒnullãªã‚‰æ–°ã—ãViewã‚’ç”Ÿæˆ
 		if(routeRow == null) {
 			routeRow = inflater.inflate(R.layout.route_row, null);
 		}
-		// •\¦ƒf[ƒ^‚ÌƒZƒbƒg	
+		// è¡¨ç¤ºãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆ
 		RouteItem item = items.get(position);
-		// item‚ªnull‚Å‚È‚¯‚ê‚ÎView‚ÉƒZƒbƒg
+		// itemãŒnullã§ãªã‘ã‚Œã°Viewã«ã‚»ãƒƒãƒˆ
 		if(item != null) {
 			setupRowView(item);
 		}
@@ -59,15 +59,15 @@ public class TimeTableAdapter extends ArrayAdapter<RouteItem> {
 	}
 
 	/**
-	 * ˜Hüî•ñ‚ÌƒZƒbƒg
+	 * è·¯ç·šæƒ…å ±ã®ã‚»ãƒƒãƒˆ
 	 * @param item
 	 */
 	private void setupRowView(RouteItem item) {
-		// ˜Hü–¼‚ÌƒZƒbƒg
+		// è·¯ç·šåã®ã‚»ãƒƒãƒˆ
 		routeName = (TextView)routeRow.findViewById(R.id.route_name);
 		routeName.setText(item.routeName());
 
-		// n”­AI“_‚ÌƒZƒbƒg
+		// å§‹ç™ºã€çµ‚ç‚¹ã®ã‚»ãƒƒãƒˆ
 		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
 		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.startingName(context), item.terminalName(context)));
 	}

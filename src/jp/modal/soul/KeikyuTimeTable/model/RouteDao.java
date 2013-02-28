@@ -14,45 +14,45 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
- * ˜Hü‚ğˆµ‚¤ƒNƒ‰ƒX
+ * è·¯ç·šã‚’æ‰±ã†ã‚¯ãƒ©ã‚¹
  * @author M
  *
  */
 public class RouteDao extends Dao {
 
 	/**
-	 * ‰Šúƒf[ƒ^
+	 * åˆæœŸãƒ‡ãƒ¼ã‚¿
 	 */
 	private String[][] initicalData = new String[][]{
-			{"1","X50 “Œ–M‘åŠw ‘åX‰w ‚ä‚«", "13", "1", "1,2,3,4,5,6,7,8,9,10,11,12,13"},
-			{"2","X50 “Œ–M‘åŠw Š—“c‰w ‚ä‚«", "1", "13", "13,12,11,10,9,8,7,6,5,4,3,2,1"}
+			{"1","æ£®50 æ±é‚¦å¤§å­¦ å¤§æ£®é§… ã‚†ã", "13", "1", "1,2,3,4,5,6,7,8,9,10,11,12,13"},
+			{"2","æ£®50 æ±é‚¦å¤§å­¦ è’²ç”°é§… ã‚†ã", "1", "13", "13,12,11,10,9,8,7,6,5,4,3,2,1"}
 	};
-	
-	/** ƒe[ƒuƒ‹–¼ */
+
+	/** ãƒ†ãƒ¼ãƒ–ãƒ«å */
 	public static final String TABLE_NAME = "route";
-	
-	// ƒJƒ‰ƒ€–¼’è‹`
-	/** ˜HüID@*/
+
+	// ã‚«ãƒ©ãƒ åå®šç¾©
+	/** è·¯ç·šIDã€€*/
 	public static final String COLUMN_ID = "id";
-	/** ˜Hü–¼ */
+	/** è·¯ç·šå */
 	public static final String COLUMN_ROUTE_NAME = "route_name";
-	/** I’…ƒoƒX’âID */
+	/** çµ‚ç€ãƒã‚¹åœID */
 	public static final String COLUMN_TERMINAL = "terminal";
-	/** n”­ƒoƒX’âID */
+	/** å§‹ç™ºãƒã‚¹åœID */
 	public static final String COLUMN_STARTING = "starting";
-	/** ƒoƒX’â */
+	/** ãƒã‚¹åœ */
 	public static final String COLUMN_BUS_STOPS = "bus_stops";
-	
-	
-	// ƒJƒ‰ƒ€–¼”z—ñ’è‹`
+
+
+	// ã‚«ãƒ©ãƒ åé…åˆ—å®šç¾©
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
 											COLUMN_ROUTE_NAME,
 											COLUMN_TERMINAL,
 											COLUMN_STARTING,
 											COLUMN_BUS_STOPS};
-	
-	// create table•¶’è‹`
+
+	// create tableæ–‡å®šç¾©
 	public static final String CREATE_TABLE;
 	static {
 		// @formatter:off
@@ -65,15 +65,15 @@ public class RouteDao extends Dao {
 		// @formatter:off
 		CREATE_TABLE = createTable(TABLE_NAME, columnDefine);
 	}
-	
+
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @param context
 	 */
 	public RouteDao(Context context) {
 		super(context);	
 	}
-	
+
 	public static RouteItem getRouteItem(Cursor cursor){
 		RouteItem routeItem = new RouteItem();
 		routeItem.id = cursor.getInt(0);
@@ -81,11 +81,11 @@ public class RouteDao extends Dao {
 		routeItem.terminal = cursor.getInt(2);
 		routeItem.starting = cursor.getInt(3);
 		routeItem.busStops = cursor.getString(4);
-		
+
 		return routeItem;
 	}
 	/**
-	 * ƒŠƒXƒgæ“¾
+	 * ãƒªã‚¹ãƒˆå–å¾—
 	 * @param columns
 	 * @param selection
 	 * @param selectionArgs
@@ -97,39 +97,39 @@ public class RouteDao extends Dao {
 	 */
 	private ArrayList<RouteItem> queryList(String[] columns, String selection, String[] selectionArgs,  String groupBy, 
 			String having, String orderBy, String limit) {
-		// QÆŒn‚Å‚ÍReadableƒ‚[ƒh
+		// å‚ç…§ç³»ã§ã¯Readableãƒ¢ãƒ¼ãƒ‰
 		SQLiteDatabase db = getReadableDatabase();
-		
-		// QÆŒnˆ—‚ÌÀ{
+
+		// å‚ç…§ç³»å‡¦ç†ã®å®Ÿæ–½
 		Cursor cursor = null;
 		cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-		
-		// ÀsŒ‹‰Êæ“¾
+
+		// å®Ÿè¡Œçµæœå–å¾—
 		ArrayList<RouteItem> itemList = new ArrayList<RouteItem>();
 		while (cursor.moveToNext()) {
 			RouteItem item = getRouteItem(cursor);
 			itemList.add(item);
 		}
-		
+
 		// DB close
 		cursor.close();
 		db.close();
-		
+
 		return itemList;
 	}
-	
+
 	/**
-	 * ˜HüID‡‚Éæ“¾
+	 * è·¯ç·šIDé †ã«å–å¾—
 	 * @return
 	 */
 	public ArrayList<RouteItem> queryRouteOrderById() {
 		String orderBy = COLUMN_ID + " asc";
 		return queryList(COLUMNS, null, null, null, null, orderBy, null);
 	}
-	
+
 	/**
-	 * w’è‚³‚ê‚½˜HüID‚Ìî•ñ‚ğæ“¾
-	 * @param routeId æ“¾‘ÎÛ‚Ì˜HüID
+	 * æŒ‡å®šã•ã‚ŒãŸè·¯ç·šIDã®æƒ…å ±ã‚’å–å¾—
+	 * @param routeId å–å¾—å¯¾è±¡ã®è·¯ç·šID
 	 * @return
 	 */
 	public RouteItem queryAllBusStopByRouteId(long routeId) {
@@ -138,17 +138,17 @@ public class RouteDao extends Dao {
 		String[] selectionArgs = new String[1];
 		selectionArgs[0] = Long.toString(routeId);
 		ArrayList<RouteItem> routeItems =  queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
-		
+
 		if(routeItems.size() != 1){
-			// ƒVƒXƒeƒ€ƒGƒ‰[
+			// ã‚·ã‚¹ãƒ†ãƒ ã‚¨ãƒ©ãƒ¼
 			return null;
 		}
 		return routeItems.get(0);
 	}
-	
+
 	/**
-	 * V‹Kì¬
-	 * SQLiteDatabaseƒIƒuƒWƒFƒNƒg‚Ìopen,close‚ÍŠO•”‚Ås‚¤
+	 * æ–°è¦ä½œæˆ
+	 * SQLiteDatabaseã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®open,closeã¯å¤–éƒ¨ã§è¡Œã†
 	 * @param db
 	 * @param item
 	 * @return
@@ -161,29 +161,29 @@ public class RouteDao extends Dao {
 		values.put(COLUMN_TERMINAL, item.terminal);
 		values.put(COLUMN_STARTING, item.starting);
 		values.put(COLUMN_BUS_STOPS, item.busStops);
-		
+
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
 			throw new Exception("insert exception");
 		}
 		return result;
 	}
-	
+
 	public void setup() {
 		RouteItem item;
-		
+
 		SQLiteDatabase db = getWritableDatabase();
 		for( String[] data: initicalData) {
-			// ‰Šúƒf[ƒ^‚ÌƒoƒX’âƒAƒCƒeƒ€‚Ìİ’è
+			// åˆæœŸãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¹åœã‚¢ã‚¤ãƒ†ãƒ ã®è¨­å®š
 			item = new RouteItem();
 			item.id = Long.parseLong(data[0]);
 			item.routeName = data[1];
-			item.terminal = Long.parseLong(data[2]);
-			item.starting = Long.parseLong(data[3]);
+			item.terminal = Integer.valueOf(data[2]);
+			item.starting = Integer.valueOf(data[3]);
 			item.busStops = data[4];
 
 			try {
-				// DB‚ÖƒCƒ“ƒT[ƒg				
+				// DBã¸ã‚¤ãƒ³ã‚µãƒ¼ãƒˆ				
 				Log.e("**********************",Long.toString(insertWithoutOpenDb(db, item)));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -191,6 +191,6 @@ public class RouteDao extends Dao {
 		}
 		db.close();
 	}
-	
-	
+
+
 }

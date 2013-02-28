@@ -26,12 +26,12 @@ import android.widget.Toast;
 
 public class KeikyuTimeTableActivity extends Activity {
 
-	/** ƒoƒX’âƒŠƒXƒg‚ğ•\¦‚·‚éƒ_ƒCƒAƒƒO */
+	/** ãƒã‚¹åœãƒªã‚¹ãƒˆã‚’è¡¨ç¤ºã™ã‚‹ãƒ€ã‚¤ã‚¢ãƒ­ã‚° */
 	public AlertDialog busStopListDialog;
 	
-	/** ‘I‘ğ‚³‚ê‚½ƒoƒX’â‚Ì”Ô† */
+	/** é¸æŠã•ã‚ŒãŸãƒã‚¹åœã®ç•ªå· */
 	public int selectedBusStopNumber; 
-	/** ‘I‘ğ‚³‚ê‚½˜HüID */
+	/** é¸æŠã•ã‚ŒãŸè·¯ç·šID */
 	public long selectedRouteId;
 	
 	/** DAO */
@@ -56,76 +56,48 @@ public class KeikyuTimeTableActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        // DAO‚ÌƒZƒbƒgƒAƒbƒv
+        // DAOã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
         setupDao();
-        // ListView‚ÌƒZƒbƒgƒAƒbƒv
-        setupListView();
-
-        TagSoupSampleActivity soup = new TagSoupSampleActivity(this);
-        soup.tagSoupTest();
-        
-        
-// ‰‰ñ‹N“®‚ÌƒZƒbƒgƒAƒbƒv
-//        setupInit();
-//        // View‚ÌƒZƒbƒgƒAƒbƒv
-//        setupView();
-//        // “®ì‚ÌƒZƒbƒgƒAƒbƒv
-//        setupEventhandling();
-//                
-//        // ˜HüƒŠƒXƒg‚ÌƒZƒbƒgƒAƒbƒv
-//        setupRouteList();
-        
+        // åˆå›èµ·å‹•æ™‚ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+        setupInit();
+        // ListViewã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+        setupListView();              
 
     }
     /**
-     * ListView‚ÌƒZƒbƒgƒAƒbƒv
+     * ListViewã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
      */
     public void setupListView() {
-    	// ˜Hüî•ñ‚Ìæ“¾
+    	// è·¯ç·šæƒ…å ±ã®å–å¾—
     	routeList = routeDao.queryRouteOrderById();
-    	// Adapter‚Ì¶¬
+    	// Adapterã®ç”Ÿæˆ
     	adapter = new RouteListAdapter(this, R.layout.route_row, routeList);
-    	// ListView‚Ìæ“¾
+    	// ListViewã®å–å¾—
     	listView = (ListView)findViewById(R.id.lineList);
-    	// ƒAƒ_ƒvƒ^[‚Ìİ’è
+    	// ã‚¢ãƒ€ãƒ—ã‚¿ãƒ¼ã®è¨­å®š
     	listView.setAdapter(adapter);
-    	// ListView‚ÌƒAƒCƒeƒ€‚ªƒNƒŠƒbƒN‚³‚ê‚½‚Æ‚«‚ÌƒR[ƒ‹ƒoƒbƒNƒŠƒXƒi[‚ğ“o˜^
+    	// ListViewã®ã‚¢ã‚¤ãƒ†ãƒ ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã¨ãã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ãƒªã‚¹ãƒŠãƒ¼ã‚’ç™»éŒ²
         listView.setOnItemClickListener(onRouteItemClick);
     }
     /**
-     * Dao‚ÌƒZƒbƒgƒAƒbƒv
+     * Daoã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
      */
     private void setupDao() {
     	routeDao = new RouteDao(getApplicationContext());
     	busStopDao = new BusStopDao(getApplicationContext());
     }
 
-//	private void setupRouteList() {
-//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-//        ArrayList<RouteItem> routeList = routeDao.queryRouteOrderById();
-//            
-//        // ƒAƒCƒeƒ€‚Ì’Ç‰Á
-//        for(RouteItem item : routeList) {
-//        	adapter.add(item.routeName);
-//        }
-//        
-//        ListView listView = (ListView)findViewById(id.lineList);
-//        // ƒAƒ_ƒvƒ^[‚Ìİ’è
-//        listView.setAdapter(adapter);
-//        // ListView‚ÌƒAƒCƒeƒ€‚ªƒNƒŠƒbƒN‚³‚ê‚½‚Æ‚«‚ÌƒR[ƒ‹ƒoƒbƒNƒŠƒXƒi[‚ğ“o˜^
-//        listView.setOnItemClickListener(onRouteItemClick);
-//	}
 
-	// ˜HüƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ªƒNƒŠƒbƒN‚³‚ê‚½‚Æ‚«‚ÌƒŠƒXƒi[
+	// è·¯ç·šãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã¨ãã®ãƒªã‚¹ãƒŠãƒ¼
 	AdapterView.OnItemClickListener onRouteItemClick = new AdapterView.OnItemClickListener() {
     	@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
     			long id) {
     		ListView listView = (ListView)parent;
-    		// ƒNƒŠƒbƒN‚³‚ê‚½ƒAƒCƒeƒ€‚Ìæ“¾
+    		// ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã‚¢ã‚¤ãƒ†ãƒ ã®å–å¾—
     		RouteItem item = (RouteItem) listView.getItemAtPosition(position);
-    		
-    		// ˜HüID‚ğƒZƒbƒg
+
+    		// è·¯ç·šIDã‚’ã‚»ãƒƒãƒˆ
     		selectedRouteId = item.id;
     		showBusStopList();
     		
@@ -133,31 +105,31 @@ public class KeikyuTimeTableActivity extends Activity {
 	};
 
     /**
-     *  View‚ÌƒZƒbƒgƒAƒbƒv
+     *  Viewã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
      */
 	private void setupView() {
 				
 	}
 	/**
-	 *  “®ì‚ÌƒZƒbƒgƒAƒbƒv
+	 *  å‹•ä½œã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	 */
 	private void setupEventhandling() {
 			
 	}
 		
 	/**
-	 * ƒoƒX’â‘I‘ğ‚Ìƒ_ƒCƒAƒƒO‚ğ•\¦‚·‚é
+	 * ãƒã‚¹åœé¸æŠã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤ºã™ã‚‹
 	 */
 	private void showBusStopList() {	
-		// ˜Hüî•ñ‚ğæ“¾
+		// è·¯ç·šæƒ…å ±ã‚’å–å¾—
 		RouteItem routeItem = routeDao.queryAllBusStopByRouteId(selectedRouteId);
 		
 		if(routeItem == null) {
-			// ƒVƒXƒeƒ€ƒGƒ‰[
+			// ã‚·ã‚¹ãƒ†ãƒ ã‚¨ãƒ©ãƒ¼
 		}
-		// ƒoƒX’â‚ğæ“¾
+		// ãƒã‚¹åœã‚’å–å¾—
 		busStops = Utils.busStopIdString2StringItems(routeItem.busStops);
-		// ƒoƒX’â–¼‚ğİ’è
+		// ãƒã‚¹åœåã‚’è¨­å®š
 		CharSequence[] busStopNames = new CharSequence[busStops.length];
 		
 		ArrayList<BusStopItem> busStopItems;
@@ -172,46 +144,46 @@ public class KeikyuTimeTableActivity extends Activity {
 		}
 			
 				
-		// ƒoƒX’â‘I‘ğ‚ÌƒŠƒXƒg‚ğ•\¦‚·‚éƒ_ƒCƒAƒƒO‚ğì¬
+		// ãƒã‚¹åœé¸æŠã®ãƒªã‚¹ãƒˆã‚’è¡¨ç¤ºã™ã‚‹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä½œæˆ
 		AlertDialog.Builder builder = new AlertDialog.Builder(KeikyuTimeTableActivity.this);		
 		builder.setTitle(R.string.bus_stop_list_dialog_title);
 		builder.setSingleChoiceItems(busStopNames, -1, new DialogInterface.OnClickListener(){
-			// ƒoƒX’âƒŠƒXƒg‚ğ‘I‘ğ‚µ‚½‚Æ‚«‚Ì“®ì‚ğİ’è
+			// ãƒã‚¹åœãƒªã‚¹ãƒˆã‚’é¸æŠã—ãŸã¨ãã®å‹•ä½œã‚’è¨­å®š
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// ‘I‘ğ‚³‚ê‚½ƒoƒX’â”Ô†‚ğİ’è
+				// é¸æŠã•ã‚ŒãŸãƒã‚¹åœç•ªå·ã‚’è¨­å®š
 				selectedBusStopNumber = Integer.valueOf(busStops[which]);
-				// ƒoƒX’â‚Ìs‚«æ‘I‘ğ‰æ–Ê‚Ö‘JˆÚ
+				// ãƒã‚¹åœã®è¡Œãå…ˆé¸æŠç”»é¢ã¸é·ç§»
 				launchBusStop();
 			}
 		});
-		// ƒoƒX’â‘I‘ğ‚ÌƒŠƒXƒg‚ğ•\¦‚·‚éƒ_ƒCƒAƒƒO‚ğì¬
+		// ãƒã‚¹åœé¸æŠã®ãƒªã‚¹ãƒˆã‚’è¡¨ç¤ºã™ã‚‹ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’ä½œæˆ
 		builder.show();
 	}
 	
 	/**
-	 * ‘I‘ğ‚³‚ê‚½ƒoƒX’â‚Ìs‚«æ‚ğ‘I‘ğ‚·‚é‰æ–Ê‚Ö‘JˆÚ‚·‚é
+	 * é¸æŠã•ã‚ŒãŸãƒã‚¹åœã®è¡Œãå…ˆã‚’é¸æŠã™ã‚‹ç”»é¢ã¸é·ç§»ã™ã‚‹
 	 */
 	public void launchBusStop(){
-		// BusStopActivity‚ğ‹N“®‚·‚éintent‚Ìì¬
+		// BusStopActivityã‚’èµ·å‹•ã™ã‚‹intentã®ä½œæˆ
 		Intent intent = new Intent(getApplicationContext(), BusStopActivity.class);
-		// ‘I‘ğ‚³‚ê‚½ƒoƒX’â”Ô†‚ğw’è
+		// é¸æŠã•ã‚ŒãŸãƒã‚¹åœç•ªå·ã‚’æŒ‡å®š
 		intent.putExtra(BusStopActivity.BUSS_STOP_NUMBER, selectedBusStopNumber);
-		// BusStopActivity‚Ì‹N“®
+		// BusStopActivityã®èµ·å‹•
 		Utils.intentLauncher(this, intent);	
 //		this.startActivity(intent);
 	}
 	
 	/**
-	 * ƒoƒX’â–¼‚ÌƒŠƒXƒg‚ğæ“¾
+	 * ãƒã‚¹åœåã®ãƒªã‚¹ãƒˆã‚’å–å¾—
 	 * @return
 	 */
 	public CharSequence[] getBusStopList() {
 		ArrayList<BusStopItem> items = busStopDao.queryBusStopOrderById();
 		
-		// ƒoƒX’â”
+		// ãƒã‚¹åœæ•°
 		int busStopNum = items.size();
-		// ƒoƒX’â–¼‚ÌƒŠƒXƒg
+		// ãƒã‚¹åœåã®ãƒªã‚¹ãƒˆ
 		CharSequence[] busStopList = new CharSequence[busStopNum];
 		int i = 0;
 		for(BusStopItem item: items) {
@@ -222,36 +194,36 @@ public class KeikyuTimeTableActivity extends Activity {
 	}
 	
 	/**
-	 * ƒAƒvƒŠ‰‰ñ‹N“®‚Ì‰Šú‰»ˆ—
+	 * ã‚¢ãƒ—ãƒªåˆå›èµ·å‹•æ™‚ã®åˆæœŸåŒ–å‡¦ç†
 	 */
 	public void setupInit() {
 		InitState initState = new InitState();
-		// ‰‰ñ‹N“®‚Ì”»’è
+		// åˆå›èµ·å‹•ã®åˆ¤å®š
 		if(initState.getStatus() == InitState.PREFERENCE_INIT) {
-			// ‰‰ñ‹N“®‚Ìê‡A‰Šúƒf[ƒ^‚ğƒZƒbƒg
+			// åˆå›èµ·å‹•ã®å ´åˆã€åˆæœŸãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 			busStopDao.setup();
 			routeDao.setup();
-			// ‹N“®ó‘Ô‚ğ•ÏX
+			// èµ·å‹•çŠ¶æ…‹ã‚’å¤‰æ›´
 			initState.setStatus(InitState.PREFERENCE_BOOTED);
 		}
 	}
 	/**
-	 * ‹N“®ƒXƒe[ƒ^ƒX‚Ì‹¤—LƒvƒŠƒtƒ@ƒŒƒ“ƒX‚ÌƒNƒ‰ƒX
-	 * TODO •Êƒtƒ@ƒCƒ‹‚Ö‚ÌØ‚èo‚µ
+	 * èµ·å‹•ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®å…±æœ‰ãƒ—ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹ã®ã‚¯ãƒ©ã‚¹
+	 * TODO åˆ¥ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®åˆ‡ã‚Šå‡ºã—
 	 * @author M
 	 *
 	 */
 	public class InitState {
-		/** ‹¤—LƒvƒŠƒtƒ@ƒŒƒ“ƒX–¼ */
+		/** å…±æœ‰ãƒ—ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹å */
 		public static final String INIT_PREFERENCE_NAME = "InitState";
-		// ‹N“®ƒXƒe[ƒ^ƒX‚Ì’è”
-		/** –¢‹N“®@*/
+		// èµ·å‹•ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®å®šæ•°
+		/** æœªèµ·å‹•ã€€*/
 		public static final int PREFERENCE_INIT = 0;
-		/** ‹N“® */
+		/** èµ·å‹• */
 		public static final int PREFERENCE_BOOTED = 1;
 		
 		/**
-		 * ‹N“®ƒXƒe[ƒ^ƒX‚Ì•Û‘¶
+		 * èµ·å‹•ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ä¿å­˜
 		 * @param status
 		 */
 		void setStatus(int state) {
@@ -259,7 +231,7 @@ public class KeikyuTimeTableActivity extends Activity {
 			sp.edit().putInt(INIT_PREFERENCE_NAME, state).commit();
 		}
 		/**
-		 * ‹N“®ƒXƒe[ƒ^ƒX‚Ìæ“¾
+		 * èµ·å‹•ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®å–å¾—
 		 * @return
 		 */
 		int getStatus() {

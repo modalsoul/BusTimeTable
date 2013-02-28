@@ -8,48 +8,46 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * ƒoƒX’â‚ğˆµ‚¤ƒNƒ‰ƒX
+ * ãƒã‚¹åœã‚’æ‰±ã†ã‚¯ãƒ©ã‚¹
  * @author M
  *
  */
 public class BusStopDao extends Dao {
 
 	/**
-	 * ‰Šúƒf[ƒ^
+	 * åˆæœŸãƒ‡ãƒ¼ã‚¿
 	 */
 	private String[][] initicalData = new String[][]{
-			{"1","Š—“c‰w"},
-			{"2","‚ ‚â‚ß‹´"},
-			{"3","Š—“cˆê’š–Ú"},
-			{"4","“Œ–M‘åŠw"},
-			{"5","‘åX¼l’š–Ú"},
-			{"6","•xmŒ©‹´(‘å“c‹æ)"},
-			{"7","‘åX¼“ñ’š–Ú"},
-			{"8","‘ò“c’Ê‚è"},
-			{"9","‘åX–kl’š–Ú"},
-			{"10","‘åX–kO’š–Ú"},
-			{"11","”ª”¦’Ê‚è"},
-			{"12","‚m‚s‚s‘åX‘O"},
-			{"13","‘åX‰w"}
+			{"1","è’²ç”°é§…"},
+			{"2","ã‚ã‚„ã‚æ©‹"},
+			{"3","è’²ç”°ä¸€ä¸ç›®"},
+			{"4","æ±é‚¦å¤§å­¦"},
+			{"5","å¤§æ£®è¥¿å››ä¸ç›®"},
+			{"6","å¯Œå£«è¦‹æ©‹(å¤§ç”°åŒº)"},
+			{"7","å¤§æ£®è¥¿äºŒä¸ç›®"},
+			{"8","æ²¢ç”°é€šã‚Š"},
+			{"9","å¤§æ£®åŒ—å››ä¸ç›®"},
+			{"10","å¤§æ£®åŒ—ä¸‰ä¸ç›®"},
+			{"11","å…«å¹¡é€šã‚Š"},
+			{"12","ï¼®ï¼´ï¼´å¤§æ£®å‰"},
+			{"13","å¤§æ£®é§…"}
 	};
-	
-	/** ƒe[ƒuƒ‹–¼ */
+
+	/** ãƒ†ãƒ¼ãƒ–ãƒ«å */
 	public static final String TABLE_NAME = "bus_stop";
-	
-	// ƒJƒ‰ƒ€–¼’è‹`
-	/** ƒoƒX’âID@*/
+
+	// ã‚«ãƒ©ãƒ åå®šç¾©
+	/** ãƒã‚¹åœIDã€€*/
 	public static final String COLUMN_ID = "id";
-	/** ƒoƒX’â–¼ */
+	/** ãƒã‚¹åœå */
 	public static final String COLUMN_BUS_STOP_NAME = "bus_stop_name";
 
-	
-	
-	// ƒJƒ‰ƒ€–¼”z—ñ’è‹`
+	// ã‚«ãƒ©ãƒ åé…åˆ—å®šç¾©
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
 											COLUMN_BUS_STOP_NAME };
-	
-	// create table•¶’è‹`
+
+	// create tableæ–‡å®šç¾©
 	public static final String CREATE_TABLE;
 	static {
 		// @formatter:off
@@ -59,24 +57,24 @@ public class BusStopDao extends Dao {
 		// @formatter:off
 		CREATE_TABLE = createTable(TABLE_NAME, columnDefine);
 	}
-	
+
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @param context
 	 */
 	public BusStopDao(Context context) {
 		super(context);	
 	}
-	
+
 	public static BusStopItem getBusStopItem(Cursor cursor){
 		BusStopItem busStopItem = new BusStopItem();
 		busStopItem.id = cursor.getInt(0);
 		busStopItem.busStopName = cursor.getString(1);
-		
+
 		return busStopItem;
 	}
 	/**
-	 * ƒŠƒXƒgæ“¾
+	 * ãƒªã‚¹ãƒˆå–å¾—
 	 * @param columns
 	 * @param selection
 	 * @param selectionArgs
@@ -88,38 +86,38 @@ public class BusStopDao extends Dao {
 	 */
 	private ArrayList<BusStopItem> queryList(String[] columns, String selection, String[] selectionArgs,  String groupBy, 
 			String having, String orderBy, String limit) {
-		// QÆŒn‚Å‚ÍReadableƒ‚[ƒh
+		// å‚ç…§ç³»ã§ã¯Readableãƒ¢ãƒ¼ãƒ‰
 		SQLiteDatabase db = getReadableDatabase();
-		
-		// QÆŒnˆ—‚ÌÀ{
+
+		// å‚ç…§ç³»å‡¦ç†ã®å®Ÿæ–½
 		Cursor cursor = null;
 		cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-		
-		// ÀsŒ‹‰Êæ“¾
+
+		// å®Ÿè¡Œçµæœå–å¾—
 		ArrayList<BusStopItem> itemList = new ArrayList<BusStopItem>();
 		while (cursor.moveToNext()) {
 			BusStopItem item = getBusStopItem(cursor);
 			itemList.add(item);
 		}
-		
+
 		// DB close
 		cursor.close();
 		db.close();
-		
+
 		return itemList;
 	}
-	
+
 	/**
-	 * ƒoƒX’âID‡‚Éæ“¾
+	 * ãƒã‚¹åœIDé †ã«å–å¾—
 	 * @return
 	 */
 	public ArrayList<BusStopItem> queryBusStopOrderById() {
 		String orderBy = COLUMN_ID + " asc";
 		return queryList(COLUMNS, null, null, null, null, orderBy, null);
 	}
-	
+
 	/**
-	 * w’è‚³‚ê‚½ƒoƒX’âID‚Ìî•ñ‚ğæ“¾
+	 * æŒ‡å®šã•ã‚ŒãŸãƒã‚¹åœIDã®æƒ…å ±ã‚’å–å¾—
 	 * @return
 	 */
 	public ArrayList<BusStopItem> queryBusStopById(String[] selectionArgs) {
@@ -132,23 +130,23 @@ public class BusStopDao extends Dao {
 			}
 			i++;
 		}
-		
+
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
-		
+
 	}
-	
+
 	public ArrayList<BusStopItem> queryBusStop(String selectionArg) {
 		String[] selectionArgs = new String[]{selectionArg};
-		
+
 		String selection = COLUMN_ID + " = ?";
-		
+
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
-		
+
 	}
-	
+
 	/**
-	 * V‹Kì¬
-	 * SQLiteDatabaseƒIƒuƒWƒFƒNƒg‚Ìopen,close‚ÍŠO•”‚Ås‚¤
+	 * æ–°è¦ä½œæˆ
+	 * SQLiteDatabaseã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®open,closeã¯å¤–éƒ¨ã§è¡Œã†
 	 * @param db
 	 * @param item
 	 * @return
@@ -158,25 +156,25 @@ public class BusStopDao extends Dao {
 		ContentValues values = new  ContentValues();
 		values.put(COLUMN_ID, item.id);
 		values.put(COLUMN_BUS_STOP_NAME, item.busStopName);
-		
+
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
 			throw new Exception("insert exception");
 		}
 		return result;
 	}
-	
+
 	public void setup() {
 		BusStopItem item;
-		
+
 		SQLiteDatabase db = getWritableDatabase();
 		for( String[] data: initicalData) {
-			// ‰Šúƒf[ƒ^‚ÌƒoƒX’âƒAƒCƒeƒ€‚Ìİ’è
+			// åˆæœŸãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¹åœã‚¢ã‚¤ãƒ†ãƒ ã®è¨­å®š
 			item = new BusStopItem();
 			item.id = Long.parseLong(data[0]);
 			item.busStopName = data[1];			
 			try {
-				// DB‚ÖƒCƒ“ƒT[ƒg				
+				// DBã¸ã‚¤ãƒ³ã‚µãƒ¼ãƒˆ				
 				insertWithoutOpenDb(db, item);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -184,6 +182,6 @@ public class BusStopDao extends Dao {
 		}
 		db.close();
 	}
-	
-	
+
+
 }

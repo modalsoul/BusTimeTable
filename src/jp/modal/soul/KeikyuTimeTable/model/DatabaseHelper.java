@@ -5,19 +5,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    /** ƒƒO—pƒ^ƒO */
+    /** ãƒ­ã‚°ç”¨ã‚¿ã‚° */
     public final String TAG = this.getClass().getSimpleName();
     
-    /** DB–¼ */
+    /** DBå */
     private static final String DB_NAME = "kqbtt";
     
     /**
-     * DB‚Ìƒo[ƒWƒ‡ƒ“”Ô†
+     * DBã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·
      */
     private static final int DB_VERSION = 1;
     
     /**
-     * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+     * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
      * @param context
      */
     public DatabaseHelper(Context context) {
@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     
     /**
-     * ƒe[ƒuƒ‹’è‹`—pƒƒ\ƒbƒh
+     * ãƒ†ãƒ¼ãƒ–ãƒ«å®šç¾©ç”¨ãƒ¡ã‚½ãƒƒãƒ‰
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -40,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	
     }
     /**
-     * ƒ}ƒCƒOƒŒ[ƒVƒ‡ƒ“—pƒƒ\ƒbƒh
+     * ãƒã‚¤ã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç”¨ãƒ¡ã‚½ãƒƒãƒ‰
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

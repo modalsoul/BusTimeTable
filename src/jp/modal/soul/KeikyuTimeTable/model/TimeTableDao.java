@@ -1,86 +1,93 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-import org.json.JSONObject;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
- * ƒoƒX’â‚ğˆµ‚¤ƒNƒ‰ƒX
+ * ãƒã‚¹åœã‚’æ‰±ã†ã‚¯ãƒ©ã‚¹
  * @author M
  *
  */
 public class TimeTableDao extends Dao {
 
 	/**
-	 * ‰Šúƒf[ƒ^
+	 * åˆæœŸãƒ‡ãƒ¼ã‚¿
 	 */
-	private String[][] initicalData = new String[][]{
+//	private String[][] initicalData = new String[][]{
+//
+//	};
 
-	};
-		
-	/** ƒe[ƒuƒ‹–¼ */
+	/** ãƒ†ãƒ¼ãƒ–ãƒ«å */
 	public static final String TABLE_NAME = "time_table";
-	
-	// ƒJƒ‰ƒ€–¼’è‹`
-	/** ID@*/
+
+	// ã‚«ãƒ©ãƒ åå®šç¾©
+	/** æ™‚åˆ»IDã€€*/
 	public static final String COLUMN_ID = "id";
-	/** ƒoƒX’âID@*/
+	/** ãƒã‚¹åœIDã€€*/
 	public static final String COLUMN_BUS_STOP_ID = "bus_stop_id";
-	/** ˜HüID@*/
+	/** è·¯ç·šIDã€€*/
 	public static final String COLUMN_ROUTE_ID = "route_id";
-	/** —j“úƒ^ƒCƒv */
+	/** æ›œæ—¥ã‚¿ã‚¤ãƒ— */
 	public static final String COLUMN_TYPE = "type";
-	/**  */
+	/** æ™‚åˆ» */
 	public static final String COLUMN_STARTING_TIME = "starting_time";
 
-	
-	
-	// ƒJƒ‰ƒ€–¼”z—ñ’è‹`
+    // æ™‚åˆ»è¡¨ã®æ›œæ—¥ã‚¿ã‚¤ãƒ—å®šç¾©
+	public static final int WEEKDAY = 0;
+	public static final int SATURDAY = 1;
+	public static final int HOLIDAY = 2;
+
+	// ã‚«ãƒ©ãƒ åé…åˆ—å®šç¾©
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
 											COLUMN_BUS_STOP_ID,
 											COLUMN_ROUTE_ID,
 											COLUMN_TYPE,
 											COLUMN_STARTING_TIME};
-	
-	// create table•¶’è‹`
+
+	// create tableæ–‡å®šç¾©
 	public static final String CREATE_TABLE;
 	static {
 		// @formatter:off
 		String columnDefine = COLUMN_ID + " integer primary key, "
 							+ COLUMN_BUS_STOP_ID + " integer not null, "
-							+ COLUMN_BUS_STOP_ID + " integer not null, "
+							+ COLUMN_ROUTE_ID + " integer not null, "
 							+ COLUMN_TYPE + " integer not null, "
 							+ COLUMN_STARTING_TIME + " text not null, "
 							;
 		// @formatter:off
 		CREATE_TABLE = createTable(TABLE_NAME, columnDefine);
 	}
-	
+
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	 * @param context
 	 */
 	public TimeTableDao(Context context) {
 		super(context);	
 	}
-	
+
 	public static TimeTableItem getTimeTableItem(Cursor cursor){
 		TimeTableItem timeTableItem = new TimeTableItem();
 		timeTableItem.id = cursor.getInt(0);
-		timeTableItem.busStopId = Long.valueOf(cursor.getString(1));
-		timeTableItem.routeId = Long.valueOf(cursor.getString(2));
+		timeTableItem.busStopId = Integer.valueOf(cursor.getString(1));
+		timeTableItem.routeId = Integer.valueOf(cursor.getString(2));
 		timeTableItem.startingTime = cursor.getString(3);
-		
+
 		return timeTableItem;
 	}
 	/**
-	 * ƒŠƒXƒgæ“¾
+	 * ãƒªã‚¹ãƒˆå–å¾—
 	 * @param columns
 	 * @param selection
 	 * @param selectionArgs
@@ -92,29 +99,29 @@ public class TimeTableDao extends Dao {
 	 */
 	private ArrayList<TimeTableItem> queryList(String[] columns, String selection, String[] selectionArgs,  String groupBy, 
 			String having, String orderBy, String limit) {
-		// QÆŒn‚Å‚ÍReadableƒ‚[ƒh
+		// å‚ç…§ç³»ã§ã¯Readableãƒ¢ãƒ¼ãƒ‰
 		SQLiteDatabase db = getReadableDatabase();
-		
-		// QÆŒnˆ—‚ÌÀ{
+
+		// å‚ç…§ç³»å‡¦ç†ã®å®Ÿæ–½
 		Cursor cursor = null;
 		cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
-		
-		// ÀsŒ‹‰Êæ“¾
+
+		// å®Ÿè¡Œçµæœå–å¾—
 		ArrayList<TimeTableItem> itemList = new ArrayList<TimeTableItem>();
 		while (cursor.moveToNext()) {
 			TimeTableItem item = getTimeTableItem(cursor);
 			itemList.add(item);
 		}
-		
+
 		// DB close
 		cursor.close();
 		db.close();
-		
+
 		return itemList;
 	}
-	
+
 	/**
-	 * ID‡‚Éæ“¾
+	 * æ™‚åˆ»IDé †ã«å–å¾—
 	 * @return
 	 */
 	public ArrayList<TimeTableItem> queryBusStopOrderById(String[] selectionArgs) {
@@ -122,10 +129,10 @@ public class TimeTableDao extends Dao {
 		String orderBy = COLUMN_ID + " asc";
 		return queryList(COLUMNS, selection, selectionArgs, null, null, orderBy, null);
 	}
-	
+
 	/**
-	 * V‹Kì¬
-	 * SQLiteDatabaseƒIƒuƒWƒFƒNƒg‚Ìopen,close‚ÍŠO•”‚Ås‚¤
+	 * æ–°è¦ä½œæˆ
+	 * SQLiteDatabaseã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®open,closeã¯å¤–éƒ¨ã§è¡Œã†
 	 * @param db
 	 * @param item
 	 * @return
@@ -138,36 +145,74 @@ public class TimeTableDao extends Dao {
 		values.put(COLUMN_ROUTE_ID, item.routeId);
 		values.put(COLUMN_TYPE, item.type);
 		values.put(COLUMN_STARTING_TIME, item.startingTime);
-		
+
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
 			throw new Exception("insert exception");
 		}
 		return result;
 	}
-	
+
 	public void setup() {
-		TimeTableItem item;
+//		TimeTableItem item;
+//
+//		SQLiteDatabase db = getWritableDatabase();
+//		for( String[] data: initicalData) {
+//			// åˆæœŸãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¹åœã‚¢ã‚¤ãƒ†ãƒ ã®è¨­å®š
+//			item = new TimeTableItem();
+//			item.id = Long.parseLong(data[0]);
+//			item.busStopId = Integer.valueOf(data[1]);
+//			item.routeId = Integer.valueOf(data[2]);
+//			item.type = Integer.valueOf(data[3]);
+//			item.startingTime = data[4];
+//
+//			try {
+//				// DBã¸ã‚¤ãƒ³ã‚µãƒ¼ãƒˆ				
+//				insertWithoutOpenDb(db, item);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		db.close();
+	}
+	
+	public ArrayList<String> getInitialData() {
+		int[][] ROUTE_LIST = {{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, {13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2}};
+		ArrayList<String> initialDataList = new ArrayList<String>();
 		
-		SQLiteDatabase db = getWritableDatabase();
-		for( String[] data: initicalData) {
-			// ‰Šúƒf[ƒ^‚ÌƒoƒX’âƒAƒCƒeƒ€‚Ìİ’è
-			item = new TimeTableItem();
-			item.id = Long.parseLong(data[0]);
-			item.busStopId = Long.valueOf(data[1]);
-			item.routeId = Long.valueOf(data[2]);
-			item.type = Integer.valueOf(data[3]);
-			item.startingTime = data[4];
-			
-			try {
-				// DB‚ÖƒCƒ“ƒT[ƒg				
-				insertWithoutOpenDb(db, item);
-			} catch (Exception e) {
-				e.printStackTrace();
+		for(int route = 0; route < ROUTE_LIST.length; route++ ) {
+			ArrayList<String> timeList = new ArrayList<String>();
+			for(int busStop: ROUTE_LIST[route]) {
+				timeList = getTimeList(route+1, busStop);
+//				Log.e("hoge", route+1 +", " + busStop);
+				for(String time: timeList) initialDataList.add(route+1 + "," + busStop + "," + time);
 			}
 		}
-		db.close();
+//		for(String hoge: initialDataList) Log.e("HOGE", hoge);
+//		Log.e("UGA", initialDataList.size() + "");
+		return initialDataList;
+	}
+	
+	private ArrayList<String> getTimeList(int route, int busStop) {
+		AssetManager as = null;
+		ArrayList<String> timeList = new ArrayList<String>();
+		try {
+			as = context.getResources().getAssets(); 
+			InputStream is = as.open(route + "/" + busStop);
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			String str;
+			while((str = reader.readLine()) != null) {
+				timeList.add(str);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return timeList;
 	}
 	
 	
+
+
 }

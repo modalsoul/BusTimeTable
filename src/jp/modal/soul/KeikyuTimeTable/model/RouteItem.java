@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import android.content.Context;
 
 public class RouteItem implements Comparable<RouteItem>, Serializable{
-	/** ƒƒOo—Í—p ƒ^ƒO */
+	/** ãƒ­ã‚°å‡ºåŠ›ç”¨ ã‚¿ã‚° */
     public final String TAG = this.getClass().getSimpleName();
     
-    // ˜HüƒIƒuƒWƒFƒNƒg‚ÌƒvƒƒpƒeƒBŒQ
+    // è·¯ç·šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ç¾¤
     public long id;
     public String routeName;
-    public long terminal;
-    public long starting;
+    public int terminal;
+    public int starting;
     public String busStops;
     
     /** Dao */
@@ -23,7 +23,7 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
     ArrayList<BusStopItem> busStopItemList;
     
     /**
-     * SerializableƒNƒ‰ƒX‚É‹Lq‚·‚é’è”
+     * Serializableã‚¯ãƒ©ã‚¹ã«è¨˜è¿°ã™ã‚‹å®šæ•°
      */
     private static final long serialVersionUID = 2L;
 
@@ -31,29 +31,29 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
 	public int compareTo(RouteItem another) {
 		return (int)(this.id - another.id);
 	}
-	
+
 	/**
-	 * ˜Hü–¼‚ğæ“¾‚·‚é
-	 * @return ˜Hü–¼
+	 * è·¯ç·šåã‚’å–å¾—ã™ã‚‹
+	 * @return è·¯ç·šå
 	 */
 	public String routeName() {
 		return routeName;
 	}
 	/**
-	 * ƒoƒX’â–¼‚ğæ“¾
+	 * ãƒã‚¹åœåã‚’å–å¾—
 	 * @param context
 	 * @param busStopId
 	 * @return
 	 */
 	private String getBusStopName(Context context, long busStopId) {
 		busStopDao = new BusStopDao(context);
-		
+
 		busStopItemList = busStopDao.queryBusStopById(new String[]{Long.toString(busStopId)});
-		
+
 		return busStopItemList.get(0).busStopName;
 	}
 	/**
-	 * I“_ƒoƒX’â–¼‚ğæ“¾
+	 * çµ‚ç‚¹ãƒã‚¹åœåã‚’å–å¾—
 	 * @param context
 	 * @return
 	 */
@@ -61,7 +61,7 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
 		return getBusStopName(context, terminal);
 	}
 	/**
-	 * n”­ƒoƒX’â–¼‚ğæ“¾
+	 * å§‹ç™ºãƒã‚¹åœåã‚’å–å¾—
 	 * @param context
 	 * @return
 	 */

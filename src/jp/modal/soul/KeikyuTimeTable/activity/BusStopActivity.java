@@ -16,13 +16,13 @@ import android.widget.TextView;
 
 public class BusStopActivity extends TabActivity {
 	
-	public Button selectLineButton; /** s‚«æ‘I‘ğƒ{ƒ^ƒ“ */
+	public Button selectLineButton; /** è¡Œãå…ˆé¸æŠãƒœã‚¿ãƒ³ */
 	
 	
 	public static String BUSS_STOP_NUMBER = "BUS_STOP_NUMBER";
 	
 	
-	/** s‚«æ‚ğ‘I‘ğ‚·‚éƒoƒX’â‚Ì”Ô† */
+	/** è¡Œãå…ˆã‚’é¸æŠã™ã‚‹ãƒã‚¹åœã®ç•ªå· */
 	public int busStop;
 
 	/** Dao */
@@ -39,22 +39,22 @@ public class BusStopActivity extends TabActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bus_stop);
         
-        // intent‚©‚ç‚Ìİ’è’l‚Ìæ“¾
+        // intentã‹ã‚‰ã®è¨­å®šå€¤ã®å–å¾—
         setupMember();
-        // Dao‚ÌƒZƒbƒgƒAƒbƒv
+        // Daoã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
         setupDao();
-        // View‚ÌƒZƒbƒgƒAƒbƒv
+        // Viewã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
         setupView();
-        // “®ì‚ÌƒZƒbƒgƒAƒbƒv
+        // å‹•ä½œã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
         setupEventhandling();
         
         
-     // TabHost‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾
+        // TabHostã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—
         TabHost tabs = getTabHost(); 
     
         LayoutInflater.from(this).inflate(R.layout.bus_stop, tabs.getTabContentView(), true);
         
-     // ƒ^ƒuƒV[ƒg‚Ìİ’è
+        // ã‚¿ãƒ–ã‚·ãƒ¼ãƒˆã®è¨­å®š
         TabSpec tab01 = tabs.newTabSpec("TabSheet1");
         tab01.setIndicator("TabSheet1");
         tab01.setContent(R.id.weekday_content);
@@ -67,15 +67,15 @@ public class BusStopActivity extends TabActivity {
         tab03.setIndicator("TabSheet3");
         tab03.setContent(R.id.sunday_content);
         tabs.addTab(tab03);
-     // ‰Šú•\¦‚Ìƒ^ƒuİ’è
+        // åˆæœŸè¡¨ç¤ºã®ã‚¿ãƒ–è¨­å®š
         tabs.setCurrentTab(0);
         
         tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-	        // ƒ^ƒu‚ªƒNƒŠƒbƒN‚³‚ê‚½‚Ìƒnƒ“ƒhƒ‰
+	        // ã‚¿ãƒ–ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸæ™‚ã®ãƒãƒ³ãƒ‰ãƒ©
 	        @Override
 	        public void onTabChanged(String tabId) {
 	
-	        	// ƒNƒŠƒbƒN‚³‚ê‚½‚Ìˆ—‚ğ‹Lq
+	        	// ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸæ™‚ã®å‡¦ç†ã‚’è¨˜è¿°
 	        	TextView text;
 	        	if(tabId == "TabSheet1") {
 	        		text = (TextView)findViewById(R.id.weekday_tab_name);
@@ -95,7 +95,7 @@ public class BusStopActivity extends TabActivity {
 
 
 	private void setupMember() {
-		// s‚«æ‚ğ‘I‘ğ‚·‚éƒoƒX’â‚ğƒZƒbƒg
+		// è¡Œãå…ˆã‚’é¸æŠã™ã‚‹ãƒã‚¹åœã‚’ã‚»ãƒƒãƒˆ
 		busStop = getIntent().getExtras().getInt(BUSS_STOP_NUMBER);
 		
 	}
@@ -105,14 +105,14 @@ public class BusStopActivity extends TabActivity {
 	}
 
 	private void setupView() {
-		// ƒoƒX’â–¼View‚Ìæ“¾
+		// ãƒã‚¹åœåViewã®å–å¾—
 		busStopName = (TextView)findViewById(R.id.selected_bus_stop_name);
-		// ƒoƒX’â–¼‚Ìæ“¾
+		// ãƒã‚¹åœåã®å–å¾—
 		ArrayList<BusStopItem> item = busStopDao.queryBusStop(Integer.toString(busStop));
 		
 		if(item != null) {
 			busStopNameString = item.get(0).busStopName;
-			// s‚«æ‚ğ‘I‘ğ‚·‚éƒoƒX’â–¼‚ğİ’è
+			// è¡Œãå…ˆã‚’é¸æŠã™ã‚‹ãƒã‚¹åœåã‚’è¨­å®š
 			busStopName.setText(busStopNameString);
 		}		
 	}

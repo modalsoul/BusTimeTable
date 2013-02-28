@@ -3,15 +3,15 @@ package jp.modal.soul.KeikyuTimeTable.model;
 import java.io.Serializable;
 
 public class BusStopItem implements Comparable<BusStopItem>, Serializable{
-	/** ログ出力用 タグ */
+	/** 繝ｭ繧ｰ蜃ｺ蜉帷畑 繧ｿ繧ｰ */
     public final String TAG = this.getClass().getSimpleName();
     
-    // バス停オブジェクトのプロパティ群
+    // 繝舌せ蛛懊が繝悶ず繧ｧ繧ｯ繝医�ｮ繝励Ο繝代ユ繧｣鄒､
     public long id;
     public String busStopName;
     
     /**
-     * Serializableクラスに記述する定数
+     * Serializable繧ｯ繝ｩ繧ｹ縺ｫ險倩ｿｰ縺吶ｋ螳壽焚
      */
     private static final long serialVersionUID = 1L;
     @Override
