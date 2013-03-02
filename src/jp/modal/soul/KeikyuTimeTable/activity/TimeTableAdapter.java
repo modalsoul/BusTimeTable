@@ -4,36 +4,36 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 import java.util.List;
 
 import jp.modal.soul.KeikyuTimeTable.R;
-import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
+import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
+import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class TimeTableAdapter extends ArrayAdapter<RouteItem> {
+public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 
 	private Context context;
-	private List<RouteItem> items;
+	private List<TimeTableItem> items;
 	private LayoutInflater inflater;
 	
 	/** Dao */
-	RouteDao routeDao;
+	TimeTableDao timetableDao;
 	
 	/** View */
-	View routeRow;
-	TextView routeName;
-	TextView toFrom;
+	View timetableRow;
+	TextView startingTime;
+	
 	/**
 	 * コンストラクタ
 	 * @param context
 	 * @param textViewResourceId
 	 * @param items
 	 */
-	TimeTableAdapter(Context context, int textViewResourceId, List<RouteItem> items){
+	TimeTableAdapter(Context context, int textViewResourceId, List<TimeTableItem> items){
 		super(context, textViewResourceId, items);
 		this.context = context;
 		this.items = items;
@@ -43,33 +43,29 @@ public class TimeTableAdapter extends ArrayAdapter<RouteItem> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// Viewの受け取り
-		routeRow = convertView;
+		timetableRow = convertView;
 		// 受け取ったViewがnullなら新しくViewを生成
-		if(routeRow == null) {
-			routeRow = inflater.inflate(R.layout.route_row, null);
+		if(timetableRow == null) {
+			timetableRow = inflater.inflate(R.layout.route_row, null);
 		}
 		// 表示データのセット
-		RouteItem item = items.get(position);
+		TimeTableItem item = items.get(position);
 		// itemがnullでなければViewにセット
 		if(item != null) {
 			setupRowView(item);
 		}
 
-		return routeRow;
+		return timetableRow;
 	}
 
 	/**
-	 * 路線情報のセット
+	 * 発車時刻のセット
 	 * @param item
 	 */
-	private void setupRowView(RouteItem item) {
-		// 路線名のセット
-		routeName = (TextView)routeRow.findViewById(R.id.route_name);
-		routeName.setText(item.routeName());
+	private void setupRowView(TimeTableItem item) {
+		startingTime = (TextView)timetableRow.findViewById(R.id.route_name);
+		startingTime.setText(item.startingTime);
 
-		// 始発、終点のセット
-		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
-		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.startingName(context), item.terminalName(context)));
 	}
 	
 

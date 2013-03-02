@@ -23,9 +23,7 @@ public class TimeTableDao extends Dao {
 	/**
 	 * 初期データ
 	 */
-//	private String[][] initicalData = new String[][]{
-//
-//	};
+	private int[][] ROUTE_LIST = {{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, {13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2}};
 
 	/** テーブル名 */
 	public static final String TABLE_NAME = "time_table";
@@ -74,16 +72,21 @@ public class TimeTableDao extends Dao {
 	 * @param context
 	 */
 	public TimeTableDao(Context context) {
-		super(context);	
+		super(context);
 	}
 
+	/**
+	 * CursorをTimeTableItemへ変換して返却
+	 * @param cursor
+	 * @return TimeTableItem
+	 */
 	public static TimeTableItem getTimeTableItem(Cursor cursor){
 		TimeTableItem timeTableItem = new TimeTableItem();
 		timeTableItem.id = cursor.getInt(0);
-		timeTableItem.busStopId = Integer.valueOf(cursor.getString(1));
-		timeTableItem.routeId = Integer.valueOf(cursor.getString(2));
-		timeTableItem.startingTime = cursor.getString(3);
-
+		timeTableItem.busStopId = cursor.getInt(1);
+		timeTableItem.routeId = cursor.getInt(2);
+		timeTableItem.type = cursor.getInt(3);
+		timeTableItem.startingTime = cursor.getString(4);
 		return timeTableItem;
 	}
 	/**
@@ -97,7 +100,7 @@ public class TimeTableDao extends Dao {
 	 * @param limit
 	 * @return
 	 */
-	private ArrayList<TimeTableItem> queryList(String[] columns, String selection, String[] selectionArgs,  String groupBy, 
+	private ArrayList<TimeTableItem> queryList(String[] columns, String selection, String[] selectionArgs,  String groupBy,
 			String having, String orderBy, String limit) {
 		// 参照系ではReadableモード
 		SQLiteDatabase db = getReadableDatabase();
@@ -125,9 +128,14 @@ public class TimeTableDao extends Dao {
 	 * @return
 	 */
 	public ArrayList<TimeTableItem> queryBusStopOrderById(String[] selectionArgs) {
-		String selection = COLUMN_BUS_STOP_ID + " = ? AND " + COLUMN_ROUTE_ID + " = ? " + COLUMN_TYPE + " = ? ";
+		String selection = COLUMN_BUS_STOP_ID + " = ? AND " + COLUMN_ROUTE_ID + " = ? AND " + COLUMN_TYPE + " = ? ";
 		String orderBy = COLUMN_ID + " asc";
 		return queryList(COLUMNS, selection, selectionArgs, null, null, orderBy, null);
+	}
+
+	public ArrayList<TimeTableItem> queryALL() {
+		String orderBy = COLUMN_ID + " asc";
+		return queryList(COLUMNS, null, null, null, null, orderBy, null);
 	}
 
 	/**
@@ -153,53 +161,62 @@ public class TimeTableDao extends Dao {
 		return result;
 	}
 
+	/**
+	 * TimeTableテーブルの初期化処理
+	 */
 	public void setup() {
-//		TimeTableItem item;
-//
-//		SQLiteDatabase db = getWritableDatabase();
-//		for( String[] data: initicalData) {
-//			// 初期データのバス停アイテムの設定
-//			item = new TimeTableItem();
-//			item.id = Long.parseLong(data[0]);
-//			item.busStopId = Integer.valueOf(data[1]);
-//			item.routeId = Integer.valueOf(data[2]);
-//			item.type = Integer.valueOf(data[3]);
-//			item.startingTime = data[4];
-//
-//			try {
-//				// DBへインサート				
-//				insertWithoutOpenDb(db, item);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		db.close();
+		TimeTableItem item;
+
+		ArrayList<String> initialData = getInitialData();
+
+		SQLiteDatabase db = getWritableDatabase();
+		Long id = 0L;
+		for( String rawData: initialData) {
+			// 初期データの時刻アイテムの設定
+			String[] data = rawData.split(",");
+			item = new TimeTableItem();
+			item.id = id;
+			item.routeId = Integer.valueOf(data[0]);
+			item.busStopId = Integer.valueOf(data[1]);
+			item.type = Integer.valueOf(data[2]);
+			item.startingTime = data[3];
+
+			try {
+				insertWithoutOpenDb(db, item);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			id++;
+		}
+		db.close();
 	}
-	
+
+	/**
+	 * assetsの時刻データの取得
+	 * @return 路線ID,バス停ID,曜日タイプ,時刻
+	 */
 	public ArrayList<String> getInitialData() {
-		int[][] ROUTE_LIST = {{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, {13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2}};
 		ArrayList<String> initialDataList = new ArrayList<String>();
-		
+
 		for(int route = 0; route < ROUTE_LIST.length; route++ ) {
 			ArrayList<String> timeList = new ArrayList<String>();
 			for(int busStop: ROUTE_LIST[route]) {
 				timeList = getTimeList(route+1, busStop);
-//				Log.e("hoge", route+1 +", " + busStop);
-				for(String time: timeList) initialDataList.add(route+1 + "," + busStop + "," + time);
+				for(String time: timeList) {
+					initialDataList.add(route+1 + "," + busStop + "," + time);
+				}
 			}
 		}
-//		for(String hoge: initialDataList) Log.e("HOGE", hoge);
-//		Log.e("UGA", initialDataList.size() + "");
 		return initialDataList;
 	}
-	
+
 	private ArrayList<String> getTimeList(int route, int busStop) {
 		AssetManager as = null;
 		ArrayList<String> timeList = new ArrayList<String>();
 		try {
-			as = context.getResources().getAssets(); 
+			as = context.getResources().getAssets();
 			InputStream is = as.open(route + "/" + busStop);
-			
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			String str;
 			while((str = reader.readLine()) != null) {
@@ -208,11 +225,11 @@ public class TimeTableDao extends Dao {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return timeList;
 	}
-	
-	
+
+
 
 
 }

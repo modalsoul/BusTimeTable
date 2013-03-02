@@ -7,15 +7,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     /** ログ用タグ */
     public final String TAG = this.getClass().getSimpleName();
-    
+
     /** DB名 */
     private static final String DB_NAME = "kqbtt";
-    
+
     /**
      * DBのバージョン番号
      */
     private static final int DB_VERSION = 1;
-    
+
     /**
      * コンストラクタ
      * @param context
@@ -23,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context) {
     	super(context, DB_NAME, null, DB_VERSION);
     }
-    
+
     /**
      * テーブル定義用メソッド
      */
@@ -33,11 +33,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	try {
     		db.execSQL(BusStopDao.CREATE_TABLE);
     		db.execSQL(RouteDao.CREATE_TABLE);
+    		db.execSQL(TimeTableDao.CREATE_TABLE);
     		db.setTransactionSuccessful();
     	} finally {
     		db.endTransaction();
     	}
-    	
+
     }
     /**
      * マイグレーション用メソッド

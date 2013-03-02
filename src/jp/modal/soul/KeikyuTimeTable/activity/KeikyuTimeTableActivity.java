@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.modal.soul.KeikyuTimeTable.R;
-import jp.modal.soul.KeikyuTimeTable.R.id;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
+import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,40 +17,38 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class KeikyuTimeTableActivity extends Activity {
 
 	/** バス停リストを表示するダイアログ */
 	public AlertDialog busStopListDialog;
-	
+
 	/** 選択されたバス停の番号 */
-	public int selectedBusStopNumber; 
+	public int selectedBusStopNumber;
 	/** 選択された路線ID */
-	public long selectedRouteId;
-	
+	public int selectedRouteId;
+
 	/** DAO */
 	private RouteDao routeDao;
 	private BusStopDao busStopDao;
-	
+	private TimeTableDao timeTableDao;
+
 	/** ItemList */
 	List<RouteItem> routeList;
-	
+
 	/** Adapter */
 	RouteListAdapter adapter;
-	
+
 	/** ListView */
 	ListView listView;
-	
+
 	/** list */
 	String[] busStops;
-	
-	
+
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +59,7 @@ public class KeikyuTimeTableActivity extends Activity {
         // 初回起動時のセットアップ
         setupInit();
         // ListViewのセットアップ
-        setupListView();              
+        setupListView();
 
     }
     /**
@@ -73,7 +71,7 @@ public class KeikyuTimeTableActivity extends Activity {
     	// Adapterの生成
     	adapter = new RouteListAdapter(this, R.layout.route_row, routeList);
     	// ListViewの取得
-    	listView = (ListView)findViewById(R.id.lineList);
+    	listView = (ListView)findViewById(R.id.line_list);
     	// アダプターの設定
     	listView.setAdapter(adapter);
     	// ListViewのアイテムがクリックされたときのコールバックリスナーを登録
@@ -85,6 +83,7 @@ public class KeikyuTimeTableActivity extends Activity {
     private void setupDao() {
     	routeDao = new RouteDao(getApplicationContext());
     	busStopDao = new BusStopDao(getApplicationContext());
+    	timeTableDao = new TimeTableDao(getApplicationContext());
     }
 
 
@@ -98,32 +97,27 @@ public class KeikyuTimeTableActivity extends Activity {
     		RouteItem item = (RouteItem) listView.getItemAtPosition(position);
 
     		// 路線IDをセット
-    		selectedRouteId = item.id;
+    		selectedRouteId = (int)item.id;
+
     		showBusStopList();
-    		
+
     	}
 	};
 
-    /**
-     *  Viewのセットアップ
-     */
-	private void setupView() {
-				
-	}
 	/**
 	 *  動作のセットアップ
 	 */
 	private void setupEventhandling() {
-			
+
 	}
-		
+
 	/**
 	 * バス停選択のダイアログを表示する
 	 */
-	private void showBusStopList() {	
+	private void showBusStopList() {
 		// 路線情報を取得
 		RouteItem routeItem = routeDao.queryAllBusStopByRouteId(selectedRouteId);
-		
+
 		if(routeItem == null) {
 			// システムエラー
 		}
@@ -131,56 +125,63 @@ public class KeikyuTimeTableActivity extends Activity {
 		busStops = Utils.busStopIdString2StringItems(routeItem.busStops);
 		// バス停名を設定
 		CharSequence[] busStopNames = new CharSequence[busStops.length];
-		
+
 		ArrayList<BusStopItem> busStopItems;
 		int i = 0;
 		for(String busStop: busStops) {
-			
+
 			busStopItems = busStopDao.queryBusStop(busStop);
-		
+
 			busStopNames[i] = busStopItems.get(0).busStopName;
-			
+
 			i++;
 		}
-			
-				
+
+
 		// バス停選択のリストを表示するダイアログを作成
-		AlertDialog.Builder builder = new AlertDialog.Builder(KeikyuTimeTableActivity.this);		
+		AlertDialog.Builder builder = new AlertDialog.Builder(KeikyuTimeTableActivity.this);
 		builder.setTitle(R.string.bus_stop_list_dialog_title);
-		builder.setSingleChoiceItems(busStopNames, -1, new DialogInterface.OnClickListener(){
-			// バス停リストを選択したときの動作を設定
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// 選択されたバス停番号を設定
-				selectedBusStopNumber = Integer.valueOf(busStops[which]);
-				// バス停の行き先選択画面へ遷移
-				launchBusStop();
-			}
-		});
-		// バス停選択のリストを表示するダイアログを作成
+		builder.setSingleChoiceItems(busStopNames, -1, busStopOnClickListener);
 		builder.show();
 	}
 	
+	/**
+	 * バス停ダイアログのバス停選択時のonClickListener
+	 */
+	DialogInterface.OnClickListener busStopOnClickListener = new DialogInterface.OnClickListener() {
+		
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			// 選択されたバス停番号を設定
+			selectedBusStopNumber = Integer.valueOf(busStops[which]);
+			// バス停の行き先選択画面へ遷移
+			launchBusStop();	
+		}
+	};
+
 	/**
 	 * 選択されたバス停の行き先を選択する画面へ遷移する
 	 */
 	public void launchBusStop(){
 		// BusStopActivityを起動するintentの作成
-		Intent intent = new Intent(getApplicationContext(), BusStopActivity.class);
+//		Intent intent = new Intent(getApplicationContext(), BusStopActivity.class);
+		Intent intent = new Intent(getApplicationContext(), BusStopTabActivity.class);
 		// 選択されたバス停番号を指定
 		intent.putExtra(BusStopActivity.BUSS_STOP_NUMBER, selectedBusStopNumber);
+		// 選択された路線番号を指定
+		intent.putExtra(BusStopActivity.ROUTE_NUMBER, selectedRouteId);
 		// BusStopActivityの起動
-		Utils.intentLauncher(this, intent);	
+		Utils.intentLauncher(this, intent);
 //		this.startActivity(intent);
 	}
-	
+
 	/**
 	 * バス停名のリストを取得
 	 * @return
 	 */
 	public CharSequence[] getBusStopList() {
 		ArrayList<BusStopItem> items = busStopDao.queryBusStopOrderById();
-		
+
 		// バス停数
 		int busStopNum = items.size();
 		// バス停名のリスト
@@ -192,7 +193,7 @@ public class KeikyuTimeTableActivity extends Activity {
 		}
 		return busStopList;
 	}
-	
+
 	/**
 	 * アプリ初回起動時の初期化処理
 	 */
@@ -203,6 +204,7 @@ public class KeikyuTimeTableActivity extends Activity {
 			// 初回起動の場合、初期データをセット
 			busStopDao.setup();
 			routeDao.setup();
+			timeTableDao.setup();
 			// 起動状態を変更
 			initState.setStatus(InitState.PREFERENCE_BOOTED);
 		}
@@ -221,7 +223,7 @@ public class KeikyuTimeTableActivity extends Activity {
 		public static final int PREFERENCE_INIT = 0;
 		/** 起動 */
 		public static final int PREFERENCE_BOOTED = 1;
-		
+
 		/**
 		 * 起動ステータスの保存
 		 * @param status
@@ -238,7 +240,7 @@ public class KeikyuTimeTableActivity extends Activity {
 			SharedPreferences sp = getSharedPreferences(INIT_PREFERENCE_NAME, MODE_PRIVATE);
 			return sp.getInt(INIT_PREFERENCE_NAME, 0);
 		}
-		
-		
+
+
 	}
 }

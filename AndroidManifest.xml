@@ -21,6 +21,10 @@
             android:name=".activity.BusStopActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity 
+            android:name=".activity.BusStopTabActivity"
+            android:label="@string/app_name">
+        </activity>
     </application>
 
 </manifest>
