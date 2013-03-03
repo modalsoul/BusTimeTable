@@ -13,7 +13,7 @@
     <!-- 時刻表タブ -->
     <string name="weekday_tab_name">平日</string>
     <string name="saturday_tab_name">土曜</string>
-    <string name="holiday_tab_name">日曜祝日</string>
+    <string name="holiday_tab_name">休日</string>
     
     <string name="got_to_map">地図で場所を確認</string>
 </resources>

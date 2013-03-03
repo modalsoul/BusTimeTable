@@ -124,7 +124,7 @@ public class TimeTableActivity extends FragmentActivity {
 
 		TabSpec weekdayTabSpec = host.newTabSpec("tab1");
         Button weekdayTabButton = new Button(this);
-        weekdayTabButton.setText("平日");
+        weekdayTabButton.setText(R.string.weekday_tab_name);
         weekdayTabButton.setTextSize(24);
         weekdayTabButton.setTextColor(getResources().getColor(R.color.black));
         weekdayTabButton.setBackgroundResource(R.drawable.weekday_tab_icon);
@@ -139,7 +139,7 @@ public class TimeTableActivity extends FragmentActivity {
         
         TabSpec saturdayTabSpec = host.newTabSpec("tab2");
         Button saturdayTabButton = new Button(this);
-        saturdayTabButton.setText("土曜");
+        saturdayTabButton.setText(R.string.saturday_tab_name);
         saturdayTabButton.setTextSize(24);
         saturdayTabButton.setTextColor(getResources().getColor(R.color.blue));
         saturdayTabButton.setBackgroundResource(R.drawable.saturday_tab_icon);
@@ -154,7 +154,7 @@ public class TimeTableActivity extends FragmentActivity {
         
         TabSpec holidayTabSpec = host.newTabSpec("tab3");
         Button holidayTabButton = new Button(this);
-        holidayTabButton.setText("休日");
+        holidayTabButton.setText(R.string.holiday_tab_name);
         holidayTabButton.setTextSize(24);
         holidayTabButton.setTextColor(getResources().getColor(R.color.red));
         holidayTabButton.setBackgroundResource(R.drawable.holiday_tab_icon);
