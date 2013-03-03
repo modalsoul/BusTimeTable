@@ -46,7 +46,7 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 		timetableRow = convertView;
 		// 受け取ったViewがnullなら新しくViewを生成
 		if(timetableRow == null) {
-			timetableRow = inflater.inflate(R.layout.route_row, null);
+			timetableRow = inflater.inflate(R.layout.time_table_row, null);
 		}
 		// 表示データのセット
 		TimeTableItem item = items.get(position);
@@ -63,7 +63,7 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 	 * @param item
 	 */
 	private void setupRowView(TimeTableItem item) {
-		startingTime = (TextView)timetableRow.findViewById(R.id.route_name);
+		startingTime = (TextView)timetableRow.findViewById(R.id.starting_time);
 		startingTime.setText(item.startingTime);
 
 	}

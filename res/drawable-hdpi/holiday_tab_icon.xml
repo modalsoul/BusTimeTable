@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
         android:state_selected="true"
-        android:drawable="@+drawable/ic_launcher">
+        android:drawable="@+drawable/white">
     </item>
     <item
-        android:drawable="@+drawable/maps_icon">
+        android:drawable="@+drawable/gray">
     </item>
 </selector>
