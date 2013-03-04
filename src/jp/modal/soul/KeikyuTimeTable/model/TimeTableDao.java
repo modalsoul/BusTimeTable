@@ -133,10 +133,6 @@ public class TimeTableDao extends Dao {
 		return queryList(COLUMNS, selection, selectionArgs, null, null, orderBy, null);
 	}
 
-	public ArrayList<TimeTableItem> queryALL() {
-		String orderBy = COLUMN_ID + " asc";
-		return queryList(COLUMNS, null, null, null, null, orderBy, null);
-	}
 
 	/**
 	 * 新規作成
@@ -171,23 +167,29 @@ public class TimeTableDao extends Dao {
 
 		SQLiteDatabase db = getWritableDatabase();
 		Long id = 0L;
-		for( String rawData: initialData) {
-			// 初期データの時刻アイテムの設定
-			String[] data = rawData.split(",");
-			item = new TimeTableItem();
-			item.id = id;
-			item.routeId = Integer.valueOf(data[0]);
-			item.busStopId = Integer.valueOf(data[1]);
-			item.type = Integer.valueOf(data[2]);
-			item.startingTime = data[3];
-
-			try {
-				insertWithoutOpenDb(db, item);
-			} catch (Exception e) {
-				e.printStackTrace();
+		
+		db.beginTransaction();
+		try {
+			for( String rawData: initialData) {
+				// 初期データの時刻アイテムの設定
+				String[] data = rawData.split(",");
+				item = new TimeTableItem();
+				item.id = id;
+				item.routeId = Integer.valueOf(data[0]);
+				item.busStopId = Integer.valueOf(data[1]);
+				item.type = Integer.valueOf(data[2]);
+				item.startingTime = data[3];
+	
+					insertWithoutOpenDb(db, item);
+				id++;
 			}
-			id++;
+			db.setTransactionSuccessful();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			db.endTransaction();
 		}
+		
 		db.close();
 	}
 

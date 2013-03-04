@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
+import jp.modal.soul.KeikyuTimeTable.model.HistoryDao;
+import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
-import android.text.format.Time;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +102,7 @@ public class TimeTableActivity extends FragmentActivity {
 		}
 		setupTabSheet();
 
-		
+		registerHistory();
 //		gotoMapButton = (Button)findViewById(R.id.go_to_map_button);
 //		gotoMapButton.setOnClickListener(new View.OnClickListener() {
 //			
@@ -215,5 +216,20 @@ public class TimeTableActivity extends FragmentActivity {
     		list = timeTableDao.queryBusStopOrderById(selectionArgs);
     		return list;
     	}
+    }
+    
+    public void registerHistory() {
+    	HistoryDao historyDao = new HistoryDao(this);
+    	SQLiteDatabase db = historyDao.getWritableDatabase();
+    	HistoryItem item = new HistoryItem();
+    	item.routeId = routeID;
+    	item.busStopId = busStopID;
+    	try {
+			historyDao.insertWithoutOpenDb(db, item);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		db.close();
     }
 }

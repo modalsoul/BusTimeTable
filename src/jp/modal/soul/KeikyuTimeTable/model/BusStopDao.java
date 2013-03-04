@@ -168,17 +168,22 @@ public class BusStopDao extends Dao {
 		BusStopItem item;
 
 		SQLiteDatabase db = getWritableDatabase();
-		for( String[] data: initicalData) {
-			// 初期データのバス停アイテムの設定
-			item = new BusStopItem();
-			item.id = Long.parseLong(data[0]);
-			item.busStopName = data[1];			
-			try {
-				// DBへインサート				
-				insertWithoutOpenDb(db, item);
-			} catch (Exception e) {
-				e.printStackTrace();
+		
+		db.beginTransaction();
+		try {
+			for( String[] data: initicalData) {
+				// 初期データのバス停アイテムの設定
+				item = new BusStopItem();
+				item.id = Long.parseLong(data[0]);
+				item.busStopName = data[1];			
+					// DBへインサート				
+					insertWithoutOpenDb(db, item);
 			}
+			db.setTransactionSuccessful();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			db.endTransaction();
 		}
 		db.close();
 	}

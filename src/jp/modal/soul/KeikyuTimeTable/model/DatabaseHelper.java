@@ -34,6 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     		db.execSQL(BusStopDao.CREATE_TABLE);
     		db.execSQL(RouteDao.CREATE_TABLE);
     		db.execSQL(TimeTableDao.CREATE_TABLE);
+    		db.execSQL(HistoryDao.CREATE_TABLE);
     		db.setTransactionSuccessful();
     	} finally {
     		db.endTransaction();
