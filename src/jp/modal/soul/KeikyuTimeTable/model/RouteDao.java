@@ -132,7 +132,7 @@ public class RouteDao extends Dao {
 	 * @param routeId 取得対象の路線ID
 	 * @return
 	 */
-	public RouteItem queryAllBusStopByRouteId(long routeId) {
+	public RouteItem queryRouteByRouteId(long routeId) {
 		String selection = COLUMN_ID + " = ?";
 
 		String[] selectionArgs = new String[1];

@@ -5,6 +5,24 @@
     android:orientation="vertical"
     android:background="@color/white" >
 
+    <TextView 
+        android:id="@+id/menu_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="42sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="京急バス時刻表"/>
+    <TextView 
+        android:id="@+id/unofficial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_gravity="right"
+        android:layout_marginRight="10dp"
+        android:text="（非公式）"/>
+
     <Button 
         android:id="@+id/route_menu_button"
         android:layout_width="fill_parent"
@@ -14,7 +32,7 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:text="路線から選ぶ"
-        android:textSize="24sp"/>
+        android:textSize="28sp"/>
     <Button 
         android:id="@+id/history_menu_button"
         android:layout_width="fill_parent"
@@ -24,6 +42,6 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:text="履歴から選ぶ"
-        android:textSize="24sp"/>
+        android:textSize="28sp"/>
 
 </LinearLayout>

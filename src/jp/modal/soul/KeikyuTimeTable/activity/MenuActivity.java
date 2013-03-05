@@ -5,25 +5,33 @@ import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
+import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryDao;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
+import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
-public class MenuActivity extends Activity {
+public class MenuActivity extends BaseActivity {
 
 	/** DAO */
 	private RouteDao routeDao;
 	private BusStopDao busStopDao;
 	private TimeTableDao timeTableDao;
+	
+	/** View */
+	private TextView title;
+	private TextView unofficial;
+	private Button routeButton;
+	private Button historyButton;
 	
     /** Called when the activity is first created. */
     @Override
@@ -36,9 +44,22 @@ public class MenuActivity extends Activity {
         // 初回起動時のセットアップ
         setupInit();
         
-        Button routeButton = (Button)findViewById(R.id.route_menu_button);
+        setupView();
+    }
+
+
+	private void setupView() {
+		title = (TextView)findViewById(R.id.menu_title);
+        setFont(title);
         
-        Button historyButton = (Button)findViewById(R.id.history_menu_button);
+        unofficial = (TextView)findViewById(R.id.unofficial);
+        setFont(unofficial);
+        
+        routeButton = (Button)findViewById(R.id.route_menu_button);
+        setFont(routeButton);
+        
+        historyButton = (Button)findViewById(R.id.history_menu_button);
+        setFont(historyButton);
         
         routeButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -49,7 +70,7 @@ public class MenuActivity extends Activity {
 		});
         
         historyButton.setOnClickListener(onClickListener);
-    }
+	}
     View.OnClickListener onClickListener = new View.OnClickListener() {
 		
 		@Override
@@ -68,10 +89,18 @@ public class MenuActivity extends Activity {
 		CharSequence[] dialogItem = new CharSequence[itemList.size()];
 		int i = 0;
 		for(HistoryItem item: itemList) {
-			dialogItem[i] = item.routeId + "-" + item.busStopId;
+			RouteItem routeItem = routeDao.queryRouteByRouteId(Long.valueOf(item.routeId));
+
+			ArrayList<BusStopItem> busstopItemList = busStopDao.queryBusStop(String.valueOf(item.busStopId));
+//			dialogItem[i] = item.routeId + "-" + item.busStopId;
+			dialogItem[i] = makeHistoryRow(routeItem.terminalName(this), busstopItemList.get(0).busStopName);
 			i++;
 		}
 		return dialogItem;
+	}
+	
+	private String makeHistoryRow(String routeName, String busstopName) {
+		return routeName + " " + busstopName +"バス停";
 	}
 	
 	

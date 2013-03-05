@@ -4,10 +4,11 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 import java.util.List;
 
 import jp.modal.soul.KeikyuTimeTable.R;
-import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
+import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,10 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 	View timetableRow;
 	TextView startingTime;
 	
+	/** Font */
+	Typeface face;
+	String font = Utils.getFont();
+	
 	/**
 	 * コンストラクタ
 	 * @param context
@@ -42,17 +47,26 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		ViewHolder holder;
 		// Viewの受け取り
 		timetableRow = convertView;
 		// 受け取ったViewがnullなら新しくViewを生成
 		if(timetableRow == null) {
 			timetableRow = inflater.inflate(R.layout.time_table_row, null);
+			holder = new ViewHolder();
+			holder.textView = (TextView)timetableRow.findViewById(R.id.starting_time);
+			timetableRow.setTag(holder);
+		} else {
+			holder = (ViewHolder)timetableRow.getTag();
 		}
 		// 表示データのセット
 		TimeTableItem item = items.get(position);
 		// itemがnullでなければViewにセット
 		if(item != null) {
-			setupRowView(item);
+			holder.textView.setText(item.startingTime);
+			
+			/* スクロールが重くなるのでフォントの指定は一旦保留 */
+			// setFont(holder.textView);
 		}
 
 		return timetableRow;
@@ -62,11 +76,19 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 	 * 発車時刻のセット
 	 * @param item
 	 */
-	private void setupRowView(TimeTableItem item) {
-		startingTime = (TextView)timetableRow.findViewById(R.id.starting_time);
-		startingTime.setText(item.startingTime);
-
-	}
+//	private void setupRowView(TimeTableItem item) {
+//		startingTime = (TextView)timetableRow.findViewById(R.id.starting_time);
+//		startingTime.setText(item.startingTime);
+//		setFont(startingTime);
+//
+//	}
 	
+	private void setFont(TextView text) {
+		face = Typeface.createFromAsset(context.getAssets(), font);
+		text.setTypeface(face);
+	}
+    static class ViewHolder {
+        TextView textView;
+    }
 
 }

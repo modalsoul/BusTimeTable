@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
-import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryDao;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
+import jp.modal.soul.KeikyuTimeTable.util.Const;
+import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -56,6 +58,10 @@ public class TimeTableActivity extends FragmentActivity {
 	TimeTableAdapter saturdayAdaptor;
 	TimeTableAdapter holidayAdaptor;
 	
+	/** Font */
+	Typeface face;
+	String font = Utils.getFont();
+	
 	String busStopNameString;
 
     /** Called when the activity is first created. */
@@ -72,6 +78,8 @@ public class TimeTableActivity extends FragmentActivity {
         setupView();
         // 動作のセットアップ
         setupEventhandling();
+        // 履歴の保存
+		registerHistory();
 
     }
 
@@ -93,16 +101,16 @@ public class TimeTableActivity extends FragmentActivity {
 		// バス停名Viewの取得
 //		busStopName = (TextView)findViewById(R.id.selected_bus_stop_name);
 		// バス停名の取得
-		ArrayList<BusStopItem> item = busStopDao.queryBusStop(Integer.toString(busStopID));
+//		ArrayList<BusStopItem> item = busStopDao.queryBusStop(Integer.toString(busStopID));
 
-		if(item != null) {
-			busStopNameString = item.get(0).busStopName;
-			// 行き先を選択するバス停名を設定
-//			busStopName.setText(busStopNameString);
-		}
+//		if(item != null) {
+//			busStopNameString = item.get(0).busStopName;
+//			// 行き先を選択するバス停名を設定
+////			busStopName.setText(busStopNameString);
+//		}
 		setupTabSheet();
 
-		registerHistory();
+
 //		gotoMapButton = (Button)findViewById(R.id.go_to_map_button);
 //		gotoMapButton.setOnClickListener(new View.OnClickListener() {
 //			
@@ -126,9 +134,10 @@ public class TimeTableActivity extends FragmentActivity {
 		TabSpec weekdayTabSpec = host.newTabSpec("tab1");
         Button weekdayTabButton = new Button(this);
         weekdayTabButton.setText(R.string.weekday_tab_name);
-        weekdayTabButton.setTextSize(24);
-        weekdayTabButton.setTextColor(getResources().getColor(R.color.black));
+        weekdayTabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
+        weekdayTabButton.setTextColor(getResources().getColor(Const.WEEKDAY_TAB_BUTTON_TEXT_COLOR));
         weekdayTabButton.setBackgroundResource(R.drawable.weekday_tab_icon);
+        setFont(weekdayTabButton);
         weekdayTabSpec.setIndicator(weekdayTabButton);
         
         Bundle weekdayBundle = new Bundle();
@@ -141,9 +150,10 @@ public class TimeTableActivity extends FragmentActivity {
         TabSpec saturdayTabSpec = host.newTabSpec("tab2");
         Button saturdayTabButton = new Button(this);
         saturdayTabButton.setText(R.string.saturday_tab_name);
-        saturdayTabButton.setTextSize(24);
-        saturdayTabButton.setTextColor(getResources().getColor(R.color.blue));
+        saturdayTabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
+        saturdayTabButton.setTextColor(getResources().getColor(Const.SATURDAY_TAB_BUTTON_TEXT_COLOR));
         saturdayTabButton.setBackgroundResource(R.drawable.saturday_tab_icon);
+        setFont(saturdayTabButton);
         saturdayTabSpec.setIndicator(saturdayTabButton);
         
         Bundle saturdayBundle = new Bundle();
@@ -156,12 +166,13 @@ public class TimeTableActivity extends FragmentActivity {
         TabSpec holidayTabSpec = host.newTabSpec("tab3");
         Button holidayTabButton = new Button(this);
         holidayTabButton.setText(R.string.holiday_tab_name);
-        holidayTabButton.setTextSize(24);
-        holidayTabButton.setTextColor(getResources().getColor(R.color.red));
+        holidayTabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
+        holidayTabButton.setTextColor(getResources().getColor(Const.HOLIDAY_TAB_BUTTON_TEXT_COLOR));
         holidayTabButton.setBackgroundResource(R.drawable.holiday_tab_icon);
+        setFont(holidayTabButton);
         holidayTabSpec.setIndicator(holidayTabButton);
-        Bundle holidaBundle = new Bundle();
         
+        Bundle holidaBundle = new Bundle();
         holidaBundle.putInt("route", routeID);
         holidaBundle.putInt("busStop", busStopID);
         holidaBundle.putInt("week", TimeTableDao.HOLIDAY);
@@ -231,5 +242,10 @@ public class TimeTableActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 		db.close();
+    }
+    
+    private void setFont(Button button) {
+    	face = Typeface.createFromAsset(getAssets(), font);
+    	button.setTypeface(face);
     }
 }

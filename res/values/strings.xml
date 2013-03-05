@@ -8,7 +8,8 @@
     <string name="select_line">行き先を選択</string>
     
 	<!--  路線リストRow  -->
-    <string name="starting_to_terminal">%1$s から %2$s</string>
+	<string name="route_list_title">路線を選択</string>
+    <string name="starting_to_terminal">%1$s から %2$s ゆき</string>
     
     <!-- 時刻表タブ -->
     <string name="weekday_tab_name">平日</string>

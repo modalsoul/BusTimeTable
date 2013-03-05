@@ -6,8 +6,9 @@ import java.util.List;
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
+import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,11 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 	View routeRow;
 	TextView routeName;
 	TextView toFrom;
+	
+	/** Font */
+	Typeface face;
+	String font = Utils.getFont();
+	
 	/**
 	 * コンストラクタ
 	 * @param context
@@ -66,10 +72,17 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 		// 路線名のセット
 		routeName = (TextView)routeRow.findViewById(R.id.route_name);
 		routeName.setText(item.routeName());
+		setFont(routeName);
 
 		// 始発、終点のセット
 		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
 		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.startingName(context), item.terminalName(context)));
+		setFont(toFrom);
+	}
+	
+	private void setFont(TextView text) {
+		face = Typeface.createFromAsset(context.getAssets(), font);
+		text.setTypeface(face);
 	}
 	
 

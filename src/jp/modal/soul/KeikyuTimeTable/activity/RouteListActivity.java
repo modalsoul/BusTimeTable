@@ -15,13 +15,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
-public class RouteListActivity extends Activity {
+public class RouteListActivity extends BaseActivity {
 
 	/** バス停リストを表示するダイアログ */
 	public AlertDialog busStopListDialog;
@@ -42,6 +42,9 @@ public class RouteListActivity extends Activity {
 	/** Adapter */
 	RouteListAdapter adapter;
 
+	/** View */
+	TextView headerTitle;
+	
 	/** ListView */
 	ListView listView;
 
@@ -56,10 +59,17 @@ public class RouteListActivity extends Activity {
         setContentView(R.layout.main);
         // DAOのセットアップ
         setupDao();
+        
+        setupView();
+        
         // ListViewのセットアップ
         setupListView();
 
     }
+	private void setupView() {
+		headerTitle = (TextView)findViewById(R.id.route_list_header_text);
+        setFont(headerTitle);
+	}
     /**
      * ListViewのセットアップ
      */
@@ -114,7 +124,7 @@ public class RouteListActivity extends Activity {
 	 */
 	private void showBusStopList() {
 		// 路線情報を取得
-		RouteItem routeItem = routeDao.queryAllBusStopByRouteId(selectedRouteId);
+		RouteItem routeItem = routeDao.queryRouteByRouteId(selectedRouteId);
 
 		if(routeItem == null) {
 			// システムエラー
@@ -172,24 +182,7 @@ public class RouteListActivity extends Activity {
 //		this.startActivity(intent);
 	}
 
-	/**
-	 * バス停名のリストを取得
-	 * @return
-	 */
-	public CharSequence[] getBusStopList() {
-		ArrayList<BusStopItem> items = busStopDao.queryBusStopOrderById();
 
-		// バス停数
-		int busStopNum = items.size();
-		// バス停名のリスト
-		CharSequence[] busStopList = new CharSequence[busStopNum];
-		int i = 0;
-		for(BusStopItem item: items) {
-			busStopList[i] = item.busStopName;
-			i++;
-		}
-		return busStopList;
-	}
 
 
 }

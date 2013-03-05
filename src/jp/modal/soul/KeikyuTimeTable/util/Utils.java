@@ -47,4 +47,9 @@ public class Utils {
 		}
 		return true;
 	}
+	
+	public static String getFont() {
+		
+		return Const.INITIAL_FONT;
+	}
 }
