@@ -1,11 +1,13 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
+import java.util.Date;
 import java.util.ArrayList;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * 路線を扱うクラス
@@ -24,6 +26,8 @@ public class HistoryDao extends Dao {
 	public static final String COLUMN_ROUTE_ID = "route_id";
 	/** バス停ID */
 	public static final String COLUMN_BUS_STOP_ID = "bus_stop_id";
+	/** 識別文字列 */
+	public static final String COLUMN_ID_STRING = "id_string";
 	
 	/** 履歴取得上限 */
 	private static final String HISTORY_LIMIT = "5";
@@ -32,7 +36,9 @@ public class HistoryDao extends Dao {
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
 											COLUMN_ROUTE_ID,
-											COLUMN_BUS_STOP_ID};
+											COLUMN_BUS_STOP_ID,
+											COLUMN_ID_STRING
+											};
 
 	// create table文定義
 	public static final String CREATE_TABLE;
@@ -41,6 +47,7 @@ public class HistoryDao extends Dao {
 		String columnDefine = COLUMN_ID + " integer primary key, "
 							+ COLUMN_ROUTE_ID + " integer not null, "
 							+ COLUMN_BUS_STOP_ID + " integer not null, "
+							+ COLUMN_ID_STRING + " text unique, "
 							;
 		// @formatter:off
 		CREATE_TABLE = createTable(TABLE_NAME, columnDefine);
@@ -59,6 +66,7 @@ public class HistoryDao extends Dao {
 		historyItem.id = cursor.getInt(0);
 		historyItem.routeId = cursor.getInt(1);
 		historyItem.busStopId = cursor.getInt(2);
+		historyItem.idString = cursor.getString(3);
 
 		return historyItem;
 	}
@@ -102,7 +110,7 @@ public class HistoryDao extends Dao {
 	 */
 	public ArrayList<HistoryItem> queryLatestHistory() {
 		String orderBy = COLUMN_UPDATE_DATE + " desc ";
-		String limit = null;
+		String limit = "5";
 		return queryList(COLUMNS, null, null, null, null, orderBy, limit);
 	}
 
@@ -116,13 +124,36 @@ public class HistoryDao extends Dao {
 	 */
 	public long insertWithoutOpenDb(SQLiteDatabase db, HistoryItem item) throws Exception {
 		ContentValues values = new  ContentValues();
-//		values.put(COLUMN_ID, item.id);
+		values.put(COLUMN_ID, item.id);
 		values.put(COLUMN_ROUTE_ID, item.routeId);
 		values.put(COLUMN_BUS_STOP_ID, item.busStopId);
+		values.put(COLUMN_ID_STRING, item.idString);
+		
+		long createDate = new Date().getTime();
+		values.put(COLUMN_CREATE_DATE, createDate);
+		values.put(COLUMN_UPDATE_DATE, createDate);
 
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
 			throw new Exception("insert exception");
+		}
+		return result;
+	}
+	
+	public long insertOrReplace(SQLiteDatabase db, HistoryItem item) throws Exception {
+		ContentValues values = new  ContentValues();
+		values.put(COLUMN_ROUTE_ID, item.routeId);
+		values.put(COLUMN_BUS_STOP_ID, item.busStopId);
+		values.put(COLUMN_ID_STRING, item.idString);
+		
+		long createDate = new Date().getTime();
+		values.put(COLUMN_CREATE_DATE, createDate);
+		values.put(COLUMN_UPDATE_DATE, createDate);
+		
+		
+		long result = db.replace(TABLE_NAME, null, values);
+		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
+			throw new Exception("replace exception");
 		}
 		return result;
 	}

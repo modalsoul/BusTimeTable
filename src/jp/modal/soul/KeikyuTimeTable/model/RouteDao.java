@@ -1,11 +1,7 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.util.ArrayList;
-
-import jp.modal.soul.KeikyuTimeTable.util.Utils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -161,6 +157,10 @@ public class RouteDao extends Dao {
 		values.put(COLUMN_TERMINAL, item.terminal);
 		values.put(COLUMN_STARTING, item.starting);
 		values.put(COLUMN_BUS_STOPS, item.busStops);
+
+		long createDate = new Date().getTime();
+		values.put(COLUMN_CREATE_DATE, createDate);
+		values.put(COLUMN_UPDATE_DATE, createDate);
 
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {

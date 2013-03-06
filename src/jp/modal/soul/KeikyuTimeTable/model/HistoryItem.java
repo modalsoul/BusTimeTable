@@ -13,6 +13,7 @@ public class HistoryItem implements Comparable<HistoryItem>, Serializable{
     public long id;
     public long routeId;
     public long busStopId;
+    public String idString;
     
     /** Dao */
     BusStopDao busStopDao;

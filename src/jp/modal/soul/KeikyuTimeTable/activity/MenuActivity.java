@@ -13,9 +13,11 @@ import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,12 +28,16 @@ public class MenuActivity extends BaseActivity {
 	private RouteDao routeDao;
 	private BusStopDao busStopDao;
 	private TimeTableDao timeTableDao;
+	private HistoryDao historyDao;
 	
 	/** View */
 	private TextView title;
 	private TextView unofficial;
 	private Button routeButton;
 	private Button historyButton;
+	
+	/** ItemList */
+	ArrayList<HistoryItem> historyItemList;
 	
     /** Called when the activity is first created. */
     @Override
@@ -78,21 +84,31 @@ public class MenuActivity extends BaseActivity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
 			builder.setTitle("履歴から選択");
 			
-			builder.setSingleChoiceItems(getDialogList(), -1, null);
+			builder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
 			builder.show();
 		}
 	};
 	
+	DialogInterface.OnClickListener historyOnClickListener = new DialogInterface.OnClickListener() {
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			HistoryItem item = historyItemList.get(which);
+			Log.e("hoge", item.routeId + ":" + item.busStopId);
+			launchBusStop((int)item.routeId, (int)item.busStopId);
+		}
+		
+	};
+	
 	public CharSequence[] getDialogList() {
-		HistoryDao historyDao = new HistoryDao(this);
-		ArrayList<HistoryItem> itemList = historyDao.queryLatestHistory();
-		CharSequence[] dialogItem = new CharSequence[itemList.size()];
+		historyDao = new HistoryDao(this);
+		historyItemList = historyDao.queryLatestHistory();
+		CharSequence[] dialogItem = new CharSequence[historyItemList.size()];
 		int i = 0;
-		for(HistoryItem item: itemList) {
+		for(HistoryItem item: historyItemList) {
 			RouteItem routeItem = routeDao.queryRouteByRouteId(Long.valueOf(item.routeId));
 
 			ArrayList<BusStopItem> busstopItemList = busStopDao.queryBusStop(String.valueOf(item.busStopId));
-//			dialogItem[i] = item.routeId + "-" + item.busStopId;
 			dialogItem[i] = makeHistoryRow(routeItem.terminalName(this), busstopItemList.get(0).busStopName);
 			i++;
 		}
@@ -100,7 +116,7 @@ public class MenuActivity extends BaseActivity {
 	}
 	
 	private String makeHistoryRow(String routeName, String busstopName) {
-		return routeName + " " + busstopName +"バス停";
+		return routeName + "ゆき\n" + busstopName +"バス停";
 	}
 	
 	
@@ -164,6 +180,19 @@ public class MenuActivity extends BaseActivity {
 			SharedPreferences sp = getSharedPreferences(INIT_PREFERENCE_NAME, MODE_PRIVATE);
 			return sp.getInt(INIT_PREFERENCE_NAME, 0);
 		}
+	}
+	/**
+	 * 選択されたバス停の行き先を選択する画面へ遷移する
+	 */
+	public void launchBusStop(int route, int busStop){
+		// BusStopActivityを起動するintentの作成
+		Intent intent = new Intent(getApplicationContext(), TimeTableActivity.class);
+		// 選択されたバス停番号を指定
+		intent.putExtra(TimeTableActivity.BUSS_STOP_NUMBER, busStop);
+		// 選択された路線番号を指定
+		intent.putExtra(TimeTableActivity.ROUTE_NUMBER, route);
+		// BusStopActivityの起動
+		Utils.intentLauncher(this, intent);
 	}
 
 }

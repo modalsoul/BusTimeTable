@@ -25,8 +25,8 @@ public class Dao {
 		// @formatter:off
 		return "create table " + tableName + " ( "
 				+ columnDefine 
-				+ COLUMN_CREATE_DATE + " text, "
-				+ COLUMN_UPDATE_DATE + " text "
+				+ COLUMN_CREATE_DATE + " text not null, "
+				+ COLUMN_UPDATE_DATE + " text not null"
 				+ ")";
 		// @formatter:on
 	}

@@ -42,6 +42,7 @@ public class TimeTableActivity extends FragmentActivity {
 	/** Dao */
 	BusStopDao busStopDao;
 	TimeTableDao timeTableDao;
+	HistoryDao historyDao;
 
 	/** View */
 	TextView busStopName;
@@ -94,6 +95,7 @@ public class TimeTableActivity extends FragmentActivity {
 	private void setupDao() {
 		busStopDao = new BusStopDao(this);
 		timeTableDao = new TimeTableDao(this);
+		historyDao = new HistoryDao(this);
 	}
 
 
@@ -230,15 +232,14 @@ public class TimeTableActivity extends FragmentActivity {
     }
     
     public void registerHistory() {
-    	HistoryDao historyDao = new HistoryDao(this);
     	SQLiteDatabase db = historyDao.getWritableDatabase();
     	HistoryItem item = new HistoryItem();
     	item.routeId = routeID;
     	item.busStopId = busStopID;
+    	item.idString = String.valueOf(routeID) + "."+ String.valueOf(busStopID);
     	try {
-			historyDao.insertWithoutOpenDb(db, item);
+    		historyDao.insertOrReplace(db, item);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		db.close();

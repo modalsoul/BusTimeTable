@@ -55,6 +55,7 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 			timetableRow = inflater.inflate(R.layout.time_table_row, null);
 			holder = new ViewHolder();
 			holder.textView = (TextView)timetableRow.findViewById(R.id.starting_time);
+			setFont(holder.textView);
 			timetableRow.setTag(holder);
 		} else {
 			holder = (ViewHolder)timetableRow.getTag();
@@ -64,9 +65,6 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableItem> {
 		// itemがnullでなければViewにセット
 		if(item != null) {
 			holder.textView.setText(item.startingTime);
-			
-			/* スクロールが重くなるのでフォントの指定は一旦保留 */
-			// setFont(holder.textView);
 		}
 
 		return timetableRow;

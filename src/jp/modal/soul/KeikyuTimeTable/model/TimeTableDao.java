@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 /**
  * バス停を扱うクラス
@@ -149,6 +149,10 @@ public class TimeTableDao extends Dao {
 		values.put(COLUMN_ROUTE_ID, item.routeId);
 		values.put(COLUMN_TYPE, item.type);
 		values.put(COLUMN_STARTING_TIME, item.startingTime);
+		
+		long createDate = new Date().getTime();
+		values.put(COLUMN_CREATE_DATE, createDate);
+		values.put(COLUMN_UPDATE_DATE, createDate);
 
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {

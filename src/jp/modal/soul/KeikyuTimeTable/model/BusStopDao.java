@@ -1,6 +1,7 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -157,6 +158,11 @@ public class BusStopDao extends Dao {
 		ContentValues values = new  ContentValues();
 		values.put(COLUMN_ID, item.id);
 		values.put(COLUMN_BUS_STOP_NAME, item.busStopName);
+		
+		long createDate = new Date().getTime();
+		values.put(COLUMN_CREATE_DATE, createDate);
+		values.put(COLUMN_UPDATE_DATE, createDate);
+
 
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {

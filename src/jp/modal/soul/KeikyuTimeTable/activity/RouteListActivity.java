@@ -11,13 +11,14 @@ import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -50,6 +51,10 @@ public class RouteListActivity extends BaseActivity {
 
 	/** list */
 	String[] busStops;
+	
+	/** listener */
+	View.OnClickListener backOnClickListener;
+	AdapterView.OnItemClickListener onRouteItemClick;
 
 
     /** Called when the activity is first created. */
@@ -60,6 +65,8 @@ public class RouteListActivity extends BaseActivity {
         // DAOのセットアップ
         setupDao();
         
+        setupEventhandling();
+        
         setupView();
         
         // ListViewのセットアップ
@@ -69,6 +76,10 @@ public class RouteListActivity extends BaseActivity {
 	private void setupView() {
 		headerTitle = (TextView)findViewById(R.id.route_list_header_text);
         setFont(headerTitle);
+        
+        Button back = (Button)findViewById(R.id.back_to_menu_from_route);
+        back.setOnClickListener(backOnClickListener);
+        setFont(back);
 	}
     /**
      * ListViewのセットアップ
@@ -95,28 +106,34 @@ public class RouteListActivity extends BaseActivity {
     }
 
 
-	// 路線リストのアイテムがクリックされたときのリスナー
-	AdapterView.OnItemClickListener onRouteItemClick = new AdapterView.OnItemClickListener() {
-    	@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-    			long id) {
-    		ListView listView = (ListView)parent;
-    		// クリックされたアイテムの取得
-    		RouteItem item = (RouteItem) listView.getItemAtPosition(position);
 
-    		// 路線IDをセット
-    		selectedRouteId = (int)item.id;
-
-    		showBusStopList();
-
-    	}
-	};
 
 	/**
 	 *  動作のセットアップ
 	 */
 	private void setupEventhandling() {
+		backOnClickListener = new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		};
+		// 路線リストのアイテムがクリックされたときのリスナー
+		onRouteItemClick = new AdapterView.OnItemClickListener() {
+	    	@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+	    			long id) {
+	    		ListView listView = (ListView)parent;
+	    		// クリックされたアイテムの取得
+	    		RouteItem item = (RouteItem) listView.getItemAtPosition(position);
 
+	    		// 路線IDをセット
+	    		selectedRouteId = (int)item.id;
+
+	    		showBusStopList();
+
+	    	}
+		};
 	}
 
 	/**
@@ -168,7 +185,7 @@ public class RouteListActivity extends BaseActivity {
 	};
 
 	/**
-	 * 選択されたバス停の行き先を選択する画面へ遷移する
+	 * 選択されたバス停の時刻表を選択する画面へ遷移する
 	 */
 	public void launchBusStop(){
 		// BusStopActivityを起動するintentの作成
@@ -179,7 +196,11 @@ public class RouteListActivity extends BaseActivity {
 		intent.putExtra(TimeTableActivity.ROUTE_NUMBER, selectedRouteId);
 		// BusStopActivityの起動
 		Utils.intentLauncher(this, intent);
-//		this.startActivity(intent);
+	}
+	
+	private void backToMenu() {
+		Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+		Utils.intentLauncher(this, intent);
 	}
 
 
