@@ -20,8 +20,8 @@ public class RouteDao extends Dao {
 	 * 初期データ
 	 */
 	private String[][] initicalData = new String[][]{
-			{"1","森50 東邦大学 大森駅 ゆき", "13", "1", "1,2,3,4,5,6,7,8,9,10,11,12,13"},
-			{"2","森50 東邦大学 蒲田駅 ゆき", "1", "13", "13,12,11,10,9,8,7,6,5,4,3,2,1"}
+			{"1","森50 東邦大学 大森駅 ゆき", "大森駅", "蒲田駅", "1,2,3,4,5,6,7,8,9,10,11,12,13"},
+			{"2","森50 東邦大学 蒲田駅 ゆき", "蒲田駅", "大森駅", "13,12,11,10,9,8,7,6,5,4,3,2,1"}
 	};
 
 	/** テーブル名 */
@@ -32,9 +32,9 @@ public class RouteDao extends Dao {
 	public static final String COLUMN_ID = "id";
 	/** 路線名 */
 	public static final String COLUMN_ROUTE_NAME = "route_name";
-	/** 終着バス停ID */
+	/** 終着バス停名 */
 	public static final String COLUMN_TERMINAL = "terminal";
-	/** 始発バス停ID */
+	/** 始発バス停名 */
 	public static final String COLUMN_STARTING = "starting";
 	/** バス停 */
 	public static final String COLUMN_BUS_STOPS = "bus_stops";
@@ -54,8 +54,8 @@ public class RouteDao extends Dao {
 		// @formatter:off
 		String columnDefine = COLUMN_ID + " integer primary key, "
 							+ COLUMN_ROUTE_NAME + " text not null, "
-							+ COLUMN_TERMINAL + " integer not null, "
-							+ COLUMN_STARTING + " integer not null, "
+							+ COLUMN_TERMINAL + " text not null, "
+							+ COLUMN_STARTING + " text not null, "
 							+ COLUMN_BUS_STOPS + " text not null, "
 							;
 		// @formatter:off
@@ -74,8 +74,8 @@ public class RouteDao extends Dao {
 		RouteItem routeItem = new RouteItem();
 		routeItem.id = cursor.getInt(0);
 		routeItem.routeName = cursor.getString(1);
-		routeItem.terminal = cursor.getInt(2);
-		routeItem.starting = cursor.getInt(3);
+		routeItem.terminal = cursor.getString(2);
+		routeItem.starting = cursor.getString(3);
 		routeItem.busStops = cursor.getString(4);
 
 		return routeItem;
@@ -178,8 +178,8 @@ public class RouteDao extends Dao {
 			item = new RouteItem();
 			item.id = Long.parseLong(data[0]);
 			item.routeName = data[1];
-			item.terminal = Integer.valueOf(data[2]);
-			item.starting = Integer.valueOf(data[3]);
+			item.terminal = data[2];
+			item.starting = data[3];
 			item.busStops = data[4];
 
 			try {

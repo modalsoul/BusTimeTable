@@ -12,8 +12,8 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
     // 路線オブジェクトのプロパティ群
     public long id;
     public String routeName;
-    public int terminal;
-    public int starting;
+    public String terminal;
+    public String starting;
     public String busStops;
     
     /** Dao */
@@ -45,27 +45,27 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
 	 * @param busStopId
 	 * @return
 	 */
-	private String getBusStopName(Context context, long busStopId) {
-		busStopDao = new BusStopDao(context);
-
-		busStopItemList = busStopDao.queryBusStopById(new String[]{Long.toString(busStopId)});
-
-		return busStopItemList.get(0).busStopName;
-	}
+//	private String getBusStopName(Context context, long busStopId) {
+//		busStopDao = new BusStopDao(context);
+//
+//		busStopItemList = busStopDao.queryBusStopById(new String[]{Long.toString(busStopId)});
+//
+//		return busStopItemList.get(0).busStopName;
+//	}
 	/**
 	 * 終点バス停名を取得
 	 * @param context
 	 * @return
 	 */
-	public String terminalName(Context context) {
-		return getBusStopName(context, terminal);
-	}
+//	public String terminalName(Context context) {
+//		return getBusStopName(context, terminal);
+//	}
 	/**
 	 * 始発バス停名を取得
 	 * @param context
 	 * @return
 	 */
-	public String startingName(Context context) {
-		return getBusStopName(context, starting);
-	}
+//	public String startingName(Context context) {
+//		return getBusStopName(context, starting);
+//	}
 }

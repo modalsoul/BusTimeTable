@@ -109,7 +109,7 @@ public class MenuActivity extends BaseActivity {
 			RouteItem routeItem = routeDao.queryRouteByRouteId(Long.valueOf(item.routeId));
 
 			ArrayList<BusStopItem> busstopItemList = busStopDao.queryBusStop(String.valueOf(item.busStopId));
-			dialogItem[i] = makeHistoryRow(routeItem.terminalName(this), busstopItemList.get(0).busStopName);
+			dialogItem[i] = makeHistoryRow(routeItem.terminal, busstopItemList.get(0).busStopName);
 			i++;
 		}
 		return dialogItem;

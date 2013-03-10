@@ -76,7 +76,7 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 
 		// 始発、終点のセット
 		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
-		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.startingName(context), item.terminalName(context)));
+		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.starting, item.terminal));
 		setFont(toFrom);
 	}
 	
