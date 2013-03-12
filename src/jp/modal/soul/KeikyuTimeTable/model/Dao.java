@@ -30,6 +30,13 @@ public class Dao {
 				+ ")";
 		// @formatter:on
 	}
+	public static String createTableNoDate(String tableName, String columnDefine) {
+		// @formatter:off
+		return "create table " + tableName + " ( "
+				+ columnDefine
+				+ ")";
+		// @formatter:on
+	}
 
 	/**
 	 * コンストラクタ

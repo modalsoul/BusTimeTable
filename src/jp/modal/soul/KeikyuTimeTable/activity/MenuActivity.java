@@ -142,9 +142,9 @@ public class MenuActivity extends BaseActivity {
 		// 初回起動の判定
 		if(initState.getStatus() == InitState.PREFERENCE_INIT) {
 			// 初回起動の場合、初期データをセット
-			busStopDao.setup();
-			routeDao.setup();
-			timeTableDao.setup();
+//			busStopDao.setup();
+//			routeDao.setup();
+//			timeTableDao.setup();
 			// 起動状態を変更
 			initState.setStatus(InitState.PREFERENCE_BOOTED);
 		}

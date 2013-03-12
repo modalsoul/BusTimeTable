@@ -40,23 +40,31 @@ public class BusStopDao extends Dao {
 	// カラム名定義
 	/** バス停ID　*/
 	public static final String COLUMN_ID = "id";
+	/** WebID */
+	public static final String COLUMN_WEB_ID = "web_id";
 	/** バス停名 */
 	public static final String COLUMN_BUS_STOP_NAME = "bus_stop_name";
-
+	/** ロケーション */
+	public static final String COLUMN_LOCATION = "location";
+	
 	// カラム名配列定義
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
-											COLUMN_BUS_STOP_NAME };
+											COLUMN_WEB_ID,
+											COLUMN_BUS_STOP_NAME,
+											COLUMN_LOCATION};
 
 	// create table文定義
 	public static final String CREATE_TABLE;
 	static {
 		// @formatter:off
-		String columnDefine = COLUMN_ID + " integer primary key, "
+		String columnDefine = COLUMN_ID + " integer primary key autoincrement, "
+							+ COLUMN_WEB_ID + " text not null"
 							+ COLUMN_BUS_STOP_NAME + " text not null, "
+							+ COLUMN_LOCATION + " text"
 							;
 		// @formatter:off
-		CREATE_TABLE = createTable(TABLE_NAME, columnDefine);
+		CREATE_TABLE = createTableNoDate(TABLE_NAME, columnDefine);
 	}
 
 	/**
@@ -70,7 +78,9 @@ public class BusStopDao extends Dao {
 	public static BusStopItem getBusStopItem(Cursor cursor){
 		BusStopItem busStopItem = new BusStopItem();
 		busStopItem.id = cursor.getInt(0);
-		busStopItem.busStopName = cursor.getString(1);
+		busStopItem.web_id = cursor.getString(1);
+		busStopItem.busStopName = cursor.getString(2);
+		busStopItem.location = cursor.getString(3);
 
 		return busStopItem;
 	}
@@ -157,11 +167,13 @@ public class BusStopDao extends Dao {
 	public long insertWithoutOpenDb(SQLiteDatabase db, BusStopItem item) throws Exception {
 		ContentValues values = new  ContentValues();
 		values.put(COLUMN_ID, item.id);
+		values.put(COLUMN_WEB_ID, item.web_id);
 		values.put(COLUMN_BUS_STOP_NAME, item.busStopName);
+		values.put(COLUMN_LOCATION, item.location);
 		
-		long createDate = new Date().getTime();
-		values.put(COLUMN_CREATE_DATE, createDate);
-		values.put(COLUMN_UPDATE_DATE, createDate);
+//		long createDate = new Date().getTime();
+//		values.put(COLUMN_CREATE_DATE, createDate);
+//		values.put(COLUMN_UPDATE_DATE, createDate);
 
 
 		long result = db.insert(TABLE_NAME, null, values);
@@ -171,29 +183,29 @@ public class BusStopDao extends Dao {
 		return result;
 	}
 
-	public void setup() {
-		BusStopItem item;
-
-		SQLiteDatabase db = getWritableDatabase();
-		
-		db.beginTransaction();
-		try {
-			for( String[] data: initicalData) {
-				// 初期データのバス停アイテムの設定
-				item = new BusStopItem();
-				item.id = Long.parseLong(data[0]);
-				item.busStopName = data[1];			
-					// DBへインサート				
-					insertWithoutOpenDb(db, item);
-			}
-			db.setTransactionSuccessful();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			db.endTransaction();
-		}
-		db.close();
-	}
+//	public void setup() {
+//		BusStopItem item;
+//
+//		SQLiteDatabase db = getWritableDatabase();
+//		
+//		db.beginTransaction();
+//		try {
+//			for( String[] data: initicalData) {
+//				// 初期データのバス停アイテムの設定
+//				item = new BusStopItem();
+//				item.id = Long.parseLong(data[0]);
+//				item.busStopName = data[1];			
+//					// DBへインサート				
+//					insertWithoutOpenDb(db, item);
+//			}
+//			db.setTransactionSuccessful();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			db.endTransaction();
+//		}
+//		db.close();
+//	}
 
 
 }

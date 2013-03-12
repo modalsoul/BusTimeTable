@@ -29,16 +29,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-    	db.beginTransaction();
-    	try {
-    		db.execSQL(BusStopDao.CREATE_TABLE);
-    		db.execSQL(RouteDao.CREATE_TABLE);
-    		db.execSQL(TimeTableDao.CREATE_TABLE);
-    		db.execSQL(HistoryDao.CREATE_TABLE);
-    		db.setTransactionSuccessful();
-    	} finally {
-    		db.endTransaction();
-    	}
+//    	db.beginTransaction();
+//    	try {
+//    		db.execSQL(BusStopDao.CREATE_TABLE);
+//    		db.execSQL(RouteDao.CREATE_TABLE);
+//    		db.execSQL(TimeTableDao.CREATE_TABLE);
+//    		db.execSQL(HistoryDao.CREATE_TABLE);
+//    		db.setTransactionSuccessful();
+//    	} finally {
+//    		db.endTransaction();
+//    	}
 
     }
     /**

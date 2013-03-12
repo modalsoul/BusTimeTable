@@ -11,10 +11,12 @@ public class RouteItem implements Comparable<RouteItem>, Serializable{
     
     // 路線オブジェクトのプロパティ群
     public long id;
+    public String web_id;
     public String routeName;
     public String terminal;
     public String starting;
     public String busStops;
+    public int area_id;
     
     /** Dao */
     BusStopDao busStopDao;

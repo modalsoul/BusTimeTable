@@ -30,6 +30,8 @@ public class RouteDao extends Dao {
 	// カラム名定義
 	/** 路線ID　*/
 	public static final String COLUMN_ID = "id";
+	/** WebID */
+	public static final String COLUMN_WEB_ID = "web_id";
 	/** 路線名 */
 	public static final String COLUMN_ROUTE_NAME = "route_name";
 	/** 終着バス停名 */
@@ -38,28 +40,34 @@ public class RouteDao extends Dao {
 	public static final String COLUMN_STARTING = "starting";
 	/** バス停 */
 	public static final String COLUMN_BUS_STOPS = "bus_stops";
+	/** エリアID */
+	public static final String COLUMN_AREA_ID = "area_id";
 
 
 	// カラム名配列定義
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
+											COLUMN_WEB_ID,
 											COLUMN_ROUTE_NAME,
 											COLUMN_TERMINAL,
 											COLUMN_STARTING,
-											COLUMN_BUS_STOPS};
+											COLUMN_BUS_STOPS,
+											COLUMN_AREA_ID};
 
 	// create table文定義
 	public static final String CREATE_TABLE;
 	static {
 		// @formatter:off
-		String columnDefine = COLUMN_ID + " integer primary key, "
+		String columnDefine = COLUMN_ID + " integer primary key autoincrement, "
+							+ COLUMN_WEB_ID + " text not null unique, "
 							+ COLUMN_ROUTE_NAME + " text not null, "
-							+ COLUMN_TERMINAL + " text not null, "
-							+ COLUMN_STARTING + " text not null, "
-							+ COLUMN_BUS_STOPS + " text not null, "
+							+ COLUMN_TERMINAL + " text, "
+							+ COLUMN_STARTING + " text, "
+							+ COLUMN_BUS_STOPS + " text, "
+							+ COLUMN_AREA_ID + " integer "
 							;
 		// @formatter:off
-		CREATE_TABLE = createTable(TABLE_NAME, columnDefine);
+		CREATE_TABLE = createTableNoDate(TABLE_NAME, columnDefine);
 	}
 
 	/**
@@ -73,10 +81,12 @@ public class RouteDao extends Dao {
 	public static RouteItem getRouteItem(Cursor cursor){
 		RouteItem routeItem = new RouteItem();
 		routeItem.id = cursor.getInt(0);
-		routeItem.routeName = cursor.getString(1);
-		routeItem.terminal = cursor.getString(2);
-		routeItem.starting = cursor.getString(3);
-		routeItem.busStops = cursor.getString(4);
+		routeItem.web_id = cursor.getString(1);
+		routeItem.routeName = cursor.getString(2);
+		routeItem.terminal = cursor.getString(3);
+		routeItem.starting = cursor.getString(4);
+		routeItem.busStops = cursor.getString(5);
+		routeItem.area_id = cursor.getInt(6);
 
 		return routeItem;
 	}
@@ -153,14 +163,16 @@ public class RouteDao extends Dao {
 	public long insertWithoutOpenDb(SQLiteDatabase db, RouteItem item) throws Exception {
 		ContentValues values = new  ContentValues();
 		values.put(COLUMN_ID, item.id);
+		values.put(COLUMN_WEB_ID, item.web_id);
 		values.put(COLUMN_ROUTE_NAME, item.routeName);
 		values.put(COLUMN_TERMINAL, item.terminal);
 		values.put(COLUMN_STARTING, item.starting);
 		values.put(COLUMN_BUS_STOPS, item.busStops);
+		values.put(COLUMN_AREA_ID, item.area_id);
 
-		long createDate = new Date().getTime();
-		values.put(COLUMN_CREATE_DATE, createDate);
-		values.put(COLUMN_UPDATE_DATE, createDate);
+//		long createDate = new Date().getTime();
+//		values.put(COLUMN_CREATE_DATE, createDate);
+//		values.put(COLUMN_UPDATE_DATE, createDate);
 
 		long result = db.insert(TABLE_NAME, null, values);
 		if(result == Dao.RETURN_CODE_INSERT_FAIL) {
@@ -169,28 +181,28 @@ public class RouteDao extends Dao {
 		return result;
 	}
 
-	public void setup() {
-		RouteItem item;
-
-		SQLiteDatabase db = getWritableDatabase();
-		for( String[] data: initicalData) {
-			// 初期データのバス停アイテムの設定
-			item = new RouteItem();
-			item.id = Long.parseLong(data[0]);
-			item.routeName = data[1];
-			item.terminal = data[2];
-			item.starting = data[3];
-			item.busStops = data[4];
-
-			try {
-				// DBへインサート				
-				Log.e("**********************",Long.toString(insertWithoutOpenDb(db, item)));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		db.close();
-	}
+//	public void setup() {
+//		RouteItem item;
+//
+//		SQLiteDatabase db = getWritableDatabase();
+//		for( String[] data: initicalData) {
+//			// 初期データのバス停アイテムの設定
+//			item = new RouteItem();
+//			item.id = Long.parseLong(data[0]);
+//			item.routeName = data[1];
+//			item.terminal = data[2];
+//			item.starting = data[3];
+//			item.busStops = data[4];
+//
+//			try {
+//				// DBへインサート				
+//				Log.e("**********************",Long.toString(insertWithoutOpenDb(db, item)));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		db.close();
+//	}
 
 
 }

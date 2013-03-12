@@ -57,7 +57,7 @@ public class TimeTableDao extends Dao {
 	public static final String CREATE_TABLE;
 	static {
 		// @formatter:off
-		String columnDefine = COLUMN_ID + " integer primary key, "
+		String columnDefine = COLUMN_ID + " integer primary key autoincrement, "
 							+ COLUMN_BUS_STOP_ID + " integer not null, "
 							+ COLUMN_ROUTE_ID + " integer not null, "
 							+ COLUMN_TYPE + " integer not null, "
