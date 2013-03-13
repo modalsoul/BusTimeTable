@@ -21,7 +21,8 @@
         android:layout_height="0dp"
         android:background="@color/white" 
         android:layout_marginTop="10dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+    	android:cacheColorHint="@color/transparent"/>
     <Button 
         android:id="@+id/back_to_menu_from_route"
         android:layout_width="fill_parent"

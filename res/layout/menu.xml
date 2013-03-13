@@ -43,5 +43,12 @@
         android:layout_marginLeft="10dp"
         android:text="履歴から選ぶ"
         android:textSize="28sp"/>
+    <ImageView 
+        android:id="@+id/icon"
+        android:layout_height="320dp"
+        android:layout_width="200dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/bus"/>
 
 </LinearLayout>

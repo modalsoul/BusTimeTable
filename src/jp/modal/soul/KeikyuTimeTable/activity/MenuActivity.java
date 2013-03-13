@@ -1,11 +1,13 @@
 package jp.modal.soul.KeikyuTimeTable.activity;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
+import jp.modal.soul.KeikyuTimeTable.model.DatabaseHelper;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryDao;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
@@ -27,7 +29,6 @@ public class MenuActivity extends BaseActivity {
 	/** DAO */
 	private RouteDao routeDao;
 	private BusStopDao busStopDao;
-	private TimeTableDao timeTableDao;
 	private HistoryDao historyDao;
 	
 	/** View */
@@ -85,6 +86,7 @@ public class MenuActivity extends BaseActivity {
 			builder.setTitle("履歴から選択");
 			
 			builder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
+			
 			builder.show();
 		}
 	};
@@ -132,7 +134,7 @@ public class MenuActivity extends BaseActivity {
     private void setupDao() {
     	routeDao = new RouteDao(getApplicationContext());
     	busStopDao = new BusStopDao(getApplicationContext());
-    	timeTableDao = new TimeTableDao(getApplicationContext());
+    	new TimeTableDao(getApplicationContext());
     }
 	/**
 	 * アプリ初回起動時の初期化処理
@@ -142,6 +144,13 @@ public class MenuActivity extends BaseActivity {
 		// 初回起動の判定
 		if(initState.getStatus() == InitState.PREFERENCE_INIT) {
 			// 初回起動の場合、初期データをセット
+			DatabaseHelper dbHelper = new DatabaseHelper(this);
+			try {
+				dbHelper.createEmptyDataBase();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 //			busStopDao.setup();
 //			routeDao.setup();
 //			timeTableDao.setup();

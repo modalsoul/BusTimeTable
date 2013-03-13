@@ -4,6 +4,7 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 import java.util.List;
 
 import jp.modal.soul.KeikyuTimeTable.R;
+import jp.modal.soul.KeikyuTimeTable.activity.TimeTableAdapter.ViewHolder;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
@@ -48,17 +49,26 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		ViewHolder holder;
 		// Viewの受け取り
 		routeRow = convertView;
 		// 受け取ったViewがnullなら新しくViewを生成
 		if(routeRow == null) {
 			routeRow = inflater.inflate(R.layout.route_row, null);
+			holder = new ViewHolder();
+			holder.routeName = (TextView)routeRow.findViewById(R.id.route_name);
+			holder.toFrom = (TextView)routeRow.findViewById(R.id.to_from);
+			setFont(holder.routeName);
+			setFont(holder.toFrom);
+			routeRow.setTag(holder);
+		} else {
+			holder = (ViewHolder)routeRow.getTag();
 		}
 		// 表示データのセット
 		RouteItem item = items.get(position);
 		// itemがnullでなければViewにセット
 		if(item != null) {
-			setupRowView(item);
+			setupRowView(holder, item);
 		}
 
 		return routeRow;
@@ -68,16 +78,16 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 	 * 路線情報のセット
 	 * @param item
 	 */
-	private void setupRowView(RouteItem item) {
+	private void setupRowView(ViewHolder holder, RouteItem item) {
 		// 路線名のセット
-		routeName = (TextView)routeRow.findViewById(R.id.route_name);
-		routeName.setText(item.routeName());
-		setFont(routeName);
+//		routeName = (TextView)routeRow.findViewById(R.id.route_name);
+		holder.routeName.setText(item.routeName());
+//		setFont(routeName);
 
 		// 始発、終点のセット
-		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
-		toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.starting, item.terminal));
-		setFont(toFrom);
+//		toFrom = (TextView)routeRow.findViewById(R.id.to_from);
+		holder.toFrom.setText(String.format(context.getString(R.string.starting_to_terminal), item.starting, item.terminal));
+
 	}
 	
 	private void setFont(TextView text) {
@@ -85,5 +95,9 @@ public class RouteListAdapter extends ArrayAdapter<RouteItem> {
 		text.setTypeface(face);
 	}
 	
+    static class ViewHolder {
+        TextView routeName;
+        TextView toFrom;
+    }
 
 }

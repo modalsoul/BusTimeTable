@@ -56,12 +56,14 @@ public class Dao {
 		SQLiteDatabase db = null;
 		while (db == null) {
 			try {
-				db = isWritable ? dbHelper.getWritableDatabase() : dbHelper.getReadableDatabase();
+				db = isWritable ? dbHelper.openDataBaseWritable() : dbHelper.openDataBaseReadable();
 			} catch (Exception e) {
 				sleep();
 			} catch (Error e) {
 				sleep();
 			}
+//			DatabaseHelper helper = new DatabaseHelper(context);
+//			db = helper.openDataBase();
 		}
 		return db;
 	}

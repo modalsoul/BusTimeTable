@@ -206,6 +206,7 @@ public class TimeTableActivity extends FragmentActivity {
             timeTableDao = new TimeTableDao(getActivity());
             
             ListView listView = new ListView(getActivity());
+            listView.setCacheColorHint(R.color.transparent);
             ArrayList<TimeTableItem> items = getTimeList(weekType);
             
 //            Time time = new Time("Asia/Tokyo");

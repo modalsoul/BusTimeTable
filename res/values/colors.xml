@@ -28,4 +28,5 @@
 	<color name="cream">#FFFFCC</color>
 	<!-- ペールグリーン -->
 	<color name="palegreen">#98fb98</color>
+	<color name="transparent">#00000000</color>
 </resources>
