@@ -18,14 +18,19 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MenuActivity extends BaseActivity {
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 
+public class MenuActivity extends BaseActivity {
+	
 	/** DAO */
 	private RouteDao routeDao;
 	private BusStopDao busStopDao;
@@ -40,10 +45,19 @@ public class MenuActivity extends BaseActivity {
 	/** ItemList */
 	ArrayList<HistoryItem> historyItemList;
 	
+	GoogleAnalytics analytics;
+	Tracker tracker;
+	
+	Uri uri;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Get the intent that started this Activity.
+        Intent intent = this.getIntent();
+        uri = intent.getData();
+        
         setContentView(R.layout.menu);
         
         // DAOのセットアップ
@@ -52,7 +66,24 @@ public class MenuActivity extends BaseActivity {
         setupInit();
         
         setupView();
+        
+        setupGA();
+
     }
+
+
+	private void setupGA() {
+		analytics = GoogleAnalytics.getInstance(this);
+        tracker = analytics.getTracker(getResources().getString(R.string.ga_trackingId));
+        EasyTracker.getInstance().setContext(this);
+        if (uri != null) {
+            if(uri.getQueryParameter("utm_source") != null) {    // Use campaign parameters if avaialble.
+              EasyTracker.getTracker().setCampaign(uri.getPath()); 
+            } else if (uri.getQueryParameter("referrer") != null) {    // Otherwise, try to find a referrer parameter.
+              EasyTracker.getTracker().setReferrer(uri.getQueryParameter("referrer"));
+            }
+          }
+	}
 
 
 	private void setupView() {
@@ -203,5 +234,21 @@ public class MenuActivity extends BaseActivity {
 		// BusStopActivityの起動
 		Utils.intentLauncher(this, intent);
 	}
+	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+		tracker.trackView("/menu");
+	}
+	@Override
+	protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 
+	}
 }
