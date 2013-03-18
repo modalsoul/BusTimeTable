@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@color/white" >
+    android:layout_gravity="bottom"
+    android:background="@color/white"
+    android:orientation="vertical" >
 
     <TextView 
         android:id="@+id/menu_title"
@@ -14,6 +15,7 @@
         android:gravity="center"
         android:layout_marginTop="10dp"
         android:text="京急バス時刻表"/>
+
     <TextView 
         android:id="@+id/unofficial"
         android:layout_width="wrap_content"
@@ -43,12 +45,37 @@
         android:layout_marginLeft="10dp"
         android:text="履歴から選ぶ"
         android:textSize="28sp"/>
-    <ImageView 
-        android:id="@+id/icon"
-        android:layout_height="320dp"
-        android:layout_width="200dp"
-        android:layout_gravity="bottom|right"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/bus"/>
+    
+	    <LinearLayout 
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:gravity="center"
+	        android:layout_marginTop="200dp">
 
+	        <ImageView
+	            android:id="@+id/busstop"
+	            android:layout_width="40dp"
+	            android:layout_height="104dp"
+	            android:src="@drawable/busstop" />
+
+	        <ImageView
+	            android:id="@+id/icon"
+	            android:layout_width="130dp"
+	            android:layout_height="match_parent"
+	            android:layout_marginLeft="30dp"
+	            android:layout_marginRight="5dp"
+	            android:src="@drawable/bus_only" />
+	
+		    <ImageView 
+		        android:id="@+id/kemuri"
+		        android:layout_height="44dp"
+		        android:layout_width="43dp"
+		        android:layout_gravity="center|right"
+		        android:src="@drawable/kemuri"/>
+	    </LinearLayout>
+	    <View 
+   			android:layout_width="fill_parent"
+   			android:layout_height="2dp"       
+   			android:background="@color/black"/>
 </LinearLayout>

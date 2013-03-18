@@ -4,4 +4,9 @@
   <string name="ga_trackingId">UA-39292326-1</string>
   <bool name="ga_autoActivityTracking">true</bool>
   <bool name="ga_reportUncaughtExceptions">true</bool>
+  
+  <string name="jp.modal.soul.KeikyuTimeTable.activity.MenuActivity">menu</string>
+  <string name="jp.modal.soul.KeikyuTimeTable.activity.RouteListActivity">RouteList</string>
+  <string name="jp.modal.soul.KeikyuTimeTable.activity.TimeTableActivity">TimeTable</string>
+    
 </resources>

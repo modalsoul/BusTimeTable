@@ -4,12 +4,17 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
+
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
+import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -56,6 +61,9 @@ public class RouteListActivity extends BaseActivity {
 	View.OnClickListener backOnClickListener;
 	AdapterView.OnItemClickListener onRouteItemClick;
 
+	/** GA */
+	GoogleAnalytics analytics;
+	Tracker tracker;
 
     /** Called when the activity is first created. */
     @Override
@@ -105,9 +113,6 @@ public class RouteListActivity extends BaseActivity {
     	timeTableDao = new TimeTableDao(getApplicationContext());
     }
 
-
-
-
 	/**
 	 *  動作のセットアップ
 	 */
@@ -135,7 +140,10 @@ public class RouteListActivity extends BaseActivity {
 	    	}
 		};
 	}
-
+	private void setupGA() {
+		analytics = GoogleAnalytics.getInstance(this);
+        tracker = analytics.getTracker(getResources().getString(R.string.ga_trackingId));
+	}
 	/**
 	 * バス停選択のダイアログを表示する
 	 */
@@ -199,6 +207,7 @@ public class RouteListActivity extends BaseActivity {
 	}
 	
 	private void backToMenu() {
+		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.BACK_TO_MENU, 0L);
 		Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
 		Utils.intentLauncher(this, intent);
 	}

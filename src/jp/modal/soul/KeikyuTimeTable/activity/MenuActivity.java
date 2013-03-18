@@ -13,6 +13,7 @@ import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
+import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -21,6 +22,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -45,10 +48,17 @@ public class MenuActivity extends BaseActivity {
 	/** ItemList */
 	ArrayList<HistoryItem> historyItemList;
 	
+	/** GA */
 	GoogleAnalytics analytics;
 	Tracker tracker;
-	
 	Uri uri;
+	
+	/** Dialog */
+	AlertDialog.Builder builder;
+	AlertDialog.Builder aboutAppBuilder;
+	
+	/** Menu */
+	private final int ABOUT_APP = 0;
 	
     /** Called when the activity is first created. */
     @Override
@@ -71,6 +81,21 @@ public class MenuActivity extends BaseActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	menu.add(Menu.NONE, ABOUT_APP, Menu.NONE, Const.MENU_ABOUT_APP);
+    	return super.onCreateOptionsMenu(menu);
+    }
+    
+    public boolean onOptionsItemSelected( MenuItem item ){
+    	if(item.getItemId() == ABOUT_APP) {
+    		aboutAppBuilder = new AlertDialog.Builder(MenuActivity.this);
+    		aboutAppBuilder.setTitle(Const.MENU_ABOUT_APP);			
+    		aboutAppBuilder.setMessage(Const.ABOUT_APP_MESSAGE);
+    		aboutAppBuilder.show();
+    	}
+    	return false;
+    }
 
 	private void setupGA() {
 		analytics = GoogleAnalytics.getInstance(this);
@@ -82,7 +107,7 @@ public class MenuActivity extends BaseActivity {
             } else if (uri.getQueryParameter("referrer") != null) {    // Otherwise, try to find a referrer parameter.
               EasyTracker.getTracker().setReferrer(uri.getQueryParameter("referrer"));
             }
-          }
+        }
 	}
 
 
@@ -99,28 +124,41 @@ public class MenuActivity extends BaseActivity {
         historyButton = (Button)findViewById(R.id.history_menu_button);
         setFont(historyButton);
         
-        routeButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				launchRouteList();
-			}
-		});
+        routeButton.setOnClickListener(onRouteClickListener);
         
-        historyButton.setOnClickListener(onClickListener);
+        historyButton.setOnClickListener(onHistoryClickListener);
 	}
-    View.OnClickListener onClickListener = new View.OnClickListener() {
+	
+	View.OnClickListener onRouteClickListener = new View.OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
-			builder.setTitle("履歴から選択");
-			
-			builder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
-			
-			builder.show();
+			launchRouteList();
 		}
 	};
+	public void launchRouteList() {
+		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_ROUTE, 0L);
+		// BusStopActivityを起動するintentの作成
+		Intent intent = new Intent(getApplicationContext(), RouteListActivity.class);
+		// BusStopActivityの起動
+		Utils.intentLauncher(this, intent);
+	}
+	
+    View.OnClickListener onHistoryClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			launchHistoryList();
+		}
+
+	};
+	private void launchHistoryList() {
+		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_HISTORY, 0L);
+		builder = new AlertDialog.Builder(MenuActivity.this);
+		builder.setTitle("履歴から選択");			
+		builder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
+		builder.show();
+	}
 	
 	DialogInterface.OnClickListener historyOnClickListener = new DialogInterface.OnClickListener() {
 
@@ -153,12 +191,6 @@ public class MenuActivity extends BaseActivity {
 	}
 	
 	
-    public void launchRouteList() {
-    	// BusStopActivityを起動するintentの作成
-    	Intent intent = new Intent(getApplicationContext(), RouteListActivity.class);
-    	// BusStopActivityの起動
-    	Utils.intentLauncher(this, intent);
-    }
     /**
      * Daoのセットアップ
      */
