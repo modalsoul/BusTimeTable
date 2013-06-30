@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public final String TAG = this.getClass().getSimpleName();
 
     /** DB名 */
-    private static final String DB_NAME = "sample";
+    private static final String DB_NAME = "kqbus";
 
     /**
      * DBのバージョン番号
@@ -29,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     
     private final Context mContext; 
     
-    private static String DB_NAME_ASSET = "sample.db";  
+    private static String DB_NAME_ASSET = "kqbus.db";  
     
     /**
      * コンストラクタ

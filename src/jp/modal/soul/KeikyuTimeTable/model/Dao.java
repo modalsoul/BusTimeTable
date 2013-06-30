@@ -1,6 +1,5 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
-import android.R.bool;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 

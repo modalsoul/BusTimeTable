@@ -4,7 +4,6 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 import java.util.List;
 
 import jp.modal.soul.KeikyuTimeTable.R;
-import jp.modal.soul.KeikyuTimeTable.activity.TimeTableAdapter.ViewHolder;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;

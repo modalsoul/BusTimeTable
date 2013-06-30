@@ -1,13 +1,12 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 /**
  * 路線を扱うクラス
@@ -110,8 +109,7 @@ public class HistoryDao extends Dao {
 	 */
 	public ArrayList<HistoryItem> queryLatestHistory() {
 		String orderBy = COLUMN_UPDATE_DATE + " desc ";
-		String limit = "5";
-		return queryList(COLUMNS, null, null, null, null, orderBy, limit);
+		return queryList(COLUMNS, null, null, null, null, orderBy, HISTORY_LIMIT);
 	}
 
 	/**

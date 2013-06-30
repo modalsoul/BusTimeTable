@@ -2,7 +2,6 @@ package jp.modal.soul.KeikyuTimeTable.util;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 
 public class Utils {
 

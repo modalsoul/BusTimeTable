@@ -60,7 +60,7 @@
 	            android:src="@drawable/busstop" />
 
 	        <ImageView
-	            android:id="@+id/icon"
+	            android:id="@+id/bus"
 	            android:layout_width="130dp"
 	            android:layout_height="match_parent"
 	            android:layout_marginLeft="30dp"

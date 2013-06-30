@@ -2,8 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, KeikyuTimeTableActivity!</string>
-    <string name="app_name">KQバス
-        					時刻表</string>
+    <string name="app_name">KQバス 時刻表</string>
     <!-- メニュー -->
     <string name="select_bus_stop">乗車するバス停を選択</string>
     <string name="bus_stop_list_dialog_title">乗車するバス停を選択</string>

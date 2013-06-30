@@ -1,8 +1,6 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.util.ArrayList;
 
 public class TimeTableItem implements Comparable<TimeTableItem>, Serializable{
 	/** ログ出力用 タグ */

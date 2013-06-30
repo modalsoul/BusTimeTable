@@ -1,7 +1,6 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,21 +17,21 @@ public class BusStopDao extends Dao {
 	/**
 	 * 初期データ
 	 */
-	private String[][] initicalData = new String[][]{
-			{"1","蒲田駅"},
-			{"2","あやめ橋"},
-			{"3","蒲田一丁目"},
-			{"4","東邦大学"},
-			{"5","大森西四丁目"},
-			{"6","富士見橋(大田区)"},
-			{"7","大森西二丁目"},
-			{"8","沢田通り"},
-			{"9","大森北四丁目"},
-			{"10","大森北三丁目"},
-			{"11","八幡通り"},
-			{"12","ＮＴＴ大森前"},
-			{"13","大森駅"}
-	};
+//	private String[][] initicalData = new String[][]{
+//			{"1","蒲田駅"},
+//			{"2","あやめ橋"},
+//			{"3","蒲田一丁目"},
+//			{"4","東邦大学"},
+//			{"5","大森西四丁目"},
+//			{"6","富士見橋(大田区)"},
+//			{"7","大森西二丁目"},
+//			{"8","沢田通り"},
+//			{"9","大森北四丁目"},
+//			{"10","大森北三丁目"},
+//			{"11","八幡通り"},
+//			{"12","ＮＴＴ大森前"},
+//			{"13","大森駅"}
+//	};
 
 	/** テーブル名 */
 	public static final String TABLE_NAME = "bus_stop";
@@ -135,13 +134,11 @@ public class BusStopDao extends Dao {
 
 		String selection = COLUMN_ID + " = ?";
 		
-			int i = 0;
-			for(String arg: selectionArgs) {
-				if(selectionArgs.length > i) {
-					selection += "OR ?";
-				}
-				i++;
-			}
+		int i = 0;
+		while(selectionArgs.length > i) {
+			selection += "OR ?";
+			i++;
+		}
 
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
 

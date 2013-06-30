@@ -4,17 +4,11 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.GoogleAnalytics;
-import com.google.analytics.tracking.android.Tracker;
-
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
-import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
-import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -26,6 +20,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 
 public class RouteListActivity extends BaseActivity {
 
@@ -40,7 +38,6 @@ public class RouteListActivity extends BaseActivity {
 	/** DAO */
 	private RouteDao routeDao;
 	private BusStopDao busStopDao;
-	private TimeTableDao timeTableDao;
 
 	/** ItemList */
 	List<RouteItem> routeList;
@@ -77,10 +74,13 @@ public class RouteListActivity extends BaseActivity {
         
         setupView();
         
+        setupGA();
+        
         // ListViewのセットアップ
         setupListView();
 
     }
+    
 	private void setupView() {
 		headerTitle = (TextView)findViewById(R.id.route_list_header_text);
         setFont(headerTitle);
@@ -110,7 +110,6 @@ public class RouteListActivity extends BaseActivity {
     private void setupDao() {
     	routeDao = new RouteDao(getApplicationContext());
     	busStopDao = new BusStopDao(getApplicationContext());
-    	timeTableDao = new TimeTableDao(getApplicationContext());
     }
 
 	/**
@@ -205,14 +204,16 @@ public class RouteListActivity extends BaseActivity {
 		// BusStopActivityの起動
 		Utils.intentLauncher(this, intent);
 	}
-	
-	private void backToMenu() {
-		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.BACK_TO_MENU, 0L);
-		Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
-		Utils.intentLauncher(this, intent);
-	}
 
-
-
-
+    @Override
+    protected void onStart() {
+    	super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+    }
+    
+    @Override
+    protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+    }
 }

@@ -6,16 +6,20 @@ import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryDao;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
+import jp.modal.soul.KeikyuTimeTable.model.TimeSummaryDao;
+import jp.modal.soul.KeikyuTimeTable.model.TimeSummaryItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +27,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 
 public class TimeTableActivity extends FragmentActivity {
 
@@ -65,6 +73,11 @@ public class TimeTableActivity extends FragmentActivity {
 	
 	String busStopNameString;
 
+	/** GA */
+	GoogleAnalytics analytics;
+	Tracker tracker;
+	Uri uri;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,12 +90,26 @@ public class TimeTableActivity extends FragmentActivity {
         setupDao();
         // Viewのセットアップ
         setupView();
+        
+        setupGA();
         // 動作のセットアップ
         setupEventhandling();
         // 履歴の保存
 		registerHistory();
 
     }
+	private void setupGA() {
+		analytics = GoogleAnalytics.getInstance(this);
+        tracker = analytics.getTracker(getResources().getString(R.string.ga_trackingId));
+        EasyTracker.getInstance().setContext(this);
+        if (uri != null) {
+            if(uri.getQueryParameter("utm_source") != null) {    // Use campaign parameters if avaialble.
+              EasyTracker.getTracker().setCampaign(uri.getPath()); 
+            } else if (uri.getQueryParameter("referrer") != null) {    // Otherwise, try to find a referrer parameter.
+              EasyTracker.getTracker().setReferrer(uri.getQueryParameter("referrer"));
+            }
+        }
+	}
 
 
 	private void setupMember() {
@@ -127,58 +154,39 @@ public class TimeTableActivity extends FragmentActivity {
 //			}
 //		});
 	}
-
+	
+	private TabSpec getTabSpec(FragmentTabHost host, String tabSpecName, int nameId, int color, int icon) {
+		TabSpec tabSpec = host.newTabSpec(tabSpecName);
+        Button tabButton = new Button(this);
+        tabButton.setText(nameId);
+        tabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
+        tabButton.setTextColor(getResources().getColor(color));
+        tabButton.setBackgroundResource(icon);
+        setFont(tabButton);
+        tabSpec.setIndicator(tabButton);
+        
+        return tabSpec;
+	}
+	private Bundle getBundle(int type) {
+		Bundle weekdayBundle = new Bundle();
+		weekdayBundle.putInt("route", routeID);
+		weekdayBundle.putInt("busStop", busStopID);
+		weekdayBundle.putInt("week", type);
+		return weekdayBundle;
+	}
 
 	private void setupTabSheet() {
 		FragmentTabHost host = (FragmentTabHost)findViewById(android.R.id.tabhost);
 		host.setup(this, getSupportFragmentManager(), R.id.content);
-
-		TabSpec weekdayTabSpec = host.newTabSpec("tab1");
-        Button weekdayTabButton = new Button(this);
-        weekdayTabButton.setText(R.string.weekday_tab_name);
-        weekdayTabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
-        weekdayTabButton.setTextColor(getResources().getColor(Const.WEEKDAY_TAB_BUTTON_TEXT_COLOR));
-        weekdayTabButton.setBackgroundResource(R.drawable.weekday_tab_icon);
-        setFont(weekdayTabButton);
-        weekdayTabSpec.setIndicator(weekdayTabButton);
+		
+		TabSpec weekdayTabSpec = getTabSpec(host, "tab1", R.string.weekday_tab_name, Const.WEEKDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.weekday_tab_icon);
+		host.addTab(weekdayTabSpec, SampleFragment.class, getBundle(TimeTableDao.WEEKDAY));
         
-        Bundle weekdayBundle = new Bundle();
-        weekdayBundle.putInt("route", routeID);
-        weekdayBundle.putInt("busStop", busStopID);
-        weekdayBundle.putInt("week", TimeTableDao.WEEKDAY);
-        host.addTab(weekdayTabSpec, SampleFragment.class, weekdayBundle);
-         
+        TabSpec saturdayTabSpec = getTabSpec(host, "tab2", R.string.saturday_tab_name, Const.SATURDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.saturday_tab_icon);
+        host.addTab(saturdayTabSpec, SampleFragment.class, getBundle(TimeTableDao.SATURDAY));
         
-        TabSpec saturdayTabSpec = host.newTabSpec("tab2");
-        Button saturdayTabButton = new Button(this);
-        saturdayTabButton.setText(R.string.saturday_tab_name);
-        saturdayTabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
-        saturdayTabButton.setTextColor(getResources().getColor(Const.SATURDAY_TAB_BUTTON_TEXT_COLOR));
-        saturdayTabButton.setBackgroundResource(R.drawable.saturday_tab_icon);
-        setFont(saturdayTabButton);
-        saturdayTabSpec.setIndicator(saturdayTabButton);
-        
-        Bundle saturdayBundle = new Bundle();
-        saturdayBundle.putInt("route", routeID);
-        saturdayBundle.putInt("busStop", busStopID);
-        saturdayBundle.putInt("week", TimeTableDao.SATURDAY);
-        host.addTab(saturdayTabSpec, SampleFragment.class, saturdayBundle);
-         
-        
-        TabSpec holidayTabSpec = host.newTabSpec("tab3");
-        Button holidayTabButton = new Button(this);
-        holidayTabButton.setText(R.string.holiday_tab_name);
-        holidayTabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
-        holidayTabButton.setTextColor(getResources().getColor(Const.HOLIDAY_TAB_BUTTON_TEXT_COLOR));
-        holidayTabButton.setBackgroundResource(R.drawable.holiday_tab_icon);
-        setFont(holidayTabButton);
-        holidayTabSpec.setIndicator(holidayTabButton);
-        
-        Bundle holidaBundle = new Bundle();
-        holidaBundle.putInt("route", routeID);
-        holidaBundle.putInt("busStop", busStopID);
-        holidaBundle.putInt("week", TimeTableDao.HOLIDAY);
-        host.addTab(holidayTabSpec, SampleFragment.class, holidaBundle);
+        TabSpec holidayTabSpec = getTabSpec(host, "tab3", R.string.holiday_tab_name, Const.HOLIDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.holiday_tab_icon);
+        host.addTab(holidayTabSpec, SampleFragment.class, getBundle(TimeTableDao.HOLIDAY));
 	}
 
 
@@ -189,9 +197,12 @@ public class TimeTableActivity extends FragmentActivity {
 	}
     public static class SampleFragment extends Fragment {
         TimeTableDao timeTableDao;
+        TimeSummaryDao timeSummaryDao;
+        
         int route;
         int busStop;
         int weekType;
+        ListView listView;
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
              
@@ -205,20 +216,48 @@ public class TimeTableActivity extends FragmentActivity {
             
             timeTableDao = new TimeTableDao(getActivity());
             
-            ListView listView = new ListView(getActivity());
+            //ListView 
+            listView = new ListView(getActivity());
             listView.setCacheColorHint(R.color.transparent);
+            listView.setSelection(listView.getCount());
             ArrayList<TimeTableItem> items = getTimeList(weekType);
             
-//            Time time = new Time("Asia/Tokyo");
-//            String timeString = time.hour + ":";
-//            
-//            listView.setSelection(position);
             TimeTableAdapter adapter = new TimeTableAdapter(getActivity(), R.layout.time_table_row, items);
             listView.setAdapter(adapter);
-            
+            setSelection();
              
             return listView;
         }
+        
+        private void setSelection() {
+        	Time time = new Time("Asia/Tokyo");
+        	time.setToNow();
+        	int hour = time.hour;
+        	
+        	timeSummaryDao = new TimeSummaryDao(getActivity());
+        	String[] selectionArgs = {Integer.toString(busStop), Integer.toString(route), Integer.toString(weekType)};
+        	ArrayList<TimeSummaryItem> list = timeSummaryDao.querySummaryOrderByHour(selectionArgs);
+        	
+        	boolean isSet = false;
+        	for(TimeSummaryItem item:list) {
+        		if(item.hour > hour -3 && item.hour < hour + 3) {
+        			if(!isSet) {
+        				listView.setSelection(item.position -1);
+        			} else if(item.hour == hour){
+        				isSet = true;
+        				listView.setSelection(item.position -1);
+            		}
+        		} 
+        	}
+        }
+        
+//        @Override
+//        public void onActivityCreated(Bundle savedInstanceState) {
+//        	super.onActivityCreated(savedInstanceState);
+//
+//        	listView.setSelection(listView.getCount() -1);
+//        }
+        
     	/**
     	 * 指定した曜日の発車時刻のリストを取得
     	 * @param weekType
@@ -249,5 +288,17 @@ public class TimeTableActivity extends FragmentActivity {
     private void setFont(Button button) {
     	face = Typeface.createFromAsset(getAssets(), font);
     	button.setTypeface(face);
+    }
+    
+    @Override
+    protected void onStart() {
+    	super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+    }
+    
+    @Override
+    protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
     }
 }

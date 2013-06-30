@@ -1,13 +1,11 @@
 package jp.modal.soul.KeikyuTimeTable.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 /**
  * 路線を扱うクラス
@@ -19,10 +17,10 @@ public class RouteDao extends Dao {
 	/**
 	 * 初期データ
 	 */
-	private String[][] initicalData = new String[][]{
-			{"1","森50 東邦大学 大森駅 ゆき", "大森駅", "蒲田駅", "1,2,3,4,5,6,7,8,9,10,11,12,13"},
-			{"2","森50 東邦大学 蒲田駅 ゆき", "蒲田駅", "大森駅", "13,12,11,10,9,8,7,6,5,4,3,2,1"}
-	};
+//	private String[][] initicalData = new String[][]{
+//			{"1","森50 東邦大学 大森駅 ゆき", "大森駅", "蒲田駅", "1,2,3,4,5,6,7,8,9,10,11,12,13"},
+//			{"2","森50 東邦大学 蒲田駅 ゆき", "蒲田駅", "大森駅", "13,12,11,10,9,8,7,6,5,4,3,2,1"}
+//	};
 
 	/** テーブル名 */
 	public static final String TABLE_NAME = "route";

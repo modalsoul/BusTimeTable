@@ -3,8 +3,6 @@ package jp.modal.soul.KeikyuTimeTable.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import android.content.Context;
-
 public class HistoryItem implements Comparable<HistoryItem>, Serializable{
 	/** ログ出力用 タグ */
     public final String TAG = this.getClass().getSimpleName();

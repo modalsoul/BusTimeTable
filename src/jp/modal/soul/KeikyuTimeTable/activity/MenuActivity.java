@@ -19,13 +19,19 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -44,6 +50,9 @@ public class MenuActivity extends BaseActivity {
 	private TextView unofficial;
 	private Button routeButton;
 	private Button historyButton;
+	private ImageView bus;
+	private ImageView kemuri;
+	private ImageView busStop;
 	
 	/** ItemList */
 	ArrayList<HistoryItem> historyItemList;
@@ -59,6 +68,7 @@ public class MenuActivity extends BaseActivity {
 	
 	/** Menu */
 	private final int ABOUT_APP = 0;
+	private final int CONTACT = 1;
 	
     /** Called when the activity is first created. */
     @Override
@@ -84,15 +94,33 @@ public class MenuActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	menu.add(Menu.NONE, ABOUT_APP, Menu.NONE, Const.MENU_ABOUT_APP);
+    	menu.add(Menu.NONE, CONTACT, Menu.NONE, Const.MENU_CONTACT);
     	return super.onCreateOptionsMenu(menu);
     }
     
     public boolean onOptionsItemSelected( MenuItem item ){
     	if(item.getItemId() == ABOUT_APP) {
+    		String versionName = "";
+    	    PackageManager packageManager = this.getPackageManager();
+    	    try {
+    	    	PackageInfo packageInfo = packageManager.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
+    	        versionName = packageInfo.versionName;
+    	    } catch (NameNotFoundException e) {
+    	    	e.printStackTrace();
+    	    }
+    		if(!versionName.equals("")) {
+    			versionName = "バージョン番号：" + versionName + "\n";
+    		}
     		aboutAppBuilder = new AlertDialog.Builder(MenuActivity.this);
-    		aboutAppBuilder.setTitle(Const.MENU_ABOUT_APP);			
-    		aboutAppBuilder.setMessage(Const.ABOUT_APP_MESSAGE);
+    		aboutAppBuilder.setTitle(Const.MENU_ABOUT_APP);		
+    		aboutAppBuilder.setPositiveButton("OK", null);
+    		aboutAppBuilder.setMessage(versionName + Const.ABOUT_APP_MESSAGE);
+    		
     		aboutAppBuilder.show();
+    	} else if(item.getItemId() == CONTACT) {
+    		Uri uri = Uri.parse(Const.CONTACT_URL);
+    			Intent i = new Intent(Intent.ACTION_VIEW,uri);
+    			startActivity(i);
     	}
     	return false;
     }
@@ -127,6 +155,41 @@ public class MenuActivity extends BaseActivity {
         routeButton.setOnClickListener(onRouteClickListener);
         
         historyButton.setOnClickListener(onHistoryClickListener);
+        
+        bus = (ImageView)findViewById(R.id.bus);
+        
+        kemuri = (ImageView)findViewById(R.id.kemuri);
+        
+        bus.setOnClickListener(busOnClickListener);
+        
+        busStop = (ImageView)findViewById(R.id.busstop);
+        busStop.setOnClickListener(onBusstopClickListener);
+        
+	}
+	View.OnClickListener onBusstopClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			tracker.sendEvent(Const.UI_CATEGORY, Const.IMAGE_PRESS, Const.BUSSTOP_IMAGE, 0L);
+			launchReviewDialog();
+		}
+
+	};
+	private void launchReviewDialog() {
+		AlertDialog.Builder reviewDialog = new AlertDialog.Builder(MenuActivity.this);
+		reviewDialog.setMessage(Const.REVIEW_MESSAGE);
+		reviewDialog.setPositiveButton(Const.GO_TO_PLAY, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Uri uri = Uri.parse("market://details?id=jp.modal.soul.KeikyuTimeTable");
+				
+				Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+				startActivity(intent);	
+			}
+		});
+		reviewDialog.setNegativeButton(Const.REVIEW_CANCEL, null);
+		reviewDialog.show();
 	}
 	
 	View.OnClickListener onRouteClickListener = new View.OnClickListener() {
@@ -158,6 +221,29 @@ public class MenuActivity extends BaseActivity {
 		builder.setTitle("履歴から選択");			
 		builder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
 		builder.show();
+	}
+	
+	private View.OnClickListener busOnClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			tracker.sendEvent(Const.UI_CATEGORY, Const.IMAGE_PRESS, Const.EGG, 0L);
+			setUpBusAnimation();
+		}
+	};
+	
+	void setUpBusAnimation() {
+		Long time = System.currentTimeMillis();
+		if(time%3 == 0) {
+			RotateAnimation rotate = new RotateAnimation(0, 1080, bus.getWidth()/2, bus.getHeight()/2);
+			rotate.setDuration(1000);
+			bus.startAnimation(rotate);
+		} else {
+			TranslateAnimation translate = new TranslateAnimation(0, -500, 0, 0);
+			translate.setDuration(3000);
+			bus.startAnimation(translate);
+			kemuri.startAnimation(translate);
+		}
 	}
 	
 	DialogInterface.OnClickListener historyOnClickListener = new DialogInterface.OnClickListener() {
@@ -270,7 +356,6 @@ public class MenuActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 		EasyTracker.getInstance().activityStart(this);
-		tracker.trackView("/menu");
 	}
 	@Override
 	protected void onStop() {
