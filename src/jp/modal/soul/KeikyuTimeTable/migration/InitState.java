@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 /**
  * 起動ステータスの共有プリファレンスのクラス
- * TODO 別ファイルへの切り出し
  * @author M
  *
  */

@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -293,52 +294,36 @@ public class MenuActivity extends BaseActivity {
 		// 初回起動の判定
 		if(initState.getStatus() == InitState.PREFERENCE_INIT) {
 			// 初回起動の場合、初期データをセット
-			DatabaseHelper dbHelper = new DatabaseHelper(this);
+			DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 			try {
 				dbHelper.createEmptyDataBase();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			busStopDao.setup();
-//			routeDao.setup();
-//			timeTableDao.setup();
 			// 起動状態を変更
 			initState.setStatus(InitState.PREFERENCE_BOOTED);
 		}
+		
 	}
-//	/**
-//	 * 起動ステータスの共有プリファレンスのクラス
-//	 * TODO 別ファイルへの切り出し
-//	 * @author M
-//	 *
-//	 */
-//	public class InitState {
-//		/** 共有プリファレンス名 */
-//		public static final String INIT_PREFERENCE_NAME = "InitState";
-//		// 起動ステータスの定数
-//		/** 未起動　*/
-//		public static final int PREFERENCE_INIT = 0;
-//		/** 起動 */
-//		public static final int PREFERENCE_BOOTED = 1;
-//
-//		/**
-//		 * 起動ステータスの保存
-//		 * @param status
-//		 */
-//		void setStatus(int state) {
-//			SharedPreferences sp = getSharedPreferences(INIT_PREFERENCE_NAME, MODE_PRIVATE);
-//			sp.edit().putInt(INIT_PREFERENCE_NAME, state).commit();
-//		}
-//		/**
-//		 * 起動ステータスの取得
-//		 * @return
-//		 */
-//		int getStatus() {
-//			SharedPreferences sp = getSharedPreferences(INIT_PREFERENCE_NAME, MODE_PRIVATE);
-//			return sp.getInt(INIT_PREFERENCE_NAME, 0);
+	
+//	public void setupDatabase() {
+//	    PackageManager packageManager = this.getPackageManager();
+//		try {
+//			PackageInfo packageInfo = packageManager.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
+//			if(packageInfo.versionCode < 2) {
+//				HistoryDao dao = new HistoryDao(getApplicationContext());
+//				ArrayList<HistoryItem> items = dao.queryLatestHistory();
+//				for(HistoryItem item: items) {
+//					
+//				}
+//				
+//			}
+//		} catch (NameNotFoundException e) {
+//			e.printStackTrace();
 //		}
 //	}
+	
 	/**
 	 * 選択されたバス停の行き先を選択する画面へ遷移する
 	 */

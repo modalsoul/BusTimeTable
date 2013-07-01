@@ -4,12 +4,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     /** ログ用タグ */
@@ -21,7 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * DBのバージョン番号
      */
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static String DB_PATH = "/data/data/jp.modal.soul.KeikyuTimeTable/databases/"; 
     
@@ -45,6 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   
         if(dbExist){  
             // すでにデータベースは作成されている  
+        	
         }else{  
             // このメソッドを呼ぶことで、空のデータベースが  
             // アプリのデフォルトシステムパスに作られる  
@@ -100,6 +104,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
   
     @Override  
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {  
+
+		Log.e("HOGEHOGE", "DB UPDATE NOW!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    	HistoryDao dao = new HistoryDao(mContext);
+    	// 履歴情報の待避
+    	ArrayList<HistoryItem> items = dao.queryLatestHistory();
+    	db.close();
+    	try {
+    		// データベースファイルの置き換え
+			copyDataBaseFromAsset();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+    	// 更新が古い順に並べ直し
+    	Collections.reverse(items);
+    	
+    	SQLiteDatabase newDb = getWritableDatabase();
+    	// 履歴情報を戻す
+    	for(HistoryItem item: items) {
+    		try {
+				dao.insertOrReplace(newDb, item);
+				Log.e("HOGEHOGE", "DB UPDATE DONE!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				newDb.close();
+			}
+    	}
     }  
   
     @Override  
