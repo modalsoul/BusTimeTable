@@ -240,23 +240,17 @@ public class TimeTableActivity extends FragmentActivity {
         	
         	boolean isSet = false;
         	for(TimeSummaryItem item:list) {
-        		if(item.hour > hour -3 && item.hour < hour + 3) {
-        			if(!isSet) {
-        				listView.setSelection(item.position -1);
-        			} else if(item.hour == hour){
-        				isSet = true;
-        				listView.setSelection(item.position -1);
-            		}
-        		} 
+        		if(item.hour >= hour -2 && item.hour < hour) {
+        			listView.setSelection(item.position);
+        		} else if(item.hour == hour) {
+        			isSet = true;
+        			listView.setSelection(item.position);
+        		} else if(item.hour > hour && item.hour <= hour + 2 && !isSet) {        			
+        			isSet = true;
+        			listView.setSelection(item.position);
+            	} 
         	}
         }
-        
-//        @Override
-//        public void onActivityCreated(Bundle savedInstanceState) {
-//        	super.onActivityCreated(savedInstanceState);
-//
-//        	listView.setSelection(listView.getCount() -1);
-//        }
         
     	/**
     	 * 指定した曜日の発車時刻のリストを取得
