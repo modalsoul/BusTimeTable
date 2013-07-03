@@ -132,6 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	HistoryDao dao = new HistoryDao(mContext);
     	// 履歴情報の待避
     	ArrayList<HistoryItem> items = dao.queryLatestHistory();
+    	Log.e("HOGEHOGE", items.size() + "");
     	db.close();
     	try {
     		// データベースファイルの置き換え
@@ -141,7 +142,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
     	// 更新が古い順に並べ直し
     	Collections.reverse(items);
-    	
+
+    	Log.e("HOGEHOGE", items.size() + "reverse");
     	SQLiteDatabase newDb = getWritableDatabase();
     	// 履歴情報を戻す
     	boolean flag = true;
@@ -152,10 +154,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			} catch (Exception e) {
 				flag = false;
 				e.printStackTrace();
-			} finally {
-				newDb.close();
-			}
+			} 
     	}
+    	newDb.close();
     	return flag;
     }
 //    /**
