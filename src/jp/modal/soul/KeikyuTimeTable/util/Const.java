@@ -47,4 +47,5 @@ public class Const {
 	/** イースターエッグ */
 	public static final String EGG = "easter_egg";
 	
+	
 }

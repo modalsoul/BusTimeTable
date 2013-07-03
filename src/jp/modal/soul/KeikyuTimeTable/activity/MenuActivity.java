@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
+import jp.modal.soul.KeikyuTimeTable.migration.DatabaseState;
 import jp.modal.soul.KeikyuTimeTable.migration.InitState;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
@@ -17,8 +18,10 @@ import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -85,6 +88,8 @@ public class MenuActivity extends BaseActivity {
         setupDao();
         // 初回起動時のセットアップ
         setupInit();
+        
+        checkUpdate();
         
         setupView();
         
@@ -290,39 +295,17 @@ public class MenuActivity extends BaseActivity {
 	 * アプリ初回起動時の初期化処理
 	 */
 	public void setupInit() {
-		InitState initState = new InitState(this);
-		// 初回起動の判定
-		if(initState.getStatus() == InitState.PREFERENCE_INIT) {
-			// 初回起動の場合、初期データをセット
-			DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-			try {
-				dbHelper.createEmptyDataBase();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// 起動状態を変更
-			initState.setStatus(InitState.PREFERENCE_BOOTED);
-		}
-		
+		InitState initState = new InitState(getApplicationContext());
+		initState.checkState();
 	}
-	
-//	public void setupDatabase() {
-//	    PackageManager packageManager = this.getPackageManager();
-//		try {
-//			PackageInfo packageInfo = packageManager.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
-//			if(packageInfo.versionCode < 2) {
-//				HistoryDao dao = new HistoryDao(getApplicationContext());
-//				ArrayList<HistoryItem> items = dao.queryLatestHistory();
-//				for(HistoryItem item: items) {
-//					
-//				}
-//				
-//			}
-//		} catch (NameNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	/**
+	 * バージョンチェック処理
+	 */
+	public void checkUpdate() {
+		// DBバージョンチェック
+		DatabaseState dbState = new DatabaseState(getApplicationContext());
+		dbState.checkState();
+	}
 	
 	/**
 	 * 選択されたバス停の行き先を選択する画面へ遷移する

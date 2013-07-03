@@ -1,5 +1,8 @@
 package jp.modal.soul.KeikyuTimeTable.migration;
 
+import java.io.IOException;
+
+import jp.modal.soul.KeikyuTimeTable.model.DatabaseHelper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -8,34 +11,32 @@ import android.content.SharedPreferences;
  * @author M
  *
  */
-public class InitState {
+public class InitState extends BaseState {
 	/** 共有プリファレンス名 */
-	public static final String INIT_PREFERENCE_NAME = "InitState";
+	public static final String INIT_PREFERENCE_NAME = "INIT_STATE";
+	public static final String KEY_NAME = "BOOT_STATE";
 	// 起動ステータスの定数
 	/** 未起動　*/
 	public static final int PREFERENCE_INIT = 0;
 	/** 起動 */
 	public static final int PREFERENCE_BOOTED = 1;
-
-	Context context;
 	
 	public InitState(Context context) {
-		this.context = context;
+		super(context);
+		preferenceName = INIT_PREFERENCE_NAME;
 	}
-	/**
-	 * 起動ステータスの保存
-	 * @param status
-	 */
-	public void setStatus(int state) {
-		SharedPreferences sp = context.getSharedPreferences(INIT_PREFERENCE_NAME, Context.MODE_PRIVATE);
-		sp.edit().putInt(INIT_PREFERENCE_NAME, state).commit();
-	}
-	/**
-	 * 起動ステータスの取得
-	 * @return
-	 */
-	public int getStatus() {
-		SharedPreferences sp = context.getSharedPreferences(INIT_PREFERENCE_NAME, Context.MODE_PRIVATE);
-		return sp.getInt(INIT_PREFERENCE_NAME, 0);
+	
+	public void checkState() {
+		// 初回起動の判定
+		if(getStatus(KEY_NAME) == InitState.PREFERENCE_INIT) {
+			// 初回起動の場合、初期データをセット
+			try {
+				dbHelper.createEmptyDataBase();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			// 起動状態を変更
+			setStatus(KEY_NAME, PREFERENCE_BOOTED);
+		}	
 	}
 }
