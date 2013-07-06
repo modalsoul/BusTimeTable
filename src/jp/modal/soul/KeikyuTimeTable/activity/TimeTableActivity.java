@@ -12,14 +12,19 @@ import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,10 +47,10 @@ public class TimeTableActivity extends FragmentActivity {
 
 
 	/** 行き先を選択するバス停の番号 */
-	public int busStopID;
+	public int busStopId;
 
 	/** 対象の路線番号 */
-	public int routeID;
+	public int routeId;
 
 	/** Dao */
 	BusStopDao busStopDao;
@@ -77,6 +82,10 @@ public class TimeTableActivity extends FragmentActivity {
 	GoogleAnalytics analytics;
 	Tracker tracker;
 	Uri uri;
+	
+	/** history */
+	private HandlerThread backgroundThread;
+	private HistoryHandler historyHandler;
 	
     /** Called when the activity is first created. */
     @Override
@@ -114,8 +123,8 @@ public class TimeTableActivity extends FragmentActivity {
 
 	private void setupMember() {
 		// 行き先を選択するバス停をセット
-		routeID = getIntent().getExtras().getInt(ROUTE_NUMBER);
-		busStopID = getIntent().getExtras().getInt(BUSS_STOP_NUMBER);
+		routeId = getIntent().getExtras().getInt(ROUTE_NUMBER);
+		busStopId = getIntent().getExtras().getInt(BUSS_STOP_NUMBER);
 
 	}
 
@@ -127,19 +136,7 @@ public class TimeTableActivity extends FragmentActivity {
 
 
 	private void setupView() {
-		// バス停名Viewの取得
-//		busStopName = (TextView)findViewById(R.id.selected_bus_stop_name);
-		// バス停名の取得
-//		ArrayList<BusStopItem> item = busStopDao.queryBusStop(Integer.toString(busStopID));
-
-//		if(item != null) {
-//			busStopNameString = item.get(0).busStopName;
-//			// 行き先を選択するバス停名を設定
-////			busStopName.setText(busStopNameString);
-//		}
 		setupTabSheet();
-
-
 //		gotoMapButton = (Button)findViewById(R.id.go_to_map_button);
 //		gotoMapButton.setOnClickListener(new View.OnClickListener() {
 //			
@@ -169,8 +166,8 @@ public class TimeTableActivity extends FragmentActivity {
 	}
 	private Bundle getBundle(int type) {
 		Bundle weekdayBundle = new Bundle();
-		weekdayBundle.putInt("route", routeID);
-		weekdayBundle.putInt("busStop", busStopID);
+		weekdayBundle.putInt("route", routeId);
+		weekdayBundle.putInt("busStop", busStopId);
 		weekdayBundle.putInt("week", type);
 		return weekdayBundle;
 	}
@@ -180,13 +177,13 @@ public class TimeTableActivity extends FragmentActivity {
 		host.setup(this, getSupportFragmentManager(), R.id.content);
 		
 		TabSpec weekdayTabSpec = getTabSpec(host, "tab1", R.string.weekday_tab_name, Const.WEEKDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.weekday_tab_icon);
-		host.addTab(weekdayTabSpec, SampleFragment.class, getBundle(TimeTableDao.WEEKDAY));
+		host.addTab(weekdayTabSpec, TabFragment.class, getBundle(TimeTableDao.WEEKDAY));
         
         TabSpec saturdayTabSpec = getTabSpec(host, "tab2", R.string.saturday_tab_name, Const.SATURDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.saturday_tab_icon);
-        host.addTab(saturdayTabSpec, SampleFragment.class, getBundle(TimeTableDao.SATURDAY));
+        host.addTab(saturdayTabSpec, TabFragment.class, getBundle(TimeTableDao.SATURDAY));
         
         TabSpec holidayTabSpec = getTabSpec(host, "tab3", R.string.holiday_tab_name, Const.HOLIDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.holiday_tab_icon);
-        host.addTab(holidayTabSpec, SampleFragment.class, getBundle(TimeTableDao.HOLIDAY));
+        host.addTab(holidayTabSpec, TabFragment.class, getBundle(TimeTableDao.HOLIDAY));
 	}
 
 
@@ -195,7 +192,7 @@ public class TimeTableActivity extends FragmentActivity {
 
 
 	}
-    public static class SampleFragment extends Fragment {
+    public static class TabFragment extends Fragment {
         TimeTableDao timeTableDao;
         TimeSummaryDao timeSummaryDao;
         
@@ -205,21 +202,16 @@ public class TimeTableActivity extends FragmentActivity {
         ListView listView;
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-             
-//            TextView textView = new TextView(getActivity());
-//            textView.setGravity(Gravity.CENTER);
-////            textView.setText(getArguments().getString("name"));
-        	
         	route = getArguments().getInt("route");
         	busStop = getArguments().getInt("busStop");
         	weekType = getArguments().getInt("week");
             
             timeTableDao = new TimeTableDao(getActivity());
-            
-            //ListView 
+
             listView = new ListView(getActivity());
             listView.setCacheColorHint(R.color.transparent);
             listView.setSelection(listView.getCount());
+            
             ArrayList<TimeTableItem> items = getTimeList(weekType);
             
             TimeTableAdapter adapter = new TimeTableAdapter(getActivity(), R.layout.time_table_row, items);
@@ -266,17 +258,10 @@ public class TimeTableActivity extends FragmentActivity {
     }
     
     public void registerHistory() {
-    	SQLiteDatabase db = historyDao.getWritableDatabase();
-    	HistoryItem item = new HistoryItem();
-    	item.routeId = routeID;
-    	item.busStopId = busStopID;
-    	item.idString = String.valueOf(routeID) + "."+ String.valueOf(busStopID);
-    	try {
-    		historyDao.insertOrReplace(db, item);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		db.close();
+    	backgroundThread = new HandlerThread("BackgroundThread", android.os.Process.THREAD_PRIORITY_DEFAULT);
+    	backgroundThread.start();
+    	historyHandler = new HistoryHandler(backgroundThread.getLooper(), getApplicationContext(), routeId, busStopId);
+    	Message.obtain(historyHandler, HistoryHandler.INSERT_HISTORY).sendToTarget();
     }
     
     private void setFont(Button button) {
@@ -294,5 +279,53 @@ public class TimeTableActivity extends FragmentActivity {
     protected void onStop() {
 		super.onStop();
 		EasyTracker.getInstance().activityStop(this);
+    }
+    
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	backgroundThread.quit();
+    }
+    
+    private static class HistoryHandler extends Handler {
+    	public static final int INSERT_HISTORY = 0;
+    	
+    	int routeId;
+    	int busStopId;
+    	HistoryDao dao;
+    	
+    	public HistoryHandler(android.os.Looper looper, Context context, int routeId, int busStopId) {
+    		super(looper);
+    		this.routeId = routeId;
+    		this.busStopId = busStopId;
+    		dao = new HistoryDao(context);
+    	}
+    	
+    	@Override
+    	public void handleMessage(Message msg) {
+    		switch (msg.what) {
+			case INSERT_HISTORY:
+				registerHistory();
+				break;
+
+			default:
+				break;
+			}
+    	}
+    	
+    	private void registerHistory() {
+        	SQLiteDatabase db = dao.getWritableDatabase();
+        	HistoryItem item = new HistoryItem();
+        	item.routeId = routeId;
+        	item.busStopId = busStopId;
+        	item.idString = String.valueOf(routeId) + "."+ String.valueOf(busStopId);
+        	try {
+        		dao.insertOrReplace(db, item);
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		} finally {
+    			db.close();
+    		}
+    	}
     }
 }
