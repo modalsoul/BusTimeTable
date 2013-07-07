@@ -38,6 +38,8 @@ public class Const {
 	public static final String IMAGE_PRESS = "image_press";
 	/** 路線選択ボタン */
 	public static final String SELECT_ROUTE = "select_route";
+	/** バス停検索ボタン */
+	public static final String SELECT_SEARCH = "select_search";
 	/** 履歴選択ボタン */
 	public static final String SELECT_HISTORY = "select_history";
 	/** 戻るボタン */

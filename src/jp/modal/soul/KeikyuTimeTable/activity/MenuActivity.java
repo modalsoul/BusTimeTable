@@ -1,7 +1,6 @@
 package jp.modal.soul.KeikyuTimeTable.activity;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
@@ -9,7 +8,6 @@ import jp.modal.soul.KeikyuTimeTable.migration.DatabaseState;
 import jp.modal.soul.KeikyuTimeTable.migration.InitState;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
-import jp.modal.soul.KeikyuTimeTable.model.DatabaseHelper;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryDao;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
@@ -18,14 +16,11 @@ import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +30,7 @@ import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,6 +49,7 @@ public class MenuActivity extends BaseActivity {
 	private TextView title;
 	private TextView unofficial;
 	private Button routeButton;
+	private Button searchButton;
 	private Button historyButton;
 	private ImageView bus;
 	private ImageView kemuri;
@@ -67,7 +64,8 @@ public class MenuActivity extends BaseActivity {
 	Uri uri;
 	
 	/** Dialog */
-	AlertDialog.Builder builder;
+	AlertDialog.Builder historyDialogBuilder;
+	AlertDialog.Builder searchDialogBuilder;
 	AlertDialog.Builder aboutAppBuilder;
 	
 	/** Menu */
@@ -155,10 +153,15 @@ public class MenuActivity extends BaseActivity {
         routeButton = (Button)findViewById(R.id.route_menu_button);
         setFont(routeButton);
         
+        searchButton = (Button)findViewById(R.id.search_menu_button);
+        setFont(searchButton);
+        
         historyButton = (Button)findViewById(R.id.history_menu_button);
         setFont(historyButton);
         
         routeButton.setOnClickListener(onRouteClickListener);
+        
+        searchButton.setOnClickListener(onSearchClickListener);
         
         historyButton.setOnClickListener(onHistoryClickListener);
         
@@ -213,6 +216,25 @@ public class MenuActivity extends BaseActivity {
 		Utils.intentLauncher(this, intent);
 	}
 	
+	View.OnClickListener onSearchClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			launchSearchBox();
+		}
+	};
+	private void launchSearchBox() {
+		final EditText editText = new EditText(MenuActivity.this);
+		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_SEARCH, 0L);
+		searchDialogBuilder = new AlertDialog.Builder(MenuActivity.this);
+		searchDialogBuilder.setTitle("バス停から選ぶ");
+		searchDialogBuilder.setMessage("バス停の名前を入力してください");
+		searchDialogBuilder.setView(editText);
+		searchDialogBuilder.setPositiveButton("検索", null);
+		searchDialogBuilder.setNegativeButton("キャンセル", null);
+		searchDialogBuilder.show();
+	}
+	
     View.OnClickListener onHistoryClickListener = new View.OnClickListener() {
 		
 		@Override
@@ -223,10 +245,10 @@ public class MenuActivity extends BaseActivity {
 	};
 	private void launchHistoryList() {
 		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_HISTORY, 0L);
-		builder = new AlertDialog.Builder(MenuActivity.this);
-		builder.setTitle("履歴から選択");			
-		builder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
-		builder.show();
+		historyDialogBuilder = new AlertDialog.Builder(MenuActivity.this);
+		historyDialogBuilder.setTitle("履歴から選択");			
+		historyDialogBuilder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
+		historyDialogBuilder.show();
 	}
 	
 	private View.OnClickListener busOnClickListener = new View.OnClickListener() {

@@ -144,13 +144,21 @@ public class BusStopDao extends Dao {
 
 	}
 
-	public ArrayList<BusStopItem> queryBusStop(String selectionArg) {
-		String[] selectionArgs = new String[]{selectionArg};
+	public ArrayList<BusStopItem> queryBusStop(String busStopId) {
+		String[] selectionArgs = new String[]{busStopId};
 
 		String selection = COLUMN_ID + " = ?";
 
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
 
+	}
+	
+	public ArrayList<BusStopItem> queryBusStopByName(String name) {
+		String[] selectionArgs = new String[]{name};
+		
+		String selection = COLUMN_BUS_STOP_NAME + " like %?%";
+		
+		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
 	}
 
 	/**
