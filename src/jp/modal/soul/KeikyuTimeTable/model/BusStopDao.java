@@ -39,6 +39,8 @@ public class BusStopDao extends Dao {
 	// カラム名定義
 	/** バス停ID　*/
 	public static final String COLUMN_ID = "id";
+	/** 路線ID */
+	public static final String COLUMN_ROUTE_ID = "route_id";
 	/** WebID */
 	public static final String COLUMN_WEB_ID = "web_id";
 	/** バス停名 */
@@ -49,6 +51,7 @@ public class BusStopDao extends Dao {
 	// カラム名配列定義
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
+											COLUMN_ROUTE_ID,
 											COLUMN_WEB_ID,
 											COLUMN_BUS_STOP_NAME,
 											COLUMN_LOCATION};
@@ -58,6 +61,7 @@ public class BusStopDao extends Dao {
 	static {
 		// @formatter:off
 		String columnDefine = COLUMN_ID + " integer primary key autoincrement, "
+							+ COLUMN_ROUTE_ID + " integer not null"
 							+ COLUMN_WEB_ID + " text not null"
 							+ COLUMN_BUS_STOP_NAME + " text not null, "
 							+ COLUMN_LOCATION + " text"
@@ -77,9 +81,10 @@ public class BusStopDao extends Dao {
 	public static BusStopItem getBusStopItem(Cursor cursor){
 		BusStopItem busStopItem = new BusStopItem();
 		busStopItem.id = cursor.getInt(0);
-		busStopItem.web_id = cursor.getString(1);
-		busStopItem.busStopName = cursor.getString(2);
-		busStopItem.location = cursor.getString(3);
+		busStopItem.route_id = cursor.getInt(1);
+		busStopItem.web_id = cursor.getString(2);
+		busStopItem.busStopName = cursor.getString(3);
+		busStopItem.location = cursor.getString(4);
 
 		return busStopItem;
 	}

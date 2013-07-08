@@ -8,6 +8,7 @@ public class BusStopItem implements Comparable<BusStopItem>, Serializable{
     
     // バス停オブジェクトのプロパティ群
     public long id;
+    public long route_id;
     public String web_id;
     public String busStopName;
     public String location;
