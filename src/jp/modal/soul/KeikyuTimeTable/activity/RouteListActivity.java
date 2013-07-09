@@ -61,13 +61,19 @@ public class RouteListActivity extends BaseActivity {
 	/** GA */
 	GoogleAnalytics analytics;
 	Tracker tracker;
+	
+	/** Search */
+	public static final String SEARCH_WORD = "search_word";
+	String word;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        // DAOのセットアップ
+        
+        setupMember();
+        
         setupDao();
         
         setupEventhandling();
@@ -79,6 +85,10 @@ public class RouteListActivity extends BaseActivity {
         // ListViewのセットアップ
         setupListView();
 
+    }
+    
+    private void setupMember() {
+    	word = getIntent().getExtras().getString(SEARCH_WORD);
     }
     
 	private void setupView() {

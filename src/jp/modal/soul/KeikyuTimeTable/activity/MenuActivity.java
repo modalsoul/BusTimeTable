@@ -68,6 +68,9 @@ public class MenuActivity extends BaseActivity {
 	AlertDialog.Builder searchDialogBuilder;
 	AlertDialog.Builder aboutAppBuilder;
 	
+	/** Search */
+	EditText searchEditText;
+	
 	/** Menu */
 	private final int ABOUT_APP = 0;
 	private final int CONTACT = 1;
@@ -224,15 +227,35 @@ public class MenuActivity extends BaseActivity {
 		}
 	};
 	private void launchSearchBox() {
-		final EditText editText = new EditText(MenuActivity.this);
+		searchEditText = new EditText(MenuActivity.this);
 		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_SEARCH, 0L);
 		searchDialogBuilder = new AlertDialog.Builder(MenuActivity.this);
-		searchDialogBuilder.setTitle("バス停から選ぶ");
-		searchDialogBuilder.setMessage("バス停の名前を入力してください");
-		searchDialogBuilder.setView(editText);
-		searchDialogBuilder.setPositiveButton("検索", null);
+		searchDialogBuilder.setTitle("バス停を検索");
+//		searchDialogBuilder.setMessage("バス停の名前を入力してください");
+		searchDialogBuilder.setView(searchEditText);
+		searchDialogBuilder.setPositiveButton("検索", onDialogSearchClickListener);
 		searchDialogBuilder.setNegativeButton("キャンセル", null);
 		searchDialogBuilder.show();
+	}
+	
+	DialogInterface.OnClickListener onDialogSearchClickListener = new DialogInterface.OnClickListener() {
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			// 空白以外の入力がある場合は、遷移
+			if(searchEditText.getText().toString().trim().length() > 0) {
+				launchRouteListBySearch();
+			}
+		}
+	};
+	
+	private void launchRouteListBySearch() {
+		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_ROUTE, 0L);
+		// BusStopActivityを起動するintentの作成
+		Intent intent = new Intent(getApplicationContext(), RouteListActivity.class);
+		intent.putExtra(RouteListActivity.SEARCH_WORD, searchEditText.getText());
+		// BusStopActivityの起動
+		Utils.intentLauncher(this, intent);
 	}
 	
     View.OnClickListener onHistoryClickListener = new View.OnClickListener() {
@@ -279,7 +302,7 @@ public class MenuActivity extends BaseActivity {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			HistoryItem item = historyItemList.get(which);
-			Log.e("hoge", item.routeId + ":" + item.busStopId);
+//			Log.e("hoge", item.routeId + ":" + item.busStopId);
 			launchBusStop((int)item.routeId, (int)item.busStopId);
 		}
 		
