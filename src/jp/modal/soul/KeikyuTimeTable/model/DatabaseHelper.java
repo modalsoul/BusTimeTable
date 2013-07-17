@@ -59,7 +59,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 copyDataBaseFromAsset();   
             } catch (IOException e) {  
                 throw new Error("Error copying database");  
-            }  
+            } finally {
+            	close();
+            }
         }  
     }
     

@@ -72,8 +72,6 @@ public class RouteListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        setupMember();
-        
         setupDao();
         
         setupEventhandling();
@@ -85,10 +83,6 @@ public class RouteListActivity extends BaseActivity {
         // ListViewのセットアップ
         setupListView();
 
-    }
-    
-    private void setupMember() {
-    	word = getIntent().getExtras().getString(SEARCH_WORD);
     }
     
 	private void setupView() {

@@ -81,8 +81,8 @@ public class BusStopDao extends Dao {
 	public static BusStopItem getBusStopItem(Cursor cursor){
 		BusStopItem busStopItem = new BusStopItem();
 		busStopItem.id = cursor.getInt(0);
-		busStopItem.route_id = cursor.getInt(1);
-		busStopItem.web_id = cursor.getString(2);
+		busStopItem.routeId = cursor.getInt(1);
+		busStopItem.webId = cursor.getString(2);
 		busStopItem.busStopName = cursor.getString(3);
 		busStopItem.location = cursor.getString(4);
 
@@ -159,9 +159,9 @@ public class BusStopDao extends Dao {
 	}
 	
 	public ArrayList<BusStopItem> queryBusStopByName(String name) {
-		String[] selectionArgs = new String[]{name};
+		String[] selectionArgs = new String[]{"%" + name + "%"};
 		
-		String selection = COLUMN_BUS_STOP_NAME + " like %?%";
+		String selection = COLUMN_BUS_STOP_NAME + " like ?";
 		
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
 	}
@@ -177,7 +177,7 @@ public class BusStopDao extends Dao {
 	public long insertWithoutOpenDb(SQLiteDatabase db, BusStopItem item) throws Exception {
 		ContentValues values = new  ContentValues();
 		values.put(COLUMN_ID, item.id);
-		values.put(COLUMN_WEB_ID, item.web_id);
+		values.put(COLUMN_WEB_ID, item.webId);
 		values.put(COLUMN_BUS_STOP_NAME, item.busStopName);
 		values.put(COLUMN_LOCATION, item.location);
 		

@@ -57,6 +57,7 @@ public class MenuActivity extends BaseActivity {
 	
 	/** ItemList */
 	ArrayList<HistoryItem> historyItemList;
+	ArrayList<BusStopItem> busStopItemList;
 	
 	/** GA */
 	GoogleAnalytics analytics;
@@ -70,6 +71,7 @@ public class MenuActivity extends BaseActivity {
 	
 	/** Search */
 	EditText searchEditText;
+	int searchResultNum;
 	
 	/** Menu */
 	private final int ABOUT_APP = 0;
@@ -187,6 +189,7 @@ public class MenuActivity extends BaseActivity {
 		}
 
 	};
+	
 	private void launchReviewDialog() {
 		AlertDialog.Builder reviewDialog = new AlertDialog.Builder(MenuActivity.this);
 		reviewDialog.setMessage(Const.REVIEW_MESSAGE);
@@ -211,6 +214,7 @@ public class MenuActivity extends BaseActivity {
 			launchRouteList();
 		}
 	};
+	
 	public void launchRouteList() {
 		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_ROUTE, 0L);
 		// BusStopActivityを起動するintentの作成
@@ -226,6 +230,7 @@ public class MenuActivity extends BaseActivity {
 			launchSearchBox();
 		}
 	};
+	
 	private void launchSearchBox() {
 		searchEditText = new EditText(MenuActivity.this);
 		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_SEARCH, 0L);
@@ -244,7 +249,7 @@ public class MenuActivity extends BaseActivity {
 		public void onClick(DialogInterface dialog, int which) {
 			// 空白以外の入力がある場合は、遷移
 			if(searchEditText.getText().toString().trim().length() > 0) {
-				launchRouteListBySearch();
+				launchSearchResultList(searchEditText.getText().toString());
 			}
 		}
 	};
@@ -270,7 +275,7 @@ public class MenuActivity extends BaseActivity {
 		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_HISTORY, 0L);
 		historyDialogBuilder = new AlertDialog.Builder(MenuActivity.this);
 		historyDialogBuilder.setTitle("履歴から選択");			
-		historyDialogBuilder.setSingleChoiceItems(getDialogList(), -1, historyOnClickListener);
+		historyDialogBuilder.setSingleChoiceItems(getHistoryDialogList(), -1, historyOnClickListener);
 		historyDialogBuilder.show();
 	}
 	
@@ -305,28 +310,58 @@ public class MenuActivity extends BaseActivity {
 //			Log.e("hoge", item.routeId + ":" + item.busStopId);
 			launchBusStop((int)item.routeId, (int)item.busStopId);
 		}
-		
 	};
 	
-	public CharSequence[] getDialogList() {
+	public CharSequence[] getHistoryDialogList() {
 		historyDao = new HistoryDao(this);
 		historyItemList = historyDao.queryLatestHistory();
 		CharSequence[] dialogItem = new CharSequence[historyItemList.size()];
 		int i = 0;
 		for(HistoryItem item: historyItemList) {
 			RouteItem routeItem = routeDao.queryRouteByRouteId(Long.valueOf(item.routeId));
-
+			
 			ArrayList<BusStopItem> busstopItemList = busStopDao.queryBusStop(String.valueOf(item.busStopId));
-			dialogItem[i] = makeHistoryRow(routeItem.terminal, busstopItemList.get(0).busStopName);
+			dialogItem[i] = makeBusStopSelectRow(routeItem.terminal, busstopItemList.get(0).busStopName);
 			i++;
 		}
 		return dialogItem;
 	}
-	
-	private String makeHistoryRow(String routeName, String busstopName) {
+
+	private String makeBusStopSelectRow(String routeName, String busstopName) {
 		return routeName + "ゆき\n" + busstopName +"バス停";
 	}
 	
+	private void launchSearchResultList(String word) {
+		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_HISTORY, 0L);
+		historyDialogBuilder = new AlertDialog.Builder(MenuActivity.this);
+		historyDialogBuilder.setSingleChoiceItems(getSearchDialogList(word), -1, searchResultOnClickListener);
+		historyDialogBuilder.setTitle("検索結果:" + searchResultNum + "件");			
+		historyDialogBuilder.show();
+	}
+	
+	DialogInterface.OnClickListener searchResultOnClickListener = new DialogInterface.OnClickListener() {
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			BusStopItem item = busStopItemList.get(which);
+			launchBusStop((int)item.routeId, (int)item.id);
+		}
+	};
+	
+	public CharSequence[] getSearchDialogList(String word) {
+		busStopDao = new BusStopDao(this);
+		busStopItemList = busStopDao.queryBusStopByName(word);
+		searchResultNum = busStopItemList.size();
+		CharSequence[] dialogItem = new CharSequence[busStopItemList.size()];
+		int i = 0;
+		for(BusStopItem item: busStopItemList) {
+			RouteItem routeItem = routeDao.queryRouteByRouteId(Long.valueOf(item.routeId));
+			
+			dialogItem[i] = makeBusStopSelectRow(routeItem.terminal, item.busStopName);
+			i++;
+		}
+		return dialogItem;
+	}
 	
     /**
      * Daoのセットアップ

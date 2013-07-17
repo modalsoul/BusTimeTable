@@ -1,13 +1,13 @@
 package jp.modal.soul.KeikyuTimeTable.task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import android.content.Context;
 import android.os.AsyncTask;
 
-public class SearchBusStopTask extends AsyncTask<Void, Void, Void>{
+public class SearchBusStopTask extends AsyncTask<Void, Void, List<BusStopItem>>{
 
 	Context context;
 	String word;
@@ -18,16 +18,15 @@ public class SearchBusStopTask extends AsyncTask<Void, Void, Void>{
 	}
 	
 	@Override
-	protected Void doInBackground(Void... arg0) {
+	protected List<BusStopItem> doInBackground(Void... arg0) {
 		
-		return null;
+		return searchBusstop();
 	}
 	
-	void searchBusstop() {
+	List<BusStopItem> searchBusstop() {
 		BusStopDao dao = new BusStopDao(context);
-		ArrayList<BusStopItem> list = dao.queryBusStopByName(word);
-		
-		
+		List<BusStopItem> list = dao.queryBusStopByName(word);
+		return list;
 	}
 
 }
