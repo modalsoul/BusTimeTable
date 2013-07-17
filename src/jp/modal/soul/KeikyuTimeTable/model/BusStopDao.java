@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * バス停を扱うクラス
@@ -159,10 +160,21 @@ public class BusStopDao extends Dao {
 	}
 	
 	public ArrayList<BusStopItem> queryBusStopByName(String name) {
-		String[] selectionArgs = new String[]{"%" + name + "%"};
-		
-		String selection = COLUMN_BUS_STOP_NAME + " like ?";
-		
+		String[] wordList = name.replaceAll("　", " ").split("[\\s]+");
+		String[] selectionArgs;
+		String selection;
+		if(wordList.length == 1) {
+			selectionArgs = new String[]{"%" + name + "%"};
+			selection = COLUMN_BUS_STOP_NAME + " like ?";
+		} else {
+			selectionArgs = new String[wordList.length];
+			selectionArgs[0] = "%" + wordList[0] + "%";
+			selection = COLUMN_BUS_STOP_NAME + " like ?";
+			for(int i = 1; i < wordList.length; i++) {
+				selectionArgs[i] = "%" + wordList[i] + "%";
+				selection += " and " + COLUMN_BUS_STOP_NAME + " like ?";
+			}
+		}
 		return queryList(COLUMNS, selection, selectionArgs, null, null, null, null);
 	}
 

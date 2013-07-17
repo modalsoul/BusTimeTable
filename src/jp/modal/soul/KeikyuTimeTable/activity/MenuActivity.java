@@ -236,7 +236,6 @@ public class MenuActivity extends BaseActivity {
 		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_SEARCH, 0L);
 		searchDialogBuilder = new AlertDialog.Builder(MenuActivity.this);
 		searchDialogBuilder.setTitle("バス停を検索");
-//		searchDialogBuilder.setMessage("バス停の名前を入力してください");
 		searchDialogBuilder.setView(searchEditText);
 		searchDialogBuilder.setPositiveButton("検索", onDialogSearchClickListener);
 		searchDialogBuilder.setNegativeButton("キャンセル", null);
@@ -253,15 +252,6 @@ public class MenuActivity extends BaseActivity {
 			}
 		}
 	};
-	
-	private void launchRouteListBySearch() {
-		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_ROUTE, 0L);
-		// BusStopActivityを起動するintentの作成
-		Intent intent = new Intent(getApplicationContext(), RouteListActivity.class);
-		intent.putExtra(RouteListActivity.SEARCH_WORD, searchEditText.getText());
-		// BusStopActivityの起動
-		Utils.intentLauncher(this, intent);
-	}
 	
     View.OnClickListener onHistoryClickListener = new View.OnClickListener() {
 		
