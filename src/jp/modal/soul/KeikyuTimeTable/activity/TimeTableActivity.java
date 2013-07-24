@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
+import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryDao;
 import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeSummaryDao;
@@ -13,6 +14,7 @@ import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -27,8 +29,10 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
@@ -164,12 +168,31 @@ public class TimeTableActivity extends FragmentActivity {
         
         return tabSpec;
 	}
+	
+	private TabSpec getMapTabSpec(FragmentTabHost host, String tabSpecName) {
+		TabSpec tabSpec = host.newTabSpec(tabSpecName);
+		Button tabButton = new Button(this);
+		tabButton.setText("地図");
+		tabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
+		tabButton.setBackgroundResource(R.drawable.map_tab_icon);
+		setFont(tabButton);
+		tabSpec.setIndicator(tabButton);
+		return tabSpec;
+	}
+	
 	private Bundle getBundle(int type) {
 		Bundle weekdayBundle = new Bundle();
 		weekdayBundle.putInt("route", routeId);
 		weekdayBundle.putInt("busStop", busStopId);
 		weekdayBundle.putInt("week", type);
 		return weekdayBundle;
+	}
+	
+	private Bundle getMapBundle() {
+		Bundle mapBundle = new Bundle();
+		ArrayList<BusStopItem> items = busStopDao.queryBusStopById(new String[]{Integer.toString(busStopId)});
+		mapBundle.putString("busStop", items.get(0).busStopName);
+		return mapBundle;
 	}
 
 	private void setupTabSheet() {
@@ -184,14 +207,15 @@ public class TimeTableActivity extends FragmentActivity {
         
         TabSpec holidayTabSpec = getTabSpec(host, "tab3", R.string.holiday_tab_name, Const.HOLIDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.holiday_tab_icon);
         host.addTab(holidayTabSpec, TabFragment.class, getBundle(TimeTableDao.HOLIDAY));
+        
+        TabSpec mapTabSpec = getMapTabSpec(host, "tab4");
+        host.addTab(mapTabSpec, MapTabFragment.class, getMapBundle());
 	}
 
 
 	private void setupEventhandling() {
-
-
-
 	}
+	
     public static class TabFragment extends Fragment {
         TimeTableDao timeTableDao;
         TimeSummaryDao timeSummaryDao;
@@ -254,6 +278,44 @@ public class TimeTableActivity extends FragmentActivity {
     		ArrayList<TimeTableItem> list = new ArrayList<TimeTableItem>();
     		list = timeTableDao.queryBusStopOrderById(selectionArgs);
     		return list;
+    	}
+    }
+    
+    public static class MapTabFragment extends Fragment {
+    	String target;
+    	/** Font */
+    	Typeface face;
+    	String font = Utils.getFont();
+    	@Override
+    	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    		target = getArguments().getString("busStop");
+    		LinearLayout tabLinearLayout = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.map_tab, null);
+    		
+    		TextView busStopName = (TextView)tabLinearLayout.getChildAt(0);
+    		busStopName.setText(target + " バス停");
+    		setFont(busStopName);
+    		
+    		TextView mapTabComment = (TextView)tabLinearLayout.getChildAt(1);
+    		setFont(mapTabComment);
+    		
+    		Button openMapButton = (Button)tabLinearLayout.getChildAt(2);
+    		setFont(openMapButton);
+    		openMapButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					gotoMap();
+				};
+			});
+    		return tabLinearLayout;
+    	}
+    	
+    	void gotoMap() {
+			Intent mi = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + target + "（バス）"));
+			startActivity(mi);
+    	}
+    	private void setFont(TextView text) {
+    		face = Typeface.createFromAsset(getActivity().getAssets(), font);
+    		text.setTypeface(face);
     	}
     }
     

@@ -129,12 +129,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     
     public boolean updateDatabase() {
-    	Log.e("HOGEHOGE", "DB UPDATE NOW!!!!!!!!!!!!!!!!!!!!!!!!!!");
     	SQLiteDatabase db = getWritableDatabase();
     	HistoryDao dao = new HistoryDao(mContext);
     	// 履歴情報の待避
     	ArrayList<HistoryItem> items = dao.queryLatestHistory();
-    	Log.e("HOGEHOGE", items.size() + "");
     	db.close();
     	try {
     		// データベースファイルの置き換え
@@ -145,14 +143,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	// 更新が古い順に並べ直し
     	Collections.reverse(items);
 
-    	Log.e("HOGEHOGE", items.size() + "reverse");
     	SQLiteDatabase newDb = getWritableDatabase();
     	// 履歴情報を戻す
     	boolean flag = true;
     	for(HistoryItem item: items) {
     		try {
 				dao.insertOrReplace(newDb, item);
-				Log.e("HOGEHOGE", "DB UPDATE DONE!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			} catch (Exception e) {
 				flag = false;
 				e.printStackTrace();
