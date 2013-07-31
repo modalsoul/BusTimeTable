@@ -19,5 +19,7 @@
     
     <!-- 地図タブ -->
     <string name="go_to_map">地図を表示する</string>
-    <string name="map_comment">バス停のおおまかな位置を検索します。\n※検索結果にバス停が表示されない場合もあるのでご注意ください。</string>
+    <string name="map_comment">バス停のおおまかな位置を検索します。\n※バス停の進行方向の指定はできません。\n※バス停をうまく検索できない場合もあります。</string>
+    <string name="go_to_navi">ルートを検索する</string>
+    <string name="navi_comment">バス停までのルートを検索します。\n※現在地がわかるようにGPSをオンにしてください。</string>
 </resources>

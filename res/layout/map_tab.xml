@@ -7,27 +7,56 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
         android:layout_marginBottom="16dp"
         android:textSize="24sp"
         android:textColor="@color/black"
         android:id="@+id/map_bus_stop_name"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:textSize="24sp"
+        android:id="@+id/open_map_button"
+        android:text="@string/go_to_map"/>
     <TextView 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
         android:layout_marginBottom="16dp"
-        android:id="@+id/map_tab_comment"
+        android:id="@+id/map_comment"
         android:text="@string/map_comment"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
         android:textSize="24sp"
-        android:id="@+id/open_map_button"
-        android:text="@string/go_to_map"/>
+        android:id="@+id/navi_button"
+        android:text="@string/go_to_navi"/>
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/navi_comment"
+        android:text="@string/navi_comment"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gps_button"
+        android:textSize="24sp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
+        android:text="GPSをオンにする"
+        android:textColor="@color/orange"
+        android:background="@color/white"
+        android:visibility="invisible"/>
 
 </LinearLayout>
