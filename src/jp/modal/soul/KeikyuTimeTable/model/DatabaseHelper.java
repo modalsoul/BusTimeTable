@@ -7,40 +7,34 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import jp.modal.soul.KeikyuTimeTable.R;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     /** ログ用タグ */
     public final String TAG = this.getClass().getSimpleName();
 
-    /** DB名 */
-    private static final String DB_NAME = "kqbus";
-
-    /**
-     * DBのバージョン番号
-     */
-    public static final int DB_VERSION = 2;
-
-    private static String DB_PATH = "/data/data/jp.modal.soul.KeikyuTimeTable/databases/"; 
+    /** DBのバージョン番号 */
+    public static final int DB_VERSION = 3;
     
     private SQLiteDatabase mDataBase;  
-    
     private final Context mContext; 
-    
-    private static String DB_NAME_ASSET = "kqbus.db";  
-    
+    private String DB_FULL_PATH;
+    private String DB_ASSET;
+
     /**
      * コンストラクタ
      * @param context
      */
     public DatabaseHelper(Context context) {
-    	super(context, DB_NAME, null, DB_VERSION);
+    	super(context, context.getResources().getString(R.string.db_name), null, DB_VERSION);
     	this.mContext = context;
+    	this.DB_FULL_PATH = mContext.getResources().getString(R.string.db_path) + mContext.getResources().getString(R.string.db_name);
+    	this.DB_ASSET = mContext.getResources().getString(R.string.db_name_asset);
     }
 
     public void createEmptyDataBase() throws IOException{  
@@ -68,10 +62,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void copyDataBaseFromAsset() throws IOException{  
     	   
         // asset 内のデータベースファイルにアクセス  
-        InputStream mInput = mContext.getAssets().open(DB_NAME_ASSET);  
+        InputStream mInput = mContext.getAssets().open(DB_ASSET);  
    
         // デフォルトのデータベースパスに作成した空のDB  
-        String outFileName = DB_PATH + DB_NAME;  
+        String outFileName = mContext.getResources().getString(R.string.db_path) + mContext.getResources().getString(R.string.db_name);  
    
         OutputStream mOutput = new FileOutputStream(outFileName);  
   
@@ -90,13 +84,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
    
     public SQLiteDatabase openDataBaseReadable() throws SQLException{  
         //Open the database  
-        String myPath = DB_PATH + DB_NAME;  
-        mDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);  
+        mDataBase = SQLiteDatabase.openDatabase(DB_FULL_PATH, null, SQLiteDatabase.OPEN_READONLY);  
         return mDataBase;  
     }
     public SQLiteDatabase openDataBaseWritable() throws SQLException {
-    	String myPath = DB_PATH + DB_NAME;  
-        mDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);  
+        mDataBase = SQLiteDatabase.openDatabase(DB_FULL_PATH, null, SQLiteDatabase.OPEN_READWRITE);  
         return mDataBase;
     }
       
@@ -116,8 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase checkDb = null;  
    
         try{  
-            String dbPath = DB_PATH + DB_NAME;  
-            checkDb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);  
+            checkDb = SQLiteDatabase.openDatabase(DB_FULL_PATH, null, SQLiteDatabase.OPEN_READONLY);  
         }catch(SQLiteException e){  
             // データベースはまだ存在していない  
         }  
@@ -157,23 +148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	newDb.close();
     	return flag;
     }
-//    /**
-//     * テーブル定義用メソッド
-//     */
-//    @Override
-//    public void onCreate(SQLiteDatabase db) {
-////    	db.beginTransaction();
-////    	try {
-////    		db.execSQL(BusStopDao.CREATE_TABLE);
-////    		db.execSQL(RouteDao.CREATE_TABLE);
-////    		db.execSQL(TimeTableDao.CREATE_TABLE);
-////    		db.execSQL(HistoryDao.CREATE_TABLE);
-////    		db.setTransactionSuccessful();
-////    	} finally {
-////    		db.endTransaction();
-////    	}
-//
-//    }
+
     /**
      * マイグレーション用メソッド
      */

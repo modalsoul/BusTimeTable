@@ -5,21 +5,22 @@ import java.util.ArrayList;
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
+import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
+import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
-public class SearchBusStopTask extends AsyncTask<Void, Void, ArrayList<BusStopItem>>{
+public class ListAllRouteTask extends AsyncTask<Void, Void, ArrayList<RouteItem>>{
 
 	Context context;
-	String word;
 	ProgressDialog progressDialog;
 	boolean isShowingDialog;
+	RouteDao dao;
 	
-	public SearchBusStopTask(Context context, String word) {
+	public ListAllRouteTask(Context context, RouteDao dao) {
 		this.context = context;
-		this.word = word;
+		this.dao = dao;
 	}
 	
 	@Override
@@ -30,21 +31,19 @@ public class SearchBusStopTask extends AsyncTask<Void, Void, ArrayList<BusStopIt
 	}
 	
 	@Override
-	protected ArrayList<BusStopItem> doInBackground(Void... arg0) {
-		return searchBusstop();
+	protected ArrayList<RouteItem> doInBackground(Void... arg0) {
+		return getAllRoute();
 	}
 	
 	@Override
-	protected void onPostExecute(ArrayList<BusStopItem> result) {
+	protected void onPostExecute(ArrayList<RouteItem> result) {
 		super.onPostExecute(result);
 		isShowingDialog = false;
 		dismissDialog();
 	}
 	
-	ArrayList<BusStopItem> searchBusstop() {
-		BusStopDao dao = new BusStopDao(context);
-		ArrayList<BusStopItem> list = dao.queryBusStopByName(word);
-		return list;
+	ArrayList<RouteItem> getAllRoute() {
+		return dao.queryRouteOrderById();
 	}
 
 	private void showDialog() {

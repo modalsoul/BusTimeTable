@@ -3,12 +3,14 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
+import jp.modal.soul.KeikyuTimeTable.task.ListAllRouteTask;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -73,7 +75,18 @@ public class RouteListActivity extends BaseActivity {
         setContentView(R.layout.main);
         
         setupDao();
-        
+    	// 路線情報の取得
+    	ListAllRouteTask task = new ListAllRouteTask(this, routeDao);
+    	task.execute(null);
+    	try {
+			routeList = task.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         setupEventhandling();
         
         setupView();
@@ -97,8 +110,6 @@ public class RouteListActivity extends BaseActivity {
      * ListViewのセットアップ
      */
     public void setupListView() {
-    	// 路線情報の取得
-    	routeList = routeDao.queryRouteOrderById();
     	// Adapterの生成
     	adapter = new RouteListAdapter(this, R.layout.route_row, routeList);
     	// ListViewの取得

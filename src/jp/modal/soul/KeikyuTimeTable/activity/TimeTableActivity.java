@@ -1,6 +1,8 @@
 package jp.modal.soul.KeikyuTimeTable.activity;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
@@ -11,11 +13,16 @@ import jp.modal.soul.KeikyuTimeTable.model.TimeSummaryDao;
 import jp.modal.soul.KeikyuTimeTable.model.TimeSummaryItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
+import jp.modal.soul.KeikyuTimeTable.model.TrafficInfoItem;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
-import android.app.AlertDialog;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
@@ -29,7 +36,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -82,8 +88,6 @@ public class TimeTableActivity extends FragmentActivity {
 	/** Font */
 	Typeface face;
 	String font = Utils.getFont();
-	
-	String busStopNameString;
 
 	/** GA */
 	GoogleAnalytics analytics;
@@ -93,6 +97,8 @@ public class TimeTableActivity extends FragmentActivity {
 	/** history */
 	private HandlerThread backgroundThread;
 	private HistoryHandler historyHandler;
+	
+	private BusStopItem busStop;
 	
     /** Called when the activity is first created. */
     @Override
@@ -104,6 +110,10 @@ public class TimeTableActivity extends FragmentActivity {
         setupMember();
         // Daoのセットアップ
         setupDao();
+        // Itemのセットアップ　
+        busStop = (busStopDao.queryBusStopById(new String[]{Integer.toString(busStopId)})).get(0);
+        setTitle(busStop.busStopName);
+        setTitleColor(getResources().getColor(R.color.white));
         // Viewのセットアップ
         setupView();
         
@@ -144,21 +154,17 @@ public class TimeTableActivity extends FragmentActivity {
 
 	private void setupView() {
 		setupTabSheet();
-//		gotoMapButton = (Button)findViewById(R.id.go_to_map_button);
-//		gotoMapButton.setOnClickListener(new View.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-////				String mapurl = "geo:0,0?p=35.577412, 139.726999";  //←ここの書き方で動作が微妙に変わる！  
-////				  
-////				Intent intent = new Intent();  
-////				intent.setAction(Intent.ACTION_VIEW);  intent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");  intent.setData(Uri.parse(mapurl));  
-////				startActivity(intent);  
-//				
-//			}
-//		});
 	}
 	
+	/**
+	 * 時刻表のタブを生成する
+	 * @param host
+	 * @param tabSpecName
+	 * @param nameId
+	 * @param color
+	 * @param icon
+	 * @return
+	 */
 	private TabSpec getTabSpec(FragmentTabHost host, String tabSpecName, int nameId, int color, int icon) {
 		TabSpec tabSpec = host.newTabSpec(tabSpecName);
         Button tabButton = new Button(this);
@@ -171,13 +177,29 @@ public class TimeTableActivity extends FragmentActivity {
         
         return tabSpec;
 	}
-	
+	/**
+	 * 地図タブを生成する
+	 * @param host
+	 * @param tabSpecName
+	 * @return
+	 */
 	private TabSpec getMapTabSpec(FragmentTabHost host, String tabSpecName) {
 		TabSpec tabSpec = host.newTabSpec(tabSpecName);
 		Button tabButton = new Button(this);
 		tabButton.setText("地図");
 		tabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
 		tabButton.setBackgroundResource(R.drawable.map_tab_icon);
+		setFont(tabButton);
+		tabSpec.setIndicator(tabButton);
+		return tabSpec;
+	}
+	
+	private TabSpec getTrafficTabSpec(FragmentTabHost host, String tabSpecName) {
+		TabSpec tabSpec = host.newTabSpec(tabSpecName);
+		Button tabButton = new Button(this);
+		tabButton.setText("運行情報");
+		tabButton.setTextSize(Const.TAB_BUTTON_TEXT_SIZE);
+		tabButton.setBackgroundResource(R.drawable.traffic_tab_icon);
 		setFont(tabButton);
 		tabSpec.setIndicator(tabButton);
 		return tabSpec;
@@ -193,9 +215,17 @@ public class TimeTableActivity extends FragmentActivity {
 	
 	private Bundle getMapBundle() {
 		Bundle mapBundle = new Bundle();
-		ArrayList<BusStopItem> items = busStopDao.queryBusStopById(new String[]{Integer.toString(busStopId)});
-		mapBundle.putString("busStop", items.get(0).busStopName);
+//		ArrayList<BusStopItem> items = busStopDao.queryBusStopById(new String[]{Integer.toString(busStopId)});
+		mapBundle.putString("busStop", busStop.busStopName);
 		return mapBundle;
+	}
+	
+	private Bundle getTrafficBundle() {
+		Bundle trafficBundle = new Bundle();
+		trafficBundle.putString("name", busStop.busStopName);
+		trafficBundle.putInt("search", busStop.search);
+		trafficBundle.putInt("terminal", busStopDao.queryTerminalBusSearchIDByRouteID(routeId));
+		return trafficBundle;
 	}
 
 	private void setupTabSheet() {
@@ -210,6 +240,9 @@ public class TimeTableActivity extends FragmentActivity {
         
         TabSpec holidayTabSpec = getTabSpec(host, "tab3", R.string.holiday_tab_name, Const.HOLIDAY_TAB_BUTTON_TEXT_COLOR, R.drawable.holiday_tab_icon);
         host.addTab(holidayTabSpec, TabFragment.class, getBundle(TimeTableDao.HOLIDAY));
+        
+        TabSpec trafficTabSpec = getTrafficTabSpec(host, "tab0");
+        host.addTab(trafficTabSpec, TrafficTabFragment.class, getTrafficBundle());
         
         TabSpec mapTabSpec = getMapTabSpec(host, "tab4");
         host.addTab(mapTabSpec, MapTabFragment.class, getMapBundle());
@@ -281,6 +314,124 @@ public class TimeTableActivity extends FragmentActivity {
     		ArrayList<TimeTableItem> list = new ArrayList<TimeTableItem>();
     		list = timeTableDao.queryBusStopOrderById(selectionArgs);
     		return list;
+    	}
+    }
+    
+    public static class TrafficTabFragment extends Fragment {
+    	final int MAX_BUS_STOP_NUM = 3;
+    	String name;
+    	int search;
+    	int terminal;
+    	TrafficInfoItem item;
+    	LinearLayout tabLinearLayout;
+    	TextView busStopNameView;
+    	TextView threeBefore;
+    	TextView twoBefore;
+    	TextView oneBefore;
+    	TextView rideBusStop;
+    	
+    	TextView labelComment;
+    	TextView label3B;
+    	TextView label2B;
+    	TextView label1B;
+
+    	/** Font */
+    	Typeface face;
+    	String font = Utils.getFont();
+    	
+    	@Override
+    	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    		name = getArguments().getString("name");
+    		search = getArguments().getInt("search");
+    		terminal = getArguments().getInt("terminal");
+    		tabLinearLayout = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.traffic_info, null);
+    		
+    		item = new TrafficInfoItem(name);
+    		
+    		setView();
+    		
+    		setupTrafficInfo();
+    		
+    		setFontAll();
+    		
+    		return tabLinearLayout;
+    	}
+    	void setFontAll() {
+    		setFont(threeBefore);
+    		setFont(twoBefore);
+    		setFont(oneBefore);
+    		setFont(rideBusStop);
+    		setFont(label1B);
+    		setFont(label2B);
+    		setFont(label3B);
+    		setFont(labelComment);
+    	}
+    	void setView() {
+    		
+    		threeBefore = (TextView)tabLinearLayout.findViewById(R.id.threeBefore);
+    		twoBefore = (TextView)tabLinearLayout.findViewById(R.id.twoBefore);
+    		oneBefore = (TextView)tabLinearLayout.findViewById(R.id.oneBefore);
+    		rideBusStop = (TextView)tabLinearLayout.findViewById(R.id.rideBusStop);
+    		rideBusStop.setText(name + "停留所");
+    		
+    		label1B = (TextView)tabLinearLayout.findViewById(R.id.one_before_label);
+    		label2B = (TextView)tabLinearLayout.findViewById(R.id.two_before_label);
+    		label3B = (TextView)tabLinearLayout.findViewById(R.id.three_before_label);
+    		labelComment = (TextView)tabLinearLayout.findViewById(R.id.traffic_comment);
+    	}
+    	void setupTrafficInfo() {
+    		String url = "http://keikyu-bus-loca.jp/BusLocWeb/getInpApchInfo.do?usn=" + search + "&dsn=" + terminal;
+    		try {
+    			Document doc = Jsoup.connect(url).get();
+    			Elements dd = doc.getElementsByTag("dd");
+    			
+    			int busStopIndex = 3;
+    			for(Elements ele : getBusStopElementList(dd)) {
+    				String[] time = ele.html().replaceAll("<.+?>", "/").split("/");
+    				if(time.length > 2) {
+    					item.arriveTime(busStopIndex,time[1]);
+    					item.terminalTime(busStopIndex,time[2]);
+    				}
+    				busStopIndex--;
+    			}
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+    		threeBefore.setText(makeTrafficText(item, TrafficInfoItem.THREE_BEFORE));
+    		twoBefore.setText(makeTrafficText(item, TrafficInfoItem.TWO_BEFORE));
+    		oneBefore.setText(makeTrafficText(item, TrafficInfoItem.ONE_BEFORE));
+    	}
+    	String makeTrafficText(TrafficInfoItem item, int type) {
+    		return getRideString(item.busStopName(), item.arriveTime(type).trim()) + "\n" + getTerminalString(item.terminalTime(type).trim());
+    		
+    	}
+    	String getRideString(String busStopName, String str) {
+    		if(str.length() > 6) return busStopName + str.substring(5);
+    		else return "";
+    	}
+    	String getTerminalString(String str) {
+    		if(str.length() > 6) return "終点" + str.substring(5);
+    		else return "";
+    	}
+    	/**
+    	 * 運行情報HTMLの<dd>タグ以下のエレメントを受け取って、
+    	 * 
+    	 * @param dd
+    	 * @return
+    	 */
+    	ArrayList<Elements> getBusStopElementList(Elements dd) {
+    		ArrayList<Elements> busStopElementList = new ArrayList<Elements>();
+    		int busStopNum = MAX_BUS_STOP_NUM;
+    		for(Iterator<Element>i = dd.iterator(); i.hasNext() && busStopNum>=0;) {
+    			Elements bus =  ((Element)i.next()).getElementsByClass("bus");
+    			busStopElementList.add(bus);
+    			busStopNum--;
+    		}
+    		return busStopElementList;
+    	}
+    	private void setFont(TextView text) {
+    		face = Typeface.createFromAsset(getActivity().getAssets(), font);
+    		text.setTypeface(face);
     	}
     }
     

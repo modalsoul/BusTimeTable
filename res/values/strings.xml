@@ -8,6 +8,10 @@
     <string name="bus_stop_list_dialog_title">乗車するバス停を選択</string>
     <string name="select_line">行き先を選択</string>
     
+    <!-- ダイアログ -->
+    <string name="now_preparing">検索中</string>
+    
+    
 	<!--  路線リストRow  -->
 	<string name="route_list_title">路線を選択</string>
     <string name="starting_to_terminal">%1$s から %2$s ゆき</string>
@@ -22,4 +26,16 @@
     <string name="map_comment">バス停のおおまかな位置を検索します。\n※バス停の進行方向の指定はできません。\n※バス停をうまく検索できない場合もあります。</string>
     <string name="go_to_navi">ルートを検索する</string>
     <string name="navi_comment">バス停までのルートを検索します。\n※現在地がわかるようにGPSをオンにしてください。</string>
+    
+    <!-- 運行情報タブ -->
+    <string name="traffic_comment">選んだバス停の近くを走っているバスの到着目安時間を表示します。\n※近くに走っているバスがなければ表示されません。</string>
+    <string name="three_before">３つ前の停留所</string>
+    <string name="two_before">２つ前の停留所</string>
+    <string name="one_before">１つ前の停留所</string>
+    <string name="just_now">乗車停留所</string>
+    
+    <!-- DB -->
+    <string name="db_path">/data/data/jp.modal.soul.KeikyuTimeTable/databases/</string>
+    <string name="db_name">kqbus</string>
+    <string name="db_name_asset">kqbus.db</string>
 </resources>

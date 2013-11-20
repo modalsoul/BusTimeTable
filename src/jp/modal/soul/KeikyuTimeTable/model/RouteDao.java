@@ -28,8 +28,6 @@ public class RouteDao extends Dao {
 	// カラム名定義
 	/** 路線ID　*/
 	public static final String COLUMN_ID = "id";
-	/** WebID */
-	public static final String COLUMN_WEB_ID = "web_id";
 	/** 路線名 */
 	public static final String COLUMN_ROUTE_NAME = "route_name";
 	/** 終着バス停名 */
@@ -45,7 +43,6 @@ public class RouteDao extends Dao {
 	// カラム名配列定義
 	public static final String[] COLUMNS = {
 											COLUMN_ID,
-											COLUMN_WEB_ID,
 											COLUMN_ROUTE_NAME,
 											COLUMN_TERMINAL,
 											COLUMN_STARTING,
@@ -57,7 +54,6 @@ public class RouteDao extends Dao {
 	static {
 		// @formatter:off
 		String columnDefine = COLUMN_ID + " integer primary key autoincrement, "
-							+ COLUMN_WEB_ID + " text not null unique, "
 							+ COLUMN_ROUTE_NAME + " text not null, "
 							+ COLUMN_TERMINAL + " text, "
 							+ COLUMN_STARTING + " text, "
@@ -79,12 +75,11 @@ public class RouteDao extends Dao {
 	public static RouteItem getRouteItem(Cursor cursor){
 		RouteItem routeItem = new RouteItem();
 		routeItem.id = cursor.getInt(0);
-		routeItem.web_id = cursor.getString(1);
-		routeItem.routeName = cursor.getString(2);
-		routeItem.terminal = cursor.getString(3);
-		routeItem.starting = cursor.getString(4);
-		routeItem.busStops = cursor.getString(5);
-		routeItem.area_id = cursor.getInt(6);
+		routeItem.routeName = cursor.getString(1);
+		routeItem.terminal = cursor.getString(2);
+		routeItem.starting = cursor.getString(3);
+		routeItem.busStops = cursor.getString(4);
+		routeItem.area_id = cursor.getInt(5);
 
 		return routeItem;
 	}
@@ -161,7 +156,6 @@ public class RouteDao extends Dao {
 	public long insertWithoutOpenDb(SQLiteDatabase db, RouteItem item) throws Exception {
 		ContentValues values = new  ContentValues();
 		values.put(COLUMN_ID, item.id);
-		values.put(COLUMN_WEB_ID, item.web_id);
 		values.put(COLUMN_ROUTE_NAME, item.routeName);
 		values.put(COLUMN_TERMINAL, item.terminal);
 		values.put(COLUMN_STARTING, item.starting);

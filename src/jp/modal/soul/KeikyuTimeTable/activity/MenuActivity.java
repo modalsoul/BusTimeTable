@@ -2,6 +2,7 @@ package jp.modal.soul.KeikyuTimeTable.activity;
 
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.migration.DatabaseState;
@@ -13,6 +14,7 @@ import jp.modal.soul.KeikyuTimeTable.model.HistoryItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.TimeTableDao;
+import jp.modal.soul.KeikyuTimeTable.task.SearchBusStopTask;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
@@ -23,7 +25,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +68,7 @@ public class MenuActivity extends BaseActivity {
 	/** Dialog */
 	AlertDialog.Builder historyDialogBuilder;
 	AlertDialog.Builder searchDialogBuilder;
+	AlertDialog searchDialog;
 	AlertDialog.Builder aboutAppBuilder;
 	
 	/** Search */
@@ -97,7 +99,6 @@ public class MenuActivity extends BaseActivity {
         setupView();
         
         setupGA();
-
     }
 
     @Override
@@ -239,7 +240,8 @@ public class MenuActivity extends BaseActivity {
 		searchDialogBuilder.setView(searchEditText);
 		searchDialogBuilder.setPositiveButton("検索", onDialogSearchClickListener);
 		searchDialogBuilder.setNegativeButton("キャンセル", null);
-		searchDialogBuilder.show();
+		searchDialog = searchDialogBuilder.create();
+		searchDialog.show();
 	}
 	
 	DialogInterface.OnClickListener onDialogSearchClickListener = new DialogInterface.OnClickListener() {
@@ -297,7 +299,6 @@ public class MenuActivity extends BaseActivity {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			HistoryItem item = historyItemList.get(which);
-//			Log.e("hoge", item.routeId + ":" + item.busStopId);
 			launchBusStop((int)item.routeId, (int)item.busStopId);
 		}
 	};
@@ -311,21 +312,22 @@ public class MenuActivity extends BaseActivity {
 			RouteItem routeItem = routeDao.queryRouteByRouteId(Long.valueOf(item.routeId));
 			
 			ArrayList<BusStopItem> busstopItemList = busStopDao.queryBusStop(String.valueOf(item.busStopId));
-			dialogItem[i] = makeBusStopSelectRow(routeItem.terminal, busstopItemList.get(0).busStopName);
+			dialogItem[i] = makeBusStopSelectRow(routeItem.routeName, routeItem.terminal, busstopItemList.get(0).busStopName);
 			i++;
 		}
 		return dialogItem;
 	}
 
-	private String makeBusStopSelectRow(String routeName, String busstopName) {
-		return routeName + "ゆき\n" + busstopName +"バス停";
+	private String makeBusStopSelectRow(String routeName, String terminal, String busstopName) {
+		return routeName + "\n" + terminal + "ゆき\n" + busstopName +"バス停";
 	}
 	
 	private void launchSearchResultList(String word) {
+		CharSequence[] items = getSearchDialogList(word);
 		tracker.sendEvent(Const.UI_CATEGORY, Const.BUTTON_PRESS, Const.SELECT_HISTORY, 0L);
 		historyDialogBuilder = new AlertDialog.Builder(MenuActivity.this);
-		historyDialogBuilder.setSingleChoiceItems(getSearchDialogList(word), -1, searchResultOnClickListener);
-		historyDialogBuilder.setTitle("検索結果:" + searchResultNum + "件");			
+		historyDialogBuilder.setSingleChoiceItems(items, -1, searchResultOnClickListener);
+		historyDialogBuilder.setTitle("検索結果:" + searchResultNum + "件");		
 		historyDialogBuilder.show();
 	}
 	
@@ -340,14 +342,24 @@ public class MenuActivity extends BaseActivity {
 	
 	public CharSequence[] getSearchDialogList(String word) {
 		busStopDao = new BusStopDao(this);
-		busStopItemList = busStopDao.queryBusStopByName(word);
+		SearchBusStopTask task = new SearchBusStopTask(MenuActivity.this, word);
+		task.execute(null);
+		try {
+			busStopItemList = task.get();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return null;
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			return null;
+		}
 		searchResultNum = busStopItemList.size();
 		CharSequence[] dialogItem = new CharSequence[busStopItemList.size()];
 		int i = 0;
 		for(BusStopItem item: busStopItemList) {
 			RouteItem routeItem = routeDao.queryRouteByRouteId(Long.valueOf(item.routeId));
 			
-			dialogItem[i] = makeBusStopSelectRow(routeItem.terminal, item.busStopName);
+			dialogItem[i] = makeBusStopSelectRow(routeItem.routeName, routeItem.terminal, item.busStopName);
 			i++;
 		}
 		return dialogItem;

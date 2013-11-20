@@ -2,9 +2,7 @@ package jp.modal.soul.KeikyuTimeTable.migration;
 
 import java.io.IOException;
 
-import jp.modal.soul.KeikyuTimeTable.model.DatabaseHelper;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 /**
  * 起動ステータスの共有プリファレンスのクラス
