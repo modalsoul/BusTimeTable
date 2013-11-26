@@ -16,6 +16,9 @@ public class TrafficInfoItem {
 		this.busStopName = busStopName;
 		arriveTime = new ArrayList<String>();
 		terminalTime = new ArrayList<String>();
+		init();
+	}
+	void init() {
 		for(int i = 0; i < BUS_STOP_NUM; i++) {
 			arriveTime.add("");
 			terminalTime.add("");
@@ -41,5 +44,10 @@ public class TrafficInfoItem {
 	public String terminalTime(int i) {
 		return terminalTime.get(i);
 	}
-
+	
+	public void clear() {
+		arriveTime.clear();
+		terminalTime.clear();
+		init();
+	}
 }

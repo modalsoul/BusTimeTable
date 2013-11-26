@@ -18,6 +18,8 @@ import jp.modal.soul.KeikyuTimeTable.task.SearchBusStopTask;
 import jp.modal.soul.KeikyuTimeTable.util.Const;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -79,6 +81,11 @@ public class MenuActivity extends BaseActivity {
 	private final int ABOUT_APP = 0;
 	private final int CONTACT = 1;
 	
+
+	/** Dialog */
+	static final int ROUTE_LIST_LOADING = 1;
+	ProgressDialog m_progressDialog;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -212,6 +219,7 @@ public class MenuActivity extends BaseActivity {
 		
 		@Override
 		public void onClick(View v) {
+			showDialog(ROUTE_LIST_LOADING);
 			launchRouteList();
 		}
 	};
@@ -282,13 +290,13 @@ public class MenuActivity extends BaseActivity {
 	
 	void setUpBusAnimation() {
 		Long time = System.currentTimeMillis();
-		if(time%3 == 0) {
+		if(time%7 == 0) {
 			RotateAnimation rotate = new RotateAnimation(0, 1080, bus.getWidth()/2, bus.getHeight()/2);
 			rotate.setDuration(1000);
 			bus.startAnimation(rotate);
 		} else {
-			TranslateAnimation translate = new TranslateAnimation(0, -500, 0, 0);
-			translate.setDuration(3000);
+			TranslateAnimation translate = new TranslateAnimation(0, -800, 0, 0);
+			translate.setDuration(4000);
 			bus.startAnimation(translate);
 			kemuri.startAnimation(translate);
 		}
@@ -416,6 +424,29 @@ public class MenuActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
 	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog = super.onCreateDialog(id);
+		switch (id) {
+		case ROUTE_LIST_LOADING:
+			ProgressDialog pDialog = new ProgressDialog(this);
+			pDialog.setMessage(getResources().getString(R.string.now_loading_route_list));
+			pDialog.setCancelable(false);
+			dialog = (Dialog) pDialog;
+			m_progressDialog = pDialog; // あとで使うかも知れないので、メンバ変数に格納しときます。
+			break;
+		}
+		return dialog;
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if(m_progressDialog!=null) m_progressDialog = null;
+		//dismissDialog(ROUTE_LIST_LOADING); // ダイアログのグルグルを終了
+		removeDialog(ROUTE_LIST_LOADING);
+	}	
+
 }

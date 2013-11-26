@@ -3,8 +3,6 @@ package jp.modal.soul.KeikyuTimeTable.task;
 import java.util.ArrayList;
 
 import jp.modal.soul.KeikyuTimeTable.R;
-import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
-import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import android.app.ProgressDialog;

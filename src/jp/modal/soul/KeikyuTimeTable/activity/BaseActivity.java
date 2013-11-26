@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 public class BaseActivity extends Activity {
 	Typeface face;
-
 	String font = Utils.getFont();
+
 	public void setFont(TextView text) {
 		face = Typeface.createFromAsset(getAssets(), font);
 		text.setTypeface(face);
@@ -20,6 +20,4 @@ public class BaseActivity extends Activity {
 		face = Typeface.createFromAsset(getAssets(), font);
 		button.setTypeface(face);
 	}
-	
-	
 }

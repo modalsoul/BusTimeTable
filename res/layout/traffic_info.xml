@@ -7,19 +7,39 @@
     android:orientation="vertical" >
     
     <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+	    android:layout_marginTop="22dp">
+	    <TextView 
+	        android:id="@+id/traffic_comment"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="22dp"
+	        android:layout_marginRight="11dp"
+	        android:textColor="@color/gray"
+	        android:layout_weight="1"
+	        android:text="@string/traffic_comment"/>
+	    <Button 
+	        android:id="@+id/reload_traffic_info"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="right"
+	        android:layout_marginRight="22dp"
+	        android:text="@string/reload_traffic_info"/>
+	</LinearLayout>
+    <ScrollView 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+	<LinearLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical">
+    <LinearLayout 
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:orientation="vertical"
           android:layout_marginLeft="22dp">
-          <TextView 
-              android:id="@+id/traffic_comment"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="22dp"
-              android:layout_marginRight="22dp"
-              android:layout_marginBottom="22dp"
-              android:textColor="@color/gray"
-              android:text="@string/traffic_comment"/>
           
 	    <LinearLayout 
 	        android:layout_width="wrap_content"
@@ -46,6 +66,7 @@
 	        android:layout_height="wrap_content"
           android:layout_marginLeft="44dp"/>
 	</LinearLayout>
+	
    	<LinearLayout 
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
@@ -136,4 +157,6 @@
 	    </LinearLayout>
     </LinearLayout>
     
+    </LinearLayout>
+    </ScrollView>
 </LinearLayout>

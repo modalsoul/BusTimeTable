@@ -67,7 +67,7 @@ public class RouteListActivity extends BaseActivity {
 	/** Search */
 	public static final String SEARCH_WORD = "search_word";
 	String word;
-
+	ListAllRouteTask task;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,25 +76,14 @@ public class RouteListActivity extends BaseActivity {
         
         setupDao();
     	// 路線情報の取得
-    	ListAllRouteTask task = new ListAllRouteTask(this, routeDao);
+    	task = new ListAllRouteTask(this, routeDao);
     	task.execute(null);
-    	try {
-			routeList = task.get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        setupEventhandling();
+
+    	setupEventhandling();
         
         setupView();
         
         setupGA();
-        
-        // ListViewのセットアップ
-        setupListView();
 
     }
     
@@ -224,6 +213,17 @@ public class RouteListActivity extends BaseActivity {
     protected void onStart() {
     	super.onStart();
 		EasyTracker.getInstance().activityStart(this);
+		
+		try {
+			routeList = task.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		setupListView();
     }
     
     @Override
