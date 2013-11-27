@@ -90,12 +90,10 @@ public class TimeTableActivity extends FragmentActivity {
 
         // intentからの設定値の取得
         setupMember();
+        
         // Daoのセットアップ
         setupDao();
-        // Itemのセットアップ　
-        busStop = (busStopDao.queryBusStopById(new String[]{Integer.toString(busStopId)})).get(0);
-        setTitle(busStop.busStopName);
-        setTitleColor(getResources().getColor(R.color.white));
+        
         // Viewのセットアップ
         setupView();
         
@@ -105,6 +103,11 @@ public class TimeTableActivity extends FragmentActivity {
 		registerHistory();
 
     }
+	private void setupTitlebar() {
+		busStop = (busStopDao.queryBusStopById(new String[]{Integer.toString(busStopId)})).get(0);
+        setTitle(busStop.busStopName);
+        setTitleColor(getResources().getColor(R.color.white));
+	}
 	private void setupGA() {
 		analytics = GoogleAnalytics.getInstance(this);
         tracker = analytics.getTracker(getResources().getString(R.string.ga_trackingId));
@@ -117,7 +120,6 @@ public class TimeTableActivity extends FragmentActivity {
             }
         }
 	}
-
 
 	private void setupMember() {
 		// 行き先を選択するバス停をセット
@@ -132,8 +134,8 @@ public class TimeTableActivity extends FragmentActivity {
 		historyDao = new HistoryDao(this);
 	}
 
-
 	private void setupView() {
+		setupTitlebar();
 		setupTabSheet();
 	}
 	
@@ -196,7 +198,6 @@ public class TimeTableActivity extends FragmentActivity {
 	
 	private Bundle getMapBundle() {
 		Bundle mapBundle = new Bundle();
-//		ArrayList<BusStopItem> items = busStopDao.queryBusStopById(new String[]{Integer.toString(busStopId)});
 		mapBundle.putString("busStop", busStop.busStopName);
 		return mapBundle;
 	}

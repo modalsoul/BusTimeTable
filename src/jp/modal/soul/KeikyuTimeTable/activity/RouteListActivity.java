@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopDao;
 import jp.modal.soul.KeikyuTimeTable.model.BusStopItem;
+import jp.modal.soul.KeikyuTimeTable.model.ListRouteItem;
 import jp.modal.soul.KeikyuTimeTable.model.RouteDao;
 import jp.modal.soul.KeikyuTimeTable.model.RouteItem;
 import jp.modal.soul.KeikyuTimeTable.task.ListAllRouteTask;
@@ -16,12 +17,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import br.com.kots.mob.complex.preferences.ComplexPreferences;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.GoogleAnalytics;
@@ -68,6 +71,10 @@ public class RouteListActivity extends BaseActivity {
 	public static final String SEARCH_WORD = "search_word";
 	String word;
 	ListAllRouteTask task;
+	
+	/** Pref */
+	ComplexPreferences cp;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,13 +85,14 @@ public class RouteListActivity extends BaseActivity {
     	// 路線情報の取得
     	task = new ListAllRouteTask(this, routeDao);
     	task.execute(null);
+    	
+    	cp = ComplexPreferences.getComplexPreferences(getBaseContext(), "preference", MODE_PRIVATE);
 
     	setupEventhandling();
         
         setupView();
         
         setupGA();
-
     }
     
 	private void setupView() {
@@ -173,7 +181,6 @@ public class RouteListActivity extends BaseActivity {
 			i++;
 		}
 
-
 		// バス停選択のリストを表示するダイアログを作成
 		AlertDialog.Builder builder = new AlertDialog.Builder(RouteListActivity.this);
 		builder.setTitle(R.string.bus_stop_list_dialog_title);
@@ -213,18 +220,28 @@ public class RouteListActivity extends BaseActivity {
     protected void onStart() {
     	super.onStart();
 		EasyTracker.getInstance().activityStart(this);
-		
 		try {
-			routeList = task.get();
+			ListRouteItem items = cp.getObject("route_list", ListRouteItem.class);
+			if(items == null) {
+				routeList = task.get();
+				makeRouteListPref();
+			} else {
+				routeList = items.routeItem();
+			}
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		setupListView();
     }
+
+	private void makeRouteListPref() {
+		ListRouteItem item = new ListRouteItem();
+		item.routeItem(routeList);
+		cp.putObject("route_list", item);
+		cp.commit();
+	}
     
     @Override
     protected void onStop() {
