@@ -19,7 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public final String TAG = this.getClass().getSimpleName();
 
     /** DBのバージョン番号 */
-    public static final int DB_VERSION = 3;
+    public static final int DB_VERSION = 4;
     
     private SQLiteDatabase mDataBase;  
     private final Context mContext; 

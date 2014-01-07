@@ -30,16 +30,12 @@ import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
-//import jp.modal.soul.KeikyuTimeTable.fragment.MapTabFragment;
 
 public class TimeTableActivity extends FragmentActivity {
 
 	public Button selectLineButton; /** 行き先選択ボタン */
-
-
 	public static String BUSS_STOP_NUMBER = "BUS_STOP_NUMBER";
 	public static String ROUTE_NUMBER = "ROUTE_NUMBER";
-
 
 	/** 行き先を選択するバス停の番号 */
 	public int busStopId;
@@ -79,14 +75,13 @@ public class TimeTableActivity extends FragmentActivity {
 	/** history */
 	private HandlerThread backgroundThread;
 	private HistoryHandler historyHandler;
-	
 	private BusStopItem busStop;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tab);
+        setContentView(R.layout.activity_busstop);
 
         // intentからの設定値の取得
         setupMember();

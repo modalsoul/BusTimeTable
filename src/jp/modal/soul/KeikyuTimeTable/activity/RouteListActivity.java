@@ -79,7 +79,7 @@ public class RouteListActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_route_list);
         
         setupDao();
     	// 路線情報の取得

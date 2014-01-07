@@ -57,6 +57,8 @@ public class MenuActivity extends BaseActivity {
 	private ImageView bus;
 	private ImageView kemuri;
 	private ImageView busStop;
+	private Button history1;
+	private Button history2;
 	
 	/** ItemList */
 	ArrayList<HistoryItem> historyItemList;
@@ -94,7 +96,7 @@ public class MenuActivity extends BaseActivity {
         Intent intent = this.getIntent();
         uri = intent.getData();
         
-        setContentView(R.layout.menu);
+        setContentView(R.layout.activity_menu);
         
         // DAOのセットアップ
         setupDao();
@@ -106,6 +108,7 @@ public class MenuActivity extends BaseActivity {
         setupView();
         
         setupGA();
+        
     }
 
     @Override
@@ -157,37 +160,104 @@ public class MenuActivity extends BaseActivity {
 
 
 	private void setupView() {
-		title = (TextView)findViewById(R.id.menu_title);
-        setFont(title);
+		setupTitleViews();
         
-        unofficial = (TextView)findViewById(R.id.unofficial);
-        setFont(unofficial);
+		setupHistoryViews();
+
+		setupSearchButtons();
         
-        routeButton = (Button)findViewById(R.id.route_menu_button);
+        setupAnimationViews();
+	}
+
+	private void setupSearchButtons() {
+		routeButton = (Button)findViewById(R.id.route_menu_button);
         setFont(routeButton);
         
         searchButton = (Button)findViewById(R.id.search_menu_button);
         setFont(searchButton);
         
-        historyButton = (Button)findViewById(R.id.history_menu_button);
+        routeButton.setOnClickListener(onRouteClickListener);
+        searchButton.setOnClickListener(onSearchClickListener);
+        
+        if(isTabletMode()) {
+        	routeButton.setTextSize(44);
+        	searchButton.setTextSize(44);
+        }
+	}
+
+	private void setupTitleViews() {
+		title = (TextView)findViewById(R.id.menu_title);
+        setFont(title);
+        
+        unofficial = (TextView)findViewById(R.id.unofficial);
+        setFont(unofficial);
+	}
+
+	private void setupHistoryViews() {
+		historyButton = (Button)findViewById(R.id.history_menu_button);
         setFont(historyButton);
         
-        routeButton.setOnClickListener(onRouteClickListener);
+        history1 = (Button)findViewById(R.id.history_1);
+        setFont(history1);
         
-        searchButton.setOnClickListener(onSearchClickListener);
+        history2 = (Button)findViewById(R.id.history_2);
+        setFont(history2);
+        
+        CharSequence[] hist = getHistoryDialogList();
+        
+        if(hist.length > 2) {
+        	history1.setText(hist[0]);
+        	history1.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					HistoryItem item = historyItemList.get(0);
+					launchBusStop((int)item.routeId, (int)item.busStopId);
+				}
+			});
+        	history2.setText(hist[1]);
+        	history2.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					HistoryItem item = historyItemList.get(1);
+					launchBusStop((int)item.routeId, (int)item.busStopId);
+				}
+			});
+        } else if(hist.length == 1) {
+        	history1.setText(hist[0]);
+        	history1.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					HistoryItem item = historyItemList.get(0);
+					launchBusStop((int)item.routeId, (int)item.busStopId);
+				}
+			});
+        } else {
+        	historyButton.setVisibility(View.GONE);
+        	history1.setVisibility(View.GONE);
+        	history2.setVisibility(View.GONE);
+        }
         
         historyButton.setOnClickListener(onHistoryClickListener);
         
-        bus = (ImageView)findViewById(R.id.bus);
-        
-        kemuri = (ImageView)findViewById(R.id.kemuri);
-        
-        bus.setOnClickListener(busOnClickListener);
-        
-        busStop = (ImageView)findViewById(R.id.busstop);
-        busStop.setOnClickListener(onBusstopClickListener);
-        
+
+        if(isTabletMode()) {
+        	historyButton.setTextSize(44);
+        	history1.setTextSize(22);
+        	history2.setTextSize(22);
+        }
 	}
+	
+	private void setupAnimationViews() {
+		bus = (ImageView)findViewById(R.id.bus);
+		
+		kemuri = (ImageView)findViewById(R.id.kemuri);
+		
+		bus.setOnClickListener(busOnClickListener);
+		
+		busStop = (ImageView)findViewById(R.id.busstop);
+		busStop.setOnClickListener(onBusstopClickListener);
+	}
+	
 	View.OnClickListener onBusstopClickListener = new View.OnClickListener() {
 		
 		@Override
@@ -327,7 +397,7 @@ public class MenuActivity extends BaseActivity {
 	}
 
 	private String makeBusStopSelectRow(String routeName, String terminal, String busstopName) {
-		return routeName + "\n" + terminal + "ゆき\n" + busstopName +"バス停";
+		return routeName + "\n"  + busstopName +"バス停\n";
 	}
 	
 	private void launchSearchResultList(String word) {

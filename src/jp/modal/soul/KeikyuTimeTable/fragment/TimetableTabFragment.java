@@ -10,7 +10,6 @@ import jp.modal.soul.KeikyuTimeTable.model.TimeTableItem;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ public class TimetableTabFragment extends Fragment {
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    	Log.e("TimeTableTab", "CALLED");
     	route = getArguments().getInt("route");
     	busStop = getArguments().getInt("busStop");
     	weekType = getArguments().getInt("week");
@@ -76,7 +74,6 @@ public class TimetableTabFragment extends Fragment {
 	 */
 	public ArrayList<TimeTableItem> getTimeList(int weekType) {
 		if(items == null) {
-			Log.e("HOGEHOGEHO", "QUERY CALLED");
 			String[] selectionArgs = { String.valueOf(busStop), String.valueOf(route), String.valueOf(weekType)};
 			items = timeTableDao.queryBusStopOrderById(selectionArgs);
 		}

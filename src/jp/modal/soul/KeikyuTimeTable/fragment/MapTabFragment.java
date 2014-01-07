@@ -29,16 +29,16 @@ public class MapTabFragment extends Fragment {
 		locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 		
 		target = getArguments().getString("busStop");
-		LinearLayout tabLinearLayout = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.map_tab, null);
+		LinearLayout tabLinearLayout = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.map_tab, null).findViewById(R.id.map_linear_layout);
 		
-		TextView busStopName = (TextView)tabLinearLayout.getChildAt(0);
+		TextView busStopName = (TextView)tabLinearLayout.findViewById(R.id.map_bus_stop_name);
 		busStopName.setText(target + " バス停");
 		setFont(busStopName);
 		
-		Button openMapButton = (Button)tabLinearLayout.getChildAt(1);
+		Button openMapButton = (Button)tabLinearLayout.findViewById(R.id.open_map_button);
 		setFont(openMapButton);
 		
-		TextView mapComment = (TextView)tabLinearLayout.getChildAt(2);
+		TextView mapComment = (TextView)tabLinearLayout.findViewById(R.id.map_comment);
 		setFont(mapComment);
 		
 		openMapButton.setOnClickListener(new OnClickListener() {
@@ -47,7 +47,7 @@ public class MapTabFragment extends Fragment {
 				gotoMap();
 			};
 		});
-		Button naviButton = (Button)tabLinearLayout.getChildAt(3);
+		Button naviButton = (Button)tabLinearLayout.findViewById(R.id.navi_button);
 		setFont(naviButton);
 		naviButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -56,11 +56,11 @@ public class MapTabFragment extends Fragment {
 			};
 		});
 		
-		TextView naviComment = (TextView)tabLinearLayout.getChildAt(4);
+		TextView naviComment = (TextView)tabLinearLayout.findViewById(R.id.navi_comment);
 		setFont(naviComment);
 		
 		if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			Button gpsOnButton = (Button)tabLinearLayout.getChildAt(5);
+			Button gpsOnButton = (Button)tabLinearLayout.findViewById(R.id.gps_button);
 			gpsOnButton.setOnClickListener(gpsOnButtonOnClickListener);
 			gpsOnButton.setVisibility(View.VISIBLE);
 			setFont(gpsOnButton);

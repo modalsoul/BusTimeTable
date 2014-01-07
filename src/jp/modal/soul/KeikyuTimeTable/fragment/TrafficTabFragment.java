@@ -56,7 +56,7 @@ public class TrafficTabFragment extends Fragment {
 		name = getArguments().getString("name");
 		search = getArguments().getInt("search");
 		terminal = getArguments().getInt("terminal");
-		tabLinearLayout = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.traffic_info, null);
+		tabLinearLayout = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.traffic_info_tab, null);
 		
 		trafficInfoItem = new TrafficInfoItem(name);
 		

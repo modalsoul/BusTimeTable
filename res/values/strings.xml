@@ -4,14 +4,21 @@
     <string name="hello">Hello World, KeikyuTimeTableActivity!</string>
     <string name="app_name">KQバス 時刻表</string>
     <!-- メニュー -->
+    <string name="menu_title">京急バス時刻表</string>
+    <string name="menu_subtitle">（非公式）</string>
     <string name="select_bus_stop">乗車するバス停を選択</string>
     <string name="bus_stop_list_dialog_title">乗車するバス停を選択</string>
     <string name="select_line">行き先を選択</string>
+    <!-- メニューボタン -->
+    <string name="menu_route_button">路線から選ぶ</string>
+    <string name="menu_busstop_button">バス停から選ぶ</string>
+    <string name="menu_history_button">履歴から選ぶ</string>
     
     <!-- ダイアログ -->
     <string name="now_preparing">検索中...</string>
     <string name="now_loading_route_list">読み込み中...</string>
-    
+    <!-- 路線リスト -->
+    <string name="route_list_back_button">←戻る</string>
 	<!--  路線リストRow  -->
 	<string name="route_list_title">路線を選択</string>
     <string name="starting_to_terminal">%1$s から %2$s ゆき</string>
@@ -26,6 +33,7 @@
     <string name="map_comment">バス停のおおまかな位置を検索します。\n※バス停の進行方向の指定はできません。\n※バス停をうまく検索できない場合もあります。</string>
     <string name="go_to_navi">ルートを検索する</string>
     <string name="navi_comment">バス停までのルートを検索します。\n※現在地がわかるようにGPSをオンにしてください。</string>
+    <string name="gps_on_button">GPSをオンにする</string>
     
     <!-- 運行情報タブ -->
     <string name="traffic_comment">近くを走っているバスの到着目安時間を表示します。\n※近くを走っているバスがなければ表示されません。</string>

@@ -1,5 +1,6 @@
 package jp.modal.soul.KeikyuTimeTable.activity;
 
+import jp.modal.soul.KeikyuTimeTable.R;
 import jp.modal.soul.KeikyuTimeTable.util.Utils;
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -19,5 +20,9 @@ public class BaseActivity extends Activity {
 	public void setFont(Button button) {
 		face = Typeface.createFromAsset(getAssets(), font);
 		button.setTypeface(face);
+	}
+	
+	boolean isTabletMode(){
+	    return getResources().getBoolean(R.bool.is_tablet);
 	}
 }
